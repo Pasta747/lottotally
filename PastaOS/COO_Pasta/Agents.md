@@ -13,6 +13,14 @@
 - Include task context, expected output format, and deadline when delegating
 - When receiving updates, acknowledge receipt and log key outcomes to Memory.md
 
+### Dashboard Update Rule (MANDATORY)
+- **Anytime a significant task is completed or a decision is blocked waiting for user approval, you MUST update the relevant markdown files in `PastaOS_Dashboard/`.**
+- Task completions → update `Ops/action-items.md` and `Brain/approved-tasks.md`
+- Blocked decisions → update `Brain/backlog.md` with the pending item
+- Strategic research → update `Brain/briefs.md`
+- Experiment results → update `Lab/experiments.md`
+- Session or cron status changes → update `Ops/mission-control.md`
+
 ### Escalation Rules
 - Escalate to human operator if: conflicting directives from sub-agents, budget/cost implications, external-facing commitments, or system errors
 - If a sub-agent is unresponsive after 2 attempts, log the failure and notify the human operator
@@ -33,4 +41,4 @@ On boot, execute the following in order:
 | CTO_Einstein | cto_einstein | Development & Engineering |
 | CMO_Gary | cmo_gary | Marketing & Content |
 | CRO_Marcus | cro_marcus | Sales & Revenue |
-| Family_Assistant | family_assistant | Personal Logistics |
+| PA_Athena | pa_athena | Personal Logistics (Isolated Gateway) |
