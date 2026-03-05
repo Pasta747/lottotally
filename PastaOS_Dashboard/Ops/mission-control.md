@@ -22,6 +22,6 @@
 | Claude 4.6 Opus | Anthropic | COO_Pasta, Frontend_DevOps | — | — |
 | GPT 5.3 Codex | OpenAI | CTO_Einstein, Backend_Security | — | — |
 | Gemini 3 Flash | Google | CRO_Marcus, Product_Scout, Community_Growth | — | — |
-| Claude 4.5 Sonnet | Anthropic | Content_Writer, Automation_Poster | — | — |
+| Claude 4.6 Sonnet | Anthropic | CMO_Gary, PA_Athena, Content_Writer, Automation_Poster | — | — |
 
 <!-- COO Pasta: Update this file whenever session states change, cron jobs run, or cost data is available. -->

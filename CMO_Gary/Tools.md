@@ -1,7 +1,7 @@
 # Tools — CMO Gary
 
 ## Model
-To be assigned (model-agnostic — routed via OpenClaw gateway)
+Claude 4.6 Sonnet (Anthropic)
 
 ## Platform
 OpenClaw (self-hosted, model-agnostic gateway)
