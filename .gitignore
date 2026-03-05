@@ -13,6 +13,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# OpenClaw runtime state
+.openclaw/
+
 # Claude Code
 .claude/worktrees/
 openclaw.json
