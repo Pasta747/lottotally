@@ -1,0 +1,284 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MonitorStatus {
+  UP
+  DEGRADED
+  DOWN
+  PAUSED
+}
+
+enum MonitorInterval {
+  ONE_MINUTE
+  FIVE_MINUTES
+  FIFTEEN_MINUTES
+}
+
+enum IncidentStatus {
+  INVESTIGATING
+  IDENTIFIED
+  MONITORING
+  RESOLVED
+}
+
+enum SubscriptionPlan {
+  FREE
+  FREELANCER
+  AGENCY
+  STUDIO
+  ENTERPRISE
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String        @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  memberships   Membership[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Agency {
+  id             String         @id @default(cuid())
+  name           String
+  slug           String         @unique
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  memberships    Membership[]
+  projects       Project[]
+  statusPages    StatusPage[]
+  subscriptions  Subscription[]
+}
+
+model Membership {
+  id        String     @id @default(cuid())
+  userId    String
+  agencyId  String
+  role      MemberRole @default(MEMBER)
+  createdAt DateTime   @default(now())
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agency    Agency     @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, agencyId])
+  @@index([agencyId])
+}
+
+model Project {
+  id         String      @id @default(cuid())
+  agencyId   String
+  name       String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  agency     Agency      @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  monitors   Monitor[]
+
+  @@index([agencyId])
+}
+
+model Monitor {
+  id                 String          @id @default(cuid())
+  projectId          String
+  name               String
+  url                String
+  interval           MonitorInterval @default(FIVE_MINUTES)
+  timeoutMs          Int             @default(10000)
+  expectedStatusCode Int             @default(200)
+  consecutiveFails   Int             @default(0)
+  status             MonitorStatus   @default(UP)
+  lastStatusCode     Int?
+  lastLatencyMs      Int?
+  lastCheckedAt      DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  project            Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  incidents          Incident[]
+  checkResults       CheckResult[]
+
+  @@index([projectId])
+}
+
+model Incident {
+  id            String         @id @default(cuid())
+  monitorId     String
+  title         String
+  status        IncidentStatus @default(INVESTIGATING)
+  startedAt     DateTime       @default(now())
+  resolvedAt    DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  monitor       Monitor        @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  @@index([monitorId, startedAt])
+}
+
+model StatusPage {
+  id            String      @id @default(cuid())
+  agencyId      String
+  name          String
+  slug          String      @unique
+  logoUrl       String?
+  brandColor    String?
+  isPublic      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  agency        Agency      @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId])
+}
+
+model Subscription {
+  id                     String           @id @default(cuid())
+  agencyId               String           @unique
+  plan                   SubscriptionPlan @default(FREE)
+  stripeCustomerId       String?          @unique
+  stripeSubscriptionId   String?          @unique
+  status                 String           @default("incomplete")
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  agency                 Agency           @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model WaitlistSignup {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  source      String   @default("landing-page")
+  createdAt   DateTime @default(now())
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  CRITICAL
+}
+
+model SupportTicket {
+  id          String         @id @default(cuid())
+  externalId  String         @default("")
+  fromEmail   String
+  subject     String
+  body        String         @default("")
+  inboxId     String         @default("")
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(NORMAL)
+  assignedTo  String?
+  resolvedAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([status, createdAt])
+  @@index([fromEmail])
+}
+
+model CheckResult {
+  id            String    @id @default(cuid())
+  monitorId     String
+  ok            Boolean
+  statusCode    Int?
+  latencyMs     Int?
+  error         String?
+  checkedAt     DateTime  @default(now())
+
+  monitor       Monitor   @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  @@index([monitorId, checkedAt])
+}
+
+model StripeWebhookEvent {
+  id          String   @id @default(cuid())
+  eventId     String   @unique
+  type        String
+  processedAt DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([type, createdAt])
+}
+
+model FunnelEvent {
+  id         String   @id @default(cuid())
+  event      String
+  userId     String?
+  agencyId   String?
+  source     String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([event, createdAt])
+  @@index([userId, createdAt])
+  @@index([agencyId, createdAt])
+}
