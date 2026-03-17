@@ -1,0 +1,621 @@
+[
+  {
+    "agency_name": "WP Buffs",
+    "domain": "wpbuffs.com",
+    "category": "wordpress-maintenance",
+    "contact_name": "Nick Adams",
+    "email": "nick@wpbuffs.com",
+    "position": "CEO",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "White-glove WP maintenance service \u2014 literally built for the 'client calling about downtime' problem. CEO/COO are perfect targets.",
+    "icp_score": 118,
+    "icp_reasons": [
+      "category:wordpress-maintenance(+30)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "maintenance/retainer model(+15)",
+      "WordPress focus(+8)",
+      "client-focused(+5)",
+      "already thinking about monitoring(+20)",
+      "decision-maker title in note(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Seahawk Media",
+    "domain": "seahawkmedia.com",
+    "category": "wordpress-maintenance",
+    "contact_name": "Ryan James",
+    "email": "ryan@seahawkmedia.com",
+    "position": "CEO",
+    "confidence": "96",
+    "is_decision_maker": "YES",
+    "personalization_note": "WordPress maintenance + SEO agency. Multiple director-level contacts.",
+    "icp_score": 98,
+    "icp_reasons": [
+      "category:wordpress-maintenance(+30)",
+      "decision-maker(+15)",
+      "confidence:96(+10)",
+      "priority:HIGH",
+      "maintenance/retainer model(+15)",
+      "WordPress focus(+8)",
+      "agency model(+5)",
+      "decision-maker title in note(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "GoWP",
+    "domain": "gowp.com",
+    "category": "wordpress-maintenance",
+    "contact_name": "Emily Hunkler",
+    "email": "emily@gowp.com",
+    "position": "COO",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "WordPress support for agencies \u2014 they resell maintenance to other agencies. Strong ICP fit.",
+    "icp_score": 93,
+    "icp_reasons": [
+      "category:wordpress-maintenance(+30)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "maintenance/retainer model(+15)",
+      "WordPress focus(+8)",
+      "agency model(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "FixRunner",
+    "domain": "fixrunner.com",
+    "category": "wordpress-maintenance",
+    "contact_name": "Sam Mulaim",
+    "email": "sam@fixrunner.com",
+    "position": "CEO",
+    "confidence": "97",
+    "is_decision_maker": "YES",
+    "personalization_note": "WordPress maintenance specialist. CEO-level contact available.",
+    "icp_score": 93,
+    "icp_reasons": [
+      "category:wordpress-maintenance(+30)",
+      "decision-maker(+15)",
+      "confidence:97(+10)",
+      "priority:HIGH",
+      "maintenance/retainer model(+15)",
+      "WordPress focus(+8)",
+      "decision-maker title in note(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Codeable",
+    "domain": "codeable.io",
+    "category": "wordpress-maintenance",
+    "contact_name": "Per Esbensen",
+    "email": "per@codeable.io",
+    "position": "CEO",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "WordPress freelancer marketplace \u2014 they manage client relationships at scale.",
+    "icp_score": 78,
+    "icp_reasons": [
+      "category:wordpress-maintenance(+30)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "WordPress focus(+8)",
+      "client-focused(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "WebDevStudios",
+    "domain": "webdevstudios.com",
+    "category": "wordpress-agency",
+    "contact_name": "Sal Ferrarello",
+    "email": "sal.ferrarello@webdevstudios.com",
+    "position": "Principal Engineer",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "Enterprise WordPress agency. Large team but strong WP maintenance practice.",
+    "icp_score": 78,
+    "icp_reasons": [
+      "category:wordpress-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "maintenance/retainer model(+15)",
+      "WordPress focus(+8)",
+      "agency model(+5)",
+      "enterprise focus(-10)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Relume",
+    "domain": "relume.io",
+    "category": "webflow-agency",
+    "contact_name": "Dan Anisse",
+    "email": "dan@relume.io",
+    "position": "CEO",
+    "confidence": "96",
+    "is_decision_maker": "YES",
+    "personalization_note": "Webflow component library + agency. James Norrish (Sales Director) is the right contact.",
+    "icp_score": 78,
+    "icp_reasons": [
+      "category:webflow-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:96(+10)",
+      "priority:HIGH",
+      "Webflow focus(+8)",
+      "agency model(+5)",
+      "decision-maker title in note(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Multidots",
+    "domain": "multidots.com",
+    "category": "wordpress-agency",
+    "contact_name": "Anil Gupta",
+    "email": "anil@multidots.com",
+    "position": "CEO",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "WordPress product + agency. Multiple decision-makers.",
+    "icp_score": 76,
+    "icp_reasons": [
+      "category:wordpress-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "WordPress focus(+8)",
+      "agency model(+5)",
+      "builds tools(+3)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Finsweet",
+    "domain": "finsweet.com",
+    "category": "webflow-agency",
+    "contact_name": "Alex Pi\u00f1ol",
+    "email": "alex@finsweet.com",
+    "position": "Chief Technology Officer",
+    "confidence": "97",
+    "is_decision_maker": "YES",
+    "personalization_note": "Webflow agency + SaaS tools. Joe Krug (Founder) is the direct contact.",
+    "icp_score": 76,
+    "icp_reasons": [
+      "category:webflow-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:97(+10)",
+      "priority:HIGH",
+      "Webflow focus(+8)",
+      "agency model(+5)",
+      "builds tools(+3)",
+      "decision-maker title in note(+5)"
+    ]
+  },
+  {
+    "agency_name": "Refokus",
+    "domain": "refokus.com",
+    "category": "webflow-agency",
+    "contact_name": "Leo Zakour",
+    "email": "leo@refokus.com",
+    "position": "Co-Founder",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "Most awarded Webflow agency (59 awards). CTO Juan Gipponi is the technical decision-maker.",
+    "icp_score": 73,
+    "icp_reasons": [
+      "category:webflow-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "Webflow focus(+8)",
+      "agency model(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "XWP",
+    "domain": "xwp.co",
+    "category": "wordpress-agency",
+    "contact_name": "Lee Aylett",
+    "email": "lee.aylett@xwp.co",
+    "position": "Senior Product Owner",
+    "confidence": "96",
+    "is_decision_maker": "YES",
+    "personalization_note": "WordPress specialists. Multiple director contacts.",
+    "icp_score": 73,
+    "icp_reasons": [
+      "category:wordpress-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:96(+10)",
+      "priority:HIGH",
+      "WordPress focus(+8)",
+      "decision-maker title in note(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Veza Digital",
+    "domain": "vezadigital.com",
+    "category": "webflow-agency",
+    "contact_name": "Stefan Katanic",
+    "email": "stefan@vezadigital.com",
+    "position": "CEO",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "Growth-focused digital agency. Multiple VP-level contacts.",
+    "icp_score": 65,
+    "icp_reasons": [
+      "category:webflow-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "agency model(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "WP Tangerine",
+    "domain": "wptangerine.com",
+    "category": "wordpress-maintenance",
+    "contact_name": "Marcus Krupp",
+    "email": "marcuskrupp@wptangerine.com",
+    "position": "CEO",
+    "confidence": "98",
+    "is_decision_maker": "YES",
+    "personalization_note": "",
+    "icp_score": 65,
+    "icp_reasons": [
+      "category:wordpress-maintenance(+30)",
+      "decision-maker(+15)",
+      "confidence:98(+10)",
+      "priority:HIGH",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "10up",
+    "domain": "10up.com",
+    "category": "wordpress-agency",
+    "contact_name": "Elliott Stocks",
+    "email": "elliott.stocks@10up.com",
+    "position": "Director of Engineering",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "Top-tier WordPress agency. Enterprise clients. Strong ICP if they do ongoing support.",
+    "icp_score": 63,
+    "icp_reasons": [
+      "category:wordpress-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "WordPress focus(+8)",
+      "agency model(+5)",
+      "client-focused(+5)",
+      "enterprise focus(-10)"
+    ]
+  },
+  {
+    "agency_name": "MadeByShape",
+    "domain": "madebyshape.co.uk",
+    "category": "web-design",
+    "contact_name": "Jason Mayo",
+    "email": "jason@madebyshape.co.uk",
+    "position": "Co-Founder",
+    "confidence": "97",
+    "is_decision_maker": "YES",
+    "personalization_note": "UK Webflow/design agency. Jason Mayo (Co-Founder) is the contact.",
+    "icp_score": 63,
+    "icp_reasons": [
+      "category:web-design(+10)",
+      "decision-maker(+15)",
+      "confidence:97(+10)",
+      "priority:HIGH",
+      "Webflow focus(+8)",
+      "agency model(+5)",
+      "decision-maker title in note(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "SiteCare",
+    "domain": "sitecare.com",
+    "category": "web-design",
+    "contact_name": "Drew Barton",
+    "email": "drew@sitecare.com",
+    "position": "President",
+    "confidence": "97",
+    "is_decision_maker": "YES",
+    "personalization_note": "WP maintenance + support. President Drew Barton is the decision maker.",
+    "icp_score": 63,
+    "icp_reasons": [
+      "category:web-design(+10)",
+      "decision-maker(+15)",
+      "confidence:97(+10)",
+      "priority:HIGH",
+      "maintenance/retainer model(+15)",
+      "WordPress focus(+8)"
+    ]
+  },
+  {
+    "agency_name": "Human Made",
+    "domain": "humanmade.com",
+    "category": "wordpress-agency",
+    "contact_name": "Tom Willmot",
+    "email": "tom@humanmade.com",
+    "position": "CEO",
+    "confidence": "96",
+    "is_decision_maker": "YES",
+    "personalization_note": "WordPress enterprise agency. Strong engineering culture.",
+    "icp_score": 63,
+    "icp_reasons": [
+      "category:wordpress-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:96(+10)",
+      "priority:HIGH",
+      "WordPress focus(+8)",
+      "agency model(+5)",
+      "enterprise focus(-10)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "WP Site Care",
+    "domain": "wpsitecare.com",
+    "category": "wordpress-maintenance",
+    "contact_name": "Ryan Sullivan",
+    "email": "ryan@wpsitecare.com",
+    "position": "",
+    "confidence": "99",
+    "is_decision_maker": "no",
+    "personalization_note": "WP maintenance + support. President Drew Barton is the decision maker.",
+    "icp_score": 63,
+    "icp_reasons": [
+      "category:wordpress-maintenance(+30)",
+      "confidence:99(+10)",
+      "priority:MEDIUM",
+      "maintenance/retainer model(+15)",
+      "WordPress focus(+8)"
+    ]
+  },
+  {
+    "agency_name": "WPMU DEV",
+    "domain": "wpmudev.com",
+    "category": "wordpress-maintenance",
+    "contact_name": "Bojan Radonic",
+    "email": "bojan@wpmudev.com",
+    "position": "Chief Customer Officer",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "",
+    "icp_score": 60,
+    "icp_reasons": [
+      "category:wordpress-maintenance(+30)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH"
+    ]
+  },
+  {
+    "agency_name": "TemplateMonster",
+    "domain": "templatemonster.com",
+    "category": "wordpress-agency",
+    "contact_name": "David Braun",
+    "email": "david@templatemonster.com",
+    "position": "CEO",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "",
+    "icp_score": 60,
+    "icp_reasons": [
+      "category:wordpress-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Flowbase",
+    "domain": "flowbase.co",
+    "category": "webflow-agency",
+    "contact_name": "Tom Bekkers",
+    "email": "tom@flowbase.co",
+    "position": "Founder",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "",
+    "icp_score": 60,
+    "icp_reasons": [
+      "category:webflow-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Digifist",
+    "domain": "digifist.com",
+    "category": "webflow-agency",
+    "contact_name": "Julia Hampel",
+    "email": "julia.hampel@digifist.com",
+    "position": "Managing Director",
+    "confidence": "98",
+    "is_decision_maker": "YES",
+    "personalization_note": "",
+    "icp_score": 60,
+    "icp_reasons": [
+      "category:webflow-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:98(+10)",
+      "priority:HIGH",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Superficial Studio",
+    "domain": "superficial.studio",
+    "category": "framer-agency",
+    "contact_name": "Andrew Kupresanin",
+    "email": "andrew@superficial.studio",
+    "position": "Creative Director",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "Framer-focused studio. Small shop. Direct DM approach recommended.",
+    "icp_score": 59,
+    "icp_reasons": [
+      "category:framer-agency(+22)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "Framer focus(+7)"
+    ]
+  },
+  {
+    "agency_name": "Pixelmatters",
+    "domain": "pixelmatters.com",
+    "category": "web-design",
+    "contact_name": "Ana Rossetto",
+    "email": "anarossetto@pixelmatters.com",
+    "position": "Product Owner",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "Portuguese design agency. Product owners listed.",
+    "icp_score": 58,
+    "icp_reasons": [
+      "category:web-design(+10)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "agency model(+5)",
+      "builds tools(+3)",
+      "decision-maker title in note(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Hartmann Studios",
+    "domain": "hartmannstudios.com",
+    "category": "framer-agency",
+    "contact_name": "Chris L",
+    "email": "chrisl@hartmannstudios.com",
+    "position": "Technical Director",
+    "confidence": "94",
+    "is_decision_maker": "YES",
+    "personalization_note": "Framer specialist. Multiple contacts found.",
+    "icp_score": 58,
+    "icp_reasons": [
+      "category:framer-agency(+22)",
+      "decision-maker(+15)",
+      "confidence:94(+9)",
+      "priority:HIGH",
+      "Framer focus(+7)"
+    ]
+  },
+  {
+    "agency_name": "Darkroom Agency",
+    "domain": "darkroom.engineering",
+    "category": "framer-agency",
+    "contact_name": "Cl\u00e9ment Roche",
+    "email": "clement@darkroom.engineering",
+    "position": "Co-Founder",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "",
+    "icp_score": 57,
+    "icp_reasons": [
+      "category:framer-agency(+22)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Prestige",
+    "domain": "prestigemgt.com",
+    "category": "wordpress-maintenance",
+    "contact_name": "Qasim Lezama",
+    "email": "qlezama@prestigemgt.com",
+    "position": "General Manager",
+    "confidence": "67",
+    "is_decision_maker": "YES",
+    "personalization_note": "",
+    "icp_score": 57,
+    "icp_reasons": [
+      "category:wordpress-maintenance(+30)",
+      "decision-maker(+15)",
+      "confidence:67(+7)",
+      "priority:HIGH"
+    ]
+  },
+  {
+    "agency_name": "WP Manage Ninja",
+    "domain": "wpmanageninja.com",
+    "category": "wordpress-agency",
+    "contact_name": "Faizus Saleheen",
+    "email": "fsaleheen@wpmanageninja.com",
+    "position": "Chief Marketing Officer",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "",
+    "icp_score": 55,
+    "icp_reasons": [
+      "category:wordpress-agency(+25)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH"
+    ]
+  },
+  {
+    "agency_name": "Huemor",
+    "domain": "huemor.rocks",
+    "category": "web-design",
+    "contact_name": "Michael Cleary",
+    "email": "mcleary@huemor.rocks",
+    "position": "Co-Founder & CEO",
+    "confidence": "99",
+    "is_decision_maker": "YES",
+    "personalization_note": "Web design agency. Multiple director contacts.",
+    "icp_score": 55,
+    "icp_reasons": [
+      "category:web-design(+10)",
+      "decision-maker(+15)",
+      "confidence:99(+10)",
+      "priority:HIGH",
+      "agency model(+5)",
+      "decision-maker title in note(+5)",
+      "c-level-title(+5)"
+    ]
+  },
+  {
+    "agency_name": "Base Creative",
+    "domain": "basecreative.co.uk",
+    "category": "web-design",
+    "contact_name": "Greg Mileham",
+    "email": "g.mileham@basecreative.co.uk",
+    "position": "Managing Director",
+    "confidence": "98",
+    "is_decision_maker": "YES",
+    "personalization_note": "UK web design agency. Director-level contacts.",
+    "icp_score": 55,
+    "icp_reasons": [
+      "category:web-design(+10)",
+      "decision-maker(+15)",
+      "confidence:98(+10)",
+      "priority:HIGH",
+      "agency model(+5)",
+      "decision-maker title in note(+5)",
+      "c-level-title(+5)"
+    ]
+  }
+]

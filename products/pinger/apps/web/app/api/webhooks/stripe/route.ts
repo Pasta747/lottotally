@@ -25,7 +25,7 @@ async function applySubscriptionUpdate(
         where: { stripeSubscriptionId: subscription.id },
         select: { agencyId: true },
       })
-      .then((s: any) => s?.agencyId));
+      .then((s: { agencyId: string | null } | null) => s?.agencyId));
 
   if (!agencyId) {
     return NextResponse.json({ received: true, ignored: `missing agencyId metadata for ${event.id}` });
@@ -144,7 +144,7 @@ export async function POST(req: Request) {
         (subscription.metadata?.agencyId as string | undefined) ||
         (await prisma.subscription
           .findFirst({ where: { stripeSubscriptionId: subscription.id }, select: { agencyId: true } })
-          .then((s: any) => s?.agencyId));
+          .then((s: { agencyId: string | null } | null) => s?.agencyId));
 
       if (agencyId) {
         await prisma.subscription.upsert({

@@ -44,7 +44,7 @@ export async function trackFunnelEvent(input: TrackFunnelInput) {
       userId: input.userId ?? null,
       agencyId: input.agencyId ?? null,
       source: input.source ?? null,
-      metadata: (input.metadata ?? undefined) as any,
+      metadata: input.metadata !== undefined ? (input.metadata as never) : undefined,
     },
   });
 

@@ -25,7 +25,13 @@ function MiniChart({ points }: { points: HistoryPoint[] }) {
   );
 }
 
+function getOneDayAgo() {
+  "use no memo";
+  return new Date(Date.now() - 24 * 60 * 60 * 1000);
+}
+
 export default async function DemoDashboardPage() {
+  const oneDayAgo = getOneDayAgo();
   const agency = await prisma.agency.findUnique({
     where: { slug: "smith-digital" },
     include: {
@@ -34,7 +40,7 @@ export default async function DemoDashboardPage() {
           monitors: {
             include: {
               checkResults: {
-                where: { checkedAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+                where: { checkedAt: { gte: oneDayAgo } },
                 orderBy: { checkedAt: "desc" },
                 take: 9000,
               },

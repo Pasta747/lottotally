@@ -1,0 +1,4 @@
+# Trade data — never commit/reset these.
+# Dedup logic depends on trade history being persistent across cron runs.
+*.json
+!.gitignore
