@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getDemoFallbackMonitors } from "@/lib/demo-fixtures";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
@@ -30,11 +31,25 @@ export default async function PublicStatusPage({ params }: { params: Promise<{ s
     },
   });
 
-  if (!page?.isPublic) return notFound();
+  const isDemoFallback = slug === "smith-digital" && (!page || !page.isPublic);
+  if (!page?.isPublic && !isDemoFallback) return notFound();
 
-  const monitors = page.agency.projects.flatMap((p) => p.monitors);
-  const color = page.brandColor ?? "#16a34a";
+  const monitors = isDemoFallback
+    ? getDemoFallbackMonitors().map((m) => ({
+        ...m,
+        checkResults: m.history24h
+          .slice()
+          .reverse()
+          .map((p) => ({ ok: p.up, latencyMs: p.ms ?? null, checkedAt: new Date(p.t) })),
+      }))
+    : page!.agency.projects.flatMap((p) => p.monitors);
+
+  const color = isDemoFallback ? "#0f766e" : page!.brandColor ?? "#16a34a";
   const overallDown = monitors.some((m) => m.status === "DOWN" || m.status === "DEGRADED");
+
+  const pageName = isDemoFallback ? "Smith Digital — System Status" : page!.name;
+  const agencyName = isDemoFallback ? "Smith Digital" : page!.agency.name;
+  const logoUrl = isDemoFallback ? null : page!.logoUrl;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-zinc-50 to-white px-4 py-6 text-zinc-900 sm:px-8 sm:py-10">
@@ -44,13 +59,13 @@ export default async function PublicStatusPage({ params }: { params: Promise<{ s
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-white/65">Live Status</p>
-                <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">{page.name}</h1>
+                <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">{pageName}</h1>
                 <p className="mt-1 text-sm text-white/70">Real-time service health and incident updates</p>
               </div>
 
               <div className="flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-3 py-2 backdrop-blur">
-                {page.logoUrl ? <Image src={page.logoUrl} alt="Agency logo" width={30} height={30} className="h-8 w-8 rounded" /> : null}
-                <span className="text-sm font-medium">{page.agency.name}</span>
+                {logoUrl ? <Image src={logoUrl} alt="Agency logo" width={30} height={30} className="h-8 w-8 rounded" /> : null}
+                <span className="text-sm font-medium">{agencyName}</span>
               </div>
             </div>
           </div>
