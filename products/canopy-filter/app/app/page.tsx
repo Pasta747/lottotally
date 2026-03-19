@@ -39,16 +39,21 @@ export default async function Home() {
   return (
     <main className="bg-[#FAF9F5] text-[#1F2C24]">
       <section className="mx-auto max-w-6xl space-y-12 px-6 py-16 md:px-10 md:py-20">
-        <header className="flex items-center justify-between">
+        <header className="sticky top-0 z-40 -mx-6 flex items-center justify-between border-b border-[#D9E2DA] bg-[#FAF9F5]/90 px-6 py-4 backdrop-blur md:-mx-10 md:px-10">
           <div className="flex items-center gap-3">
-            <Image src="/brand/canopy-logo.png" alt="Canopy logo" width={48} height={48} />
+            <Image src="/brand/canopy-logo.png" alt="Canopy logo" width={44} height={44} />
             <span className="text-sm font-semibold tracking-[0.08em] text-[#355F44]">CANOPY FILTER</span>
           </div>
+          <nav className="hidden items-center gap-4 text-sm text-[#4D5E52] md:flex">
+            <a href="#features" className="hover:text-[#1F2C24]">Features</a>
+            <a href="#pricing" className="hover:text-[#1F2C24]">Pricing</a>
+            <a href="#start-free" className="hover:text-[#1F2C24]">Start free</a>
+          </nav>
           <Link
-            href="#start-free"
-            className="hidden rounded-md border border-[#D9E2DA] bg-[#EEF4EF] px-4 py-2 text-sm font-medium text-[#355F44] transition hover:bg-[#E5EFE7] sm:inline-flex"
+            href="#pricing"
+            className="rounded-md bg-[#355F44] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#2B4E38]"
           >
-            Start Free
+            Upgrade
           </Link>
         </header>
 
@@ -100,7 +105,7 @@ export default async function Home() {
           )}
         </section>
 
-        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <section id="features" className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-3xl border border-[#D9E2DA] bg-white p-6 shadow-[0_6px_20px_rgba(31,44,36,0.05)]">
             <h3 className="font-semibold">Multi-platform, rolling out</h3>
             <p className="mt-2 text-sm text-[#4D5E52]">Start with YouTube now. Podcast and additional social integrations are rolling out next.</p>
@@ -147,6 +152,15 @@ export default async function Home() {
         </section>
 
         <PricingCheckout />
+
+        <section className="rounded-3xl border border-[#355F44] bg-[#355F44] p-6 text-white shadow-[0_10px_30px_rgba(31,44,36,0.25)] md:p-8">
+          <h2 className="text-2xl font-semibold">Keep your energy for creators, not comment triage.</h2>
+          <p className="mt-2 max-w-2xl text-[#DDE8DF]">Connect YouTube, review what matters, and let Canopy filter the rest.</p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <a href="/api/youtube/connect" className="rounded-md bg-white px-4 py-2 font-semibold text-[#355F44]">Connect YouTube</a>
+            <a href="#pricing" className="rounded-md border border-white/40 px-4 py-2 font-semibold text-white">View paid plans</a>
+          </div>
+        </section>
       </section>
     </main>
   );

@@ -35,7 +35,7 @@ export function PricingCheckout() {
   }
 
   return (
-    <section className="rounded-3xl border border-[#D9E2DA] bg-white p-6 shadow-[0_6px_20px_rgba(31,44,36,0.05)] md:p-8">
+    <section id="pricing" className="rounded-3xl border border-[#D9E2DA] bg-white p-6 shadow-[0_6px_20px_rgba(31,44,36,0.05)] md:p-8">
       <h2 className="text-2xl font-semibold text-[#355F44]">Upgrade when you’re ready</h2>
       <p className="mt-2 text-[#4D5E52]">Enter your email once, then choose a plan to launch Stripe checkout.</p>
 
