@@ -61,6 +61,20 @@ Checks:
 - Stripe checkout env completeness
 - basic counts (waitlist signups, YouTube connections)
 
+## Digest delivery (manual trigger for beta)
+
+`POST /api/digest/run` with auth header `Authorization: Bearer <CRON_SECRET>`
+
+Body:
+```json
+{
+  "creatorId": "<canopy_creator_id>",
+  "toEmail": "creator@example.com"
+}
+```
+
+Returns digest stats and sends an email digest via AgentMail.
+
 ## Deploy
 
 ```bash

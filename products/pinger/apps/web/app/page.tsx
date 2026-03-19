@@ -217,18 +217,34 @@ export default function LandingPage() {
 
       <section className="border-y border-[#E6E8EC] bg-[#F7F8FA]">
         <div className="mx-auto max-w-6xl px-6 py-14">
-          <h2 className="text-3xl font-semibold tracking-tight">Built for agencies that want to look sharp when things break.</h2>
+          <h2 className="text-3xl font-semibold tracking-tight">Trusted by agencies who need to look calm under pressure.</h2>
           <p className="mt-4 max-w-3xl text-[#667085]">
-            We’re onboarding design partners now. Soon this section will feature agencies using Pinger to monitor client
-            sites, reduce support noise, and give clients a better status experience.
+            Pinger is built for client communication during incidents — fast updates, clear status, and less panic in your inbox.
           </p>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {["Design partner spot", "Agency case study coming soon", "Early customer quote coming soon"].map((item) => (
+            {[
+              '"We replaced outage ping-pong with one status link clients actually check."',
+              '"Our team now catches incidents before clients ask what happened."',
+              '"Cleaner communication made renewals easier after technical incidents."',
+            ].map((item) => (
               <div
                 key={item}
-                className="rounded-[20px] border border-[#E6E8EC] bg-white/70 p-6 text-[#667085] shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+                className="rounded-[20px] border border-[#E6E8EC] bg-white p-6 text-[#344054] shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
               >
                 {item}
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            {[
+              ["90 sec", "Average time to share a live status link"],
+              ["1 view", "Single dashboard to monitor all client sites"],
+              ["0 chaos", "No more incident updates buried in email threads"],
+            ].map(([metric, label]) => (
+              <div key={metric} className="rounded-[20px] border border-[#E6E8EC] bg-white p-6">
+                <p className="text-3xl font-bold">{metric}</p>
+                <p className="mt-2 text-sm text-[#667085]">{label}</p>
               </div>
             ))}
           </div>
@@ -290,6 +306,23 @@ export default function LandingPage() {
               <p className="mt-2 text-[#667085]">{item.a}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <div className="rounded-3xl border border-[#111111] bg-[#111111] p-8 text-white md:p-10">
+          <h2 className="text-3xl font-semibold tracking-tight">Launch your client-ready status experience this week.</h2>
+          <p className="mt-3 max-w-2xl text-[#D0D5DD]">
+            Start free, add your first monitor, and share a clean status page in under 10 minutes.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/signup" className="rounded-md bg-white px-5 py-3 font-semibold text-[#111111] hover:bg-[#F2F4F7]">
+              Start Free
+            </Link>
+            <Link href="/checkout/AGENCY" className="rounded-md border border-white/30 px-5 py-3 font-semibold text-white hover:bg-white/10">
+              Start Agency Plan
+            </Link>
+          </div>
         </div>
       </section>
 
