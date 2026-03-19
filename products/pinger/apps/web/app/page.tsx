@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { WaitlistForm } from "@/components/landing/waitlist-form";
 import { LandingVisitTracker } from "@/components/landing/landing-visit-tracker";
 
 const faqs = [
@@ -114,7 +113,7 @@ export default function LandingPage() {
             Sign in
           </Link>
           <Link
-            href="/#waitlist"
+            href="/signup"
             className="rounded-md bg-[#111111] px-4 py-2 text-white transition hover:bg-[#16C47F] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(22,196,127,0.18)]"
           >
             Start Free
@@ -132,8 +131,19 @@ export default function LandingPage() {
             Pinger monitors every client site, alerts your team fast, and gives clients a clean status page they can trust —
             so you spend less time answering “is the site down?” and more time fixing it.
           </p>
-          <div id="waitlist" className="mt-8">
-            <WaitlistForm />
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href="/signup"
+              className="rounded-md bg-[#111111] px-5 py-3 text-white transition hover:bg-[#16C47F]"
+            >
+              Start Free
+            </Link>
+            <Link
+              href="/checkout/AGENCY"
+              className="rounded-md border border-[#D0D5DD] px-5 py-3 text-[#111111] transition hover:bg-[#F2F4F7]"
+            >
+              Start Paid Plan
+            </Link>
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
             {chipItems.map((chip) => (
@@ -250,16 +260,22 @@ export default function LandingPage() {
         </p>
         <div className="mt-6 grid gap-4 md:grid-cols-5">
           {[
-            ["Free", "$0", "3 sites"],
-            ["Freelancer", "$29", "10 sites"],
-            ["Agency", "$79", "30 sites"],
-            ["Studio", "$179", "100 sites"],
-            ["Enterprise", "$499+", "Unlimited"],
-          ].map(([name, price, sites]) => (
+            ["Free", "$0", "3 sites", "/signup"],
+            ["Freelancer", "$29", "10 sites", "/checkout/FREELANCER"],
+            ["Agency", "$79", "30 sites", "/checkout/AGENCY"],
+            ["Studio", "$179", "100 sites", "/checkout/STUDIO"],
+            ["Enterprise", "$499+", "Unlimited", "/checkout/ENTERPRISE"],
+          ].map(([name, price, sites, href]) => (
             <div key={name} className="rounded-[20px] border border-[#E6E8EC] p-6 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
               <p className="font-semibold">{name}</p>
               <p className="mt-2 text-3xl font-bold">{price}</p>
               <p className="mt-2 text-sm text-[#667085]">{sites}</p>
+              <Link
+                href={href}
+                className="mt-4 inline-block rounded-md bg-[#111111] px-4 py-2 text-sm font-medium text-white hover:bg-[#16C47F]"
+              >
+                {name === "Free" ? "Start Free" : "Choose Plan"}
+              </Link>
             </div>
           ))}
         </div>

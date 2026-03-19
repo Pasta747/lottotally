@@ -6,6 +6,11 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
+
+  function nextPath() {
+    if (typeof window === "undefined") return "/dashboard";
+    return new URLSearchParams(window.location.search).get("next") || "/dashboard";
+  }
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +34,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    router.push(nextPath());
     router.refresh();
   }
 

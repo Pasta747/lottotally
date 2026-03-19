@@ -6,6 +6,11 @@ import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
   const router = useRouter();
+
+  function nextPath() {
+    if (typeof window === "undefined") return "/dashboard";
+    return new URLSearchParams(window.location.search).get("next") || "/dashboard";
+  }
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +36,7 @@ export default function SignupPage() {
     }
 
     await signIn("credentials", { email, password, redirect: false });
-    router.push("/dashboard");
+    router.push(nextPath());
     router.refresh();
   }
 
