@@ -2,10 +2,24 @@ import { Pool } from "pg";
 
 let pool: Pool | null = null;
 
+function normalizeConnectionString(raw: string) {
+  try {
+    const url = new URL(raw);
+    url.searchParams.set("sslmode", "no-verify");
+    return url.toString();
+  } catch {
+    return raw;
+  }
+}
+
 function getPool() {
   if (!pool) {
     if (!process.env.DATABASE_URL) throw new Error("Missing DATABASE_URL");
-    pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+    const connectionString = normalizeConnectionString(process.env.DATABASE_URL);
+    pool = new Pool({
+      connectionString,
+      ssl: { rejectUnauthorized: false },
+    });
   }
   return pool;
 }
