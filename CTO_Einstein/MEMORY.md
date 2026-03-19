@@ -70,3 +70,46 @@ Why it matters:
 
 Build effort:
 - 1-2 days initial for Pinger (backend checks + simple UI panel + docs), then templatize for Canopy.
+
+## 2026-03-19 — Nightly Build Report (12:00 AM)
+
+### What was built
+
+- **Canopy billing conversion path (P2)**
+  - Added Stripe checkout API: `app/api/billing/checkout/route.ts`
+  - Added Stripe helper: `lib/stripe.ts`
+  - Added paid pricing conversion component on landing: `components/landing/pricing-checkout.tsx`
+  - Integrated pricing checkout section into landing page (`app/page.tsx`).
+- **Canopy ops readiness check**
+  - Added `GET /api/ops/preflight` with CRON_SECRET auth.
+  - Checks Stripe env completeness (`STRIPE_SECRET_KEY`, `STRIPE_PRICE_CREATOR/PRO/STUDIO`) + core DB health metrics.
+  - Updated Canopy README with required Stripe env vars + preflight usage.
+
+### What was tested
+
+- Build tests executed:
+  - `canopy-filter/app` → `npm run build` ✅
+  - `pinger/apps/web` → `npm run build -w apps/web` ✅
+  - `lottosync` → `npm run build` ✅
+- Deploy tests executed:
+  - Canopy deployed to production and aliased to `canopyfilter.com` ✅
+- Functional API checks:
+  - Canopy checkout endpoint currently returns missing env error when Stripe vars absent (expected fail state):
+    - `Missing required env var: STRIPE_SECRET_KEY`
+
+### Pass/Fail summary
+
+- **Pass:** Code compiles and deploys for all active products.
+- **Pass:** Canopy paid checkout plumbing is live.
+- **Fail (config):** Canopy Stripe production env vars not set yet, so live checkout cannot complete.
+
+### Remaining backlog
+
+1. Set Canopy Stripe env vars in Vercel production:
+   - `STRIPE_SECRET_KEY`
+   - `STRIPE_PRICE_CREATOR`
+   - `STRIPE_PRICE_PRO`
+   - `STRIPE_PRICE_STUDIO`
+   - (recommended) `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+2. Run Canopy end-to-end checkout validation after env is set.
+3. Continue Crusoe-quality redesign rollouts across LottoTally/Canopy/Pinger per Mario priority.

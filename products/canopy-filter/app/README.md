@@ -16,6 +16,13 @@ Already in prod:
 - `POSTHOG_API_KEY`
 - `POSTHOG_HOST`
 
+Required for Stripe checkout:
+- `STRIPE_SECRET_KEY`
+- `STRIPE_PRICE_CREATOR`
+- `STRIPE_PRICE_PRO`
+- `STRIPE_PRICE_STUDIO`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (recommended)
+
 Required for YouTube OAuth:
 - `GOOGLE_CLIENT_ID` (or `GOOGLE_OAUTH_CLIENT_ID`)
 - `GOOGLE_CLIENT_SECRET` (or `GOOGLE_OAUTH_CLIENT_SECRET`)
@@ -44,6 +51,15 @@ Required for YouTube OAuth:
 - `access_token`, `refresh_token`, `token_scope`, `token_type`, `token_expires_at`
 - `recent_videos` (jsonb)
 - `connected_at`, `updated_at`
+
+## Ops preflight
+
+`GET /api/ops/preflight` with header `Authorization: Bearer <CRON_SECRET>`
+
+Checks:
+- DB connectivity/tables
+- Stripe checkout env completeness
+- basic counts (waitlist signups, YouTube connections)
 
 ## Deploy
 
