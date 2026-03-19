@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { WaitlistForm } from "@/components/landing/waitlist-form";
+import { PricingCheckout } from "@/components/landing/pricing-checkout";
 import { db, ensureTables } from "@/lib/db";
 
 type Connection = {
@@ -138,12 +139,14 @@ export default async function Home() {
 
         <section id="start-free" className="rounded-3xl border border-[#D9E2DA] bg-white p-6 shadow-[0_6px_20px_rgba(31,44,36,0.05)] md:p-8">
           <h2 className="text-2xl font-semibold text-[#355F44]">Start free.</h2>
-          <p className="mt-2 max-w-2xl text-[#4D5E52]">We&apos;re opening access in phases. Start free and see how Canopy fits your workflow. Paid plans are coming next.</p>
+          <p className="mt-2 max-w-2xl text-[#4D5E52]">Join the free tier now, connect YouTube, and start filtering comments immediately. Upgrade to paid plans when you want higher limits and team workflows.</p>
           <div className="mt-4">
             <WaitlistForm />
           </div>
-          <p className="mt-3 text-sm text-[#4D5E52]">No credit card required.</p>
+          <p className="mt-3 text-sm text-[#4D5E52]">No credit card required for free tier.</p>
         </section>
+
+        <PricingCheckout />
       </section>
     </main>
   );
