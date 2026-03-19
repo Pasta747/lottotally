@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     }
 
     const stripe = getStripe();
-    const appUrl = process.env.NEXTAUTH_URL ?? process.env.APP_URL ?? "https://canopyfilter.com";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL ?? "https://canopyfilter.com";
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
