@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { KalshiClient } = require('/root/PastaOS/Plutus/oddstool-v2/kalshi-client');
 
 const TRADES_FILE = path.join(__dirname, '..', 'data', 'vantage-trades.json');
 
@@ -16,26 +15,9 @@ function logTrade(t) {
   fs.writeFileSync(TRADES_FILE, `${JSON.stringify(rows, null, 2)}\n`);
 }
 
-async function executeSignal(signal, { paper = true } = {}) {
-  // Beta default: paper mode only.
-  if (paper) {
-    logTrade({
-      layer: signal.layer,
-      category: signal.category,
-      source: signal.source || null,
-      signalStrength: signal.signalStrength,
-      ticker: signal.ticker,
-      side: signal.side,
-      executionPrice: signal.executionPrice,
-      settlementResult: null,
-      mode: 'paper',
-      status: 'EXECUTED_PAPER',
-    });
-    return { ok: true, paper: true };
-  }
-
-  const client = new KalshiClient({ demo: false });
-  const order = await client.placeOrder(signal.order);
+async function executeSignal(signal) {
+  // V-PAPER enforcement (non-negotiable beta rule):
+  // hard-coded paper mode only; no live execution path exists.
   logTrade({
     layer: signal.layer,
     category: signal.category,
@@ -45,11 +27,10 @@ async function executeSignal(signal, { paper = true } = {}) {
     side: signal.side,
     executionPrice: signal.executionPrice,
     settlementResult: null,
-    mode: 'live',
-    status: order.ok ? 'SUBMITTED' : `FAILED:${order.error}`,
-    orderResponse: order,
+    mode: 'paper',
+    status: 'EXECUTED_PAPER',
   });
-  return order;
+  return { ok: true, paper: true, enforced: true };
 }
 
 module.exports = { executeSignal, logTrade };
