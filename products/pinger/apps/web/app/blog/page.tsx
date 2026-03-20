@@ -3,10 +3,13 @@ import Link from "next/link";
 import { getAllBlogPosts } from "@/lib/blog";
 
 export const metadata: Metadata = {
-  title: "Pinger Blog",
+  title: "Pinger Blog — Uptime Monitoring & Status Pages for Agencies",
   description: "Uptime monitoring insights for web agencies.",
+  alternates: {
+    canonical: "https://pingerhq.com/blog",
+  },
   openGraph: {
-    title: "Pinger Blog",
+    title: "Pinger Blog — Uptime Monitoring & Status Pages for Agencies",
     description: "Uptime monitoring insights for web agencies.",
     url: "https://pingerhq.com/blog",
     type: "website",

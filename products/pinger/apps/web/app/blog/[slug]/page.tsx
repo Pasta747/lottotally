@@ -36,8 +36,20 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const post = await getBlogPostBySlug(slug);
   if (!post) notFound();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    author: { "@type": "Organization", name: "Pinger" },
+    publisher: { "@type": "Organization", name: "Pinger", url: "https://pingerhq.com" },
+    mainEntityOfPage: `https://pingerhq.com/blog/${slug}`,
+  };
+
   return (
     <main className="min-h-screen bg-zinc-50 text-zinc-900">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <article className="mx-auto max-w-[680px] px-6 py-14">
         <Link href="/blog" className="text-sm font-medium underline">← Back to blog</Link>
 
