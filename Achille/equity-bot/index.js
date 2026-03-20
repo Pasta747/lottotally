@@ -210,6 +210,57 @@ async function showAccount() {
   myPos.forEach((p) => console.log(`${p.symbol} qty=${p.position} avgCost=${p.avgCost}`));
 }
 
+async function showPnl() {
+  let closed = paper.getClosedTrades();
+  if (!closed.length && paper.getTrades().length) {
+    closed = paper.rebuildClosedTradesFromHistory();
+  }
+
+  const openPos = paper.getOpenPositions();
+  const symbols = Object.keys(openPos);
+  const prices = await fetchLastPrices(symbols);
+
+  const strategyRows = paper.pnlByStrategy(prices);
+
+  console.log('=== Strategy Performance (Realized + Unrealized) ===');
+  if (!strategyRows.length) {
+    console.log('No closed/open strategy data yet.');
+  } else {
+    console.table(
+      strategyRows.map((r) => ({
+        strategy: r.strategy,
+        realized: r.realizedPnl,
+        unrealized: r.unrealizedPnl,
+        total: r.totalPnl,
+        trades: r.trades,
+        winRatePct: r.winRate,
+        avgWin: r.avgWin,
+        avgLoss: r.avgLoss,
+        sharpe: r.sharpe,
+      }))
+    );
+  }
+
+  const openRows = paper.evaluatePositions(prices);
+  const unrealizedTotal = openRows.reduce((sum, row) => sum + Number(row.pnl || 0), 0);
+
+  console.log('\n=== Open Positions MTM ===');
+  if (!openRows.length) console.log('None');
+  else {
+    openRows.forEach((r) => {
+      console.log(`${r.symbol} qty=${r.qty} entry=${r.entryPrice} last=${r.lastPrice} unrealized=${r.pnl} (${r.pnlPct}%) strategy=${r.strategy}`);
+    });
+  }
+
+  const realizedTotal = closed.reduce((sum, t) => sum + Number(t.pnl || 0), 0);
+
+  console.log('\n=== Totals ===');
+  console.log(`Closed trades: ${closed.length}`);
+  console.log(`Realized P&L: ${Number(realizedTotal.toFixed(2))}`);
+  console.log(`Unrealized P&L: ${Number(unrealizedTotal.toFixed(2))}`);
+  console.log(`Net P&L: ${Number((realizedTotal + unrealizedTotal).toFixed(2))}`);
+}
+
 function showStrategyList() {
   const enabled = new Set(config.STRATEGIES_ENABLED || []);
   console.log('=== Available Strategies ===');

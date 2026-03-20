@@ -20,17 +20,19 @@ function writeJson(file, data) {
   fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
 }
 
-function msToHuman(ms) {
-  const totalSec = Math.max(0, Math.floor(ms / 1000));
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  return `${h}h ${m}m`;
+function millisToHuman(ms) {
+  const sec = Math.max(0, Math.round(ms / 1000));
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  if (h) return `${h}h ${m}m`;
+  if (m) return `${m}m ${s}s`;
+  return `${s}s`;
 }
 
 class PaperTrader {
   constructor() {
     ensureDataFiles();
-    this.backfillClosedTradesFromTradeLog();
   }
 
   getTrades() {
@@ -63,8 +65,9 @@ class PaperTrader {
     const positions = this.getOpenPositions();
     const closed = this.getClosedTrades();
 
+    const ts = new Date().toISOString();
     const trade = {
-      timestamp: new Date().toISOString(),
+      timestamp: ts,
       strategy,
       symbol,
       side,
@@ -80,26 +83,31 @@ class PaperTrader {
         qty,
         entryPrice: price,
         strategy,
-        openedAt: trade.timestamp,
+        openedAt: ts,
       };
     } else if (side === 'SELL' && positions[symbol]) {
-      const pos = positions[symbol];
-      const pnl = Number(((price - pos.entryPrice) * qty).toFixed(2));
-      const holdMs = new Date(trade.timestamp).getTime() - new Date(pos.openedAt).getTime();
+      const entry = positions[symbol];
+      const pnl = Number(((price - entry.entryPrice) * qty).toFixed(2));
+      const holdMs = new Date(ts).getTime() - new Date(entry.openedAt).getTime();
+
+      const entryNotional = Math.abs(entry.entryPrice * qty) || 1;
+      const pnlPct = Number(((pnl / entryNotional) * 100).toFixed(3));
+
       closed.push({
         symbol,
-        strategy: pos.strategy,
-        entry_price: pos.entryPrice,
-        exit_price: price,
+        strategy: entry.strategy,
+        entry_price: Number(entry.entryPrice.toFixed(6)),
+        exit_price: Number(price.toFixed(6)),
         qty,
         pnl,
-        pnl_pct: Number((((price - pos.entryPrice) / pos.entryPrice) * 100).toFixed(2)),
-        hold_time: msToHuman(holdMs),
+        pnl_pct: pnlPct,
+        hold_time: millisToHuman(holdMs),
         hold_time_ms: holdMs,
-        timestamp: trade.timestamp,
-        opened_at: pos.openedAt,
+        timestamp: ts,
+        opened_at: entry.openedAt,
         exit_strategy: strategy,
       });
+
       delete positions[symbol];
     }
 
@@ -108,57 +116,6 @@ class PaperTrader {
     writeJson(config.CLOSED_TRADES_FILE, closed);
 
     return trade;
-  }
-
-  backfillClosedTradesFromTradeLog() {
-    const existing = this.getClosedTrades();
-    if (existing.length > 0) return;
-
-    const trades = this.getTrades();
-    const openBySymbol = {};
-    const closed = [];
-
-    for (const t of trades) {
-      const symbol = t.symbol;
-      if (!symbol) continue;
-
-      if (t.side === 'BUY') {
-        openBySymbol[symbol] = {
-          strategy: t.strategy || 'unknown',
-          entryPrice: Number(t.price),
-          qty: Number(t.qty),
-          timestamp: t.timestamp,
-        };
-      }
-
-      if (t.side === 'SELL' && openBySymbol[symbol]) {
-        const entry = openBySymbol[symbol];
-        const qty = Number(t.qty || entry.qty || 0);
-        const exitPrice = Number(t.price || 0);
-        const entryPrice = Number(entry.entryPrice || 0);
-        const pnl = Number(((exitPrice - entryPrice) * qty).toFixed(2));
-        const holdMs = new Date(t.timestamp).getTime() - new Date(entry.timestamp).getTime();
-
-        closed.push({
-          symbol,
-          strategy: entry.strategy,
-          entry_price: entryPrice,
-          exit_price: exitPrice,
-          qty,
-          pnl,
-          pnl_pct: entryPrice > 0 ? Number((((exitPrice - entryPrice) / entryPrice) * 100).toFixed(2)) : 0,
-          hold_time: msToHuman(holdMs),
-          hold_time_ms: holdMs,
-          timestamp: t.timestamp,
-          opened_at: entry.timestamp,
-          exit_strategy: t.strategy || 'unknown',
-        });
-
-        delete openBySymbol[symbol];
-      }
-    }
-
-    writeJson(config.CLOSED_TRADES_FILE, closed);
   }
 
   evaluatePositions(lastPriceBySymbol = {}) {
@@ -176,85 +133,6 @@ class PaperTrader {
     });
   }
 
-  strategyPerformanceReport(lastPriceBySymbol = {}) {
-    const closed = this.getClosedTrades();
-    const open = this.evaluatePositions(lastPriceBySymbol);
-    const byStrategy = {};
-
-    for (const t of closed) {
-      const k = t.strategy || 'unknown';
-      byStrategy[k] = byStrategy[k] || {
-        strategy: k,
-        closedTrades: 0,
-        wins: 0,
-        losses: 0,
-        realizedPnl: 0,
-        avgWin: 0,
-        avgLoss: 0,
-        sharpeLike: 0,
-        _winVals: [],
-        _lossVals: [],
-        _returns: [],
-        openTrades: 0,
-        unrealizedPnl: 0,
-      };
-      const row = byStrategy[k];
-      row.closedTrades += 1;
-      row.realizedPnl += Number(t.pnl || 0);
-      row._returns.push(Number(t.pnl_pct || 0));
-      if (t.pnl > 0) {
-        row.wins += 1;
-        row._winVals.push(Number(t.pnl));
-      } else {
-        row.losses += 1;
-        row._lossVals.push(Number(t.pnl));
-      }
-    }
-
-    for (const p of open) {
-      const k = p.strategy || 'unknown';
-      byStrategy[k] = byStrategy[k] || {
-        strategy: k,
-        closedTrades: 0,
-        wins: 0,
-        losses: 0,
-        realizedPnl: 0,
-        avgWin: 0,
-        avgLoss: 0,
-        sharpeLike: 0,
-        _winVals: [],
-        _lossVals: [],
-        _returns: [],
-        openTrades: 0,
-        unrealizedPnl: 0,
-      };
-      byStrategy[k].openTrades += 1;
-      byStrategy[k].unrealizedPnl += Number(p.pnl || 0);
-    }
-
-    return Object.values(byStrategy).map((row) => {
-      const avg = (arr) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0);
-      const meanRet = avg(row._returns);
-      const variance = row._returns.length
-        ? row._returns.reduce((s, r) => s + Math.pow(r - meanRet, 2), 0) / row._returns.length
-        : 0;
-      const std = Math.sqrt(variance);
-      const sharpeLike = std > 0 ? meanRet / std : 0;
-
-      return {
-        strategy: row.strategy,
-        closedTrades: row.closedTrades,
-        winRate: row.closedTrades ? Number(((row.wins / row.closedTrades) * 100).toFixed(2)) : 0,
-        realizedPnl: Number(row.realizedPnl.toFixed(2)),
-        avgWin: Number(avg(row._winVals).toFixed(2)),
-        avgLoss: Number(avg(row._lossVals).toFixed(2)),
-        sharpeLike: Number(sharpeLike.toFixed(3)),
-        openTrades: row.openTrades,
-        unrealizedPnl: Number(row.unrealizedPnl.toFixed(2)),
-      };
-    }).sort((a, b) => b.realizedPnl - a.realizedPnl);
-  }
-
   dailySummary(dateStr = new Date().toISOString().slice(0, 10)) {
     const trades = this.getTrades().filter((t) => t.timestamp.startsWith(dateStr));
     const buys = trades.filter((t) => t.side === 'BUY');
@@ -266,6 +144,131 @@ class PaperTrader {
       sellNotional: Number(sells.reduce((s, t) => s + t.notional, 0).toFixed(2)),
       symbols: [...new Set(trades.map((t) => t.symbol))],
     };
+  }
+
+  rebuildClosedTradesFromHistory() {
+    const trades = this.getTrades();
+    const positions = {};
+    const closed = [];
+
+    for (const t of trades) {
+      const symbol = t.symbol;
+      if (!symbol) continue;
+
+      if (t.side === 'BUY') {
+        positions[symbol] = {
+          symbol,
+          qty: t.qty,
+          entryPrice: t.price,
+          strategy: t.strategy,
+          openedAt: t.timestamp,
+        };
+      }
+
+      if (t.side === 'SELL' && positions[symbol]) {
+        const entry = positions[symbol];
+        const pnl = Number(((t.price - entry.entryPrice) * t.qty).toFixed(2));
+        const holdMs = new Date(t.timestamp).getTime() - new Date(entry.openedAt).getTime();
+
+        const entryNotional = Math.abs(entry.entryPrice * t.qty) || 1;
+        const pnlPct = Number(((pnl / entryNotional) * 100).toFixed(3));
+
+        closed.push({
+          symbol,
+          strategy: entry.strategy,
+          entry_price: Number(entry.entryPrice.toFixed(6)),
+          exit_price: Number(t.price.toFixed(6)),
+          qty: t.qty,
+          pnl,
+          pnl_pct: pnlPct,
+          hold_time: millisToHuman(holdMs),
+          hold_time_ms: holdMs,
+          timestamp: t.timestamp,
+          opened_at: entry.openedAt,
+          exit_strategy: t.strategy,
+        });
+        delete positions[symbol];
+      }
+    }
+
+    writeJson(config.CLOSED_TRADES_FILE, closed);
+    return closed;
+  }
+
+  pnlByStrategy(lastPriceBySymbol = {}) {
+    const closed = this.getClosedTrades();
+    const open = this.evaluatePositions(lastPriceBySymbol);
+
+    const agg = new Map();
+
+    const add = (strategy, item) => {
+      if (!agg.has(strategy)) {
+        agg.set(strategy, {
+          strategy,
+          realizedPnl: 0,
+          unrealizedPnl: 0,
+          trades: 0,
+          wins: 0,
+          losses: 0,
+          grossWin: 0,
+          grossLoss: 0,
+          returns: [],
+        });
+      }
+      const row = agg.get(strategy);
+      Object.assign(row, item(row));
+    };
+
+    for (const t of closed) {
+      add(t.strategy || 'unknown', (row) => {
+        const pnl = Number(t.pnl || 0);
+        const entryNotional = Math.abs(Number(t.entry_price || 0) * Number(t.qty || 0)) || 1;
+        const r = pnl / entryNotional;
+        return {
+          realizedPnl: row.realizedPnl + pnl,
+          trades: row.trades + 1,
+          wins: row.wins + (pnl > 0 ? 1 : 0),
+          losses: row.losses + (pnl < 0 ? 1 : 0),
+          grossWin: row.grossWin + (pnl > 0 ? pnl : 0),
+          grossLoss: row.grossLoss + (pnl < 0 ? Math.abs(pnl) : 0),
+          returns: [...row.returns, r],
+        };
+      });
+    }
+
+    for (const p of open) {
+      add(p.strategy || 'unknown', (row) => ({
+        unrealizedPnl: row.unrealizedPnl + Number(p.pnl || 0),
+      }));
+    }
+
+    const out = [...agg.values()].map((row) => {
+      const avgWin = row.wins ? row.grossWin / row.wins : 0;
+      const avgLoss = row.losses ? row.grossLoss / row.losses : 0;
+      const winRate = row.trades ? (row.wins / row.trades) * 100 : 0;
+
+      const mean = row.returns.length ? row.returns.reduce((a, b) => a + b, 0) / row.returns.length : 0;
+      const variance = row.returns.length
+        ? row.returns.reduce((a, b) => a + (b - mean) ** 2, 0) / row.returns.length
+        : 0;
+      const std = Math.sqrt(variance);
+      const sharpe = std > 0 ? (mean / std) * Math.sqrt(row.returns.length) : 0;
+
+      return {
+        strategy: row.strategy,
+        realizedPnl: Number(row.realizedPnl.toFixed(2)),
+        unrealizedPnl: Number(row.unrealizedPnl.toFixed(2)),
+        totalPnl: Number((row.realizedPnl + row.unrealizedPnl).toFixed(2)),
+        trades: row.trades,
+        winRate: Number(winRate.toFixed(2)),
+        avgWin: Number(avgWin.toFixed(2)),
+        avgLoss: Number(avgLoss.toFixed(2)),
+        sharpe: Number(sharpe.toFixed(3)),
+      };
+    });
+
+    out.sort((a, b) => b.totalPnl - a.totalPnl);
+    return out;
   }
 }
 
