@@ -102,9 +102,18 @@ async function executeSignals(signals) {
   return actions;
 }
 
+function withTimeout(promise, ms, label) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
 async function runStrategy(strategy) {
   try {
-    return await strategy.scan(config.UNIVERSE, config, paper);
+    const timeoutMs = Number(process.env.STRATEGY_TIMEOUT_MS || 3000);
+    return await withTimeout(strategy.scan(config.UNIVERSE, config, paper), timeoutMs, strategy.name);
   } catch (err) {
     return [{ symbol: '-', side: 'SELL', strategy: strategy.name, reason: `strategy error: ${err.message}`, price: 0 }];
   }
