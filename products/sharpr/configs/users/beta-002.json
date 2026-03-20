@@ -1,0 +1,16 @@
+{
+  "userId": "beta-002",
+  "name": "Beta User Two",
+  "whatsapp": "+10000000002",
+  "bankroll": 2500,
+  "riskLevel": "conservative",
+  "autoExecute": false,
+  "kalshiApiKey": "",
+  "kalshiMode": "paper",
+  "strategies": ["ev-plus", "kelly"],
+  "notifications": {
+    "signals": true,
+    "dailySummary": true,
+    "tradeConfirmation": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "sharpr",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "scan": "node src/scan-broadcast.js",
+    "summary": "node src/daily-summary.js"
+  }
+}
