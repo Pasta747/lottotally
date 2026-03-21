@@ -12,7 +12,9 @@
     "paper:l2": "node src/index.js --l2 --paper-exec"
   },
   "dependencies": {
+    "@vercel/postgres": "^0.10.0",
     "next": "16.1.6",
+    "next-auth": "^4.24.13",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   }
