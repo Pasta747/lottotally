@@ -4,7 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const TABS = ['Positions', 'Pending', 'History'];
+const TABS = ['Positions', 'Awaiting Settlement', 'History'];
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -79,7 +79,7 @@ export default function Dashboard() {
   // Filter trades by tab — Positions tab uses live Kalshi data
   const tabTrades = {
     Positions: livePositions,
-    Pending: trades.filter(t => t.outcome === 'pending'),
+    'Awaiting Settlement': trades.filter(t => t.outcome === 'pending'),
     History: trades.filter(t => !['open', 'pending'].includes(t.outcome)),
   };
   const visibleTrades = tabTrades[activeTab] || [];
@@ -367,7 +367,7 @@ function EmptyState({ tab, noKeys, onSettings, onSync, syncing }) {
     Positions: noKeys
       ? { icon: '🔑', title: 'Connect your Kalshi account', text: 'Add your Kalshi API keys in Settings to see live positions.' }
       : { icon: '📭', title: 'No open positions', text: 'Live positions from your Kalshi account will appear here.' },
-    Pending: { icon: '⏳', title: 'No pending orders', text: 'Orders waiting to fill will appear here.' },
+    'Awaiting Settlement': { icon: '⏳', title: 'No unsettled trades', text: 'Trades waiting for market resolution will appear here.' },
     History: { icon: '📋', title: 'No trade history yet', text: 'Sync your Kalshi order history to see past trades, or start trading and history will appear automatically.' },
   };
   const { icon, title, text } = messages[tab] || messages.History;

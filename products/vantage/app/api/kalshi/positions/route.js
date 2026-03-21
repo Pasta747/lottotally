@@ -116,18 +116,17 @@ export async function GET() {
       };
     });
 
-    // Snapshot today's balance for chart (fire-and-forget)
+    // Snapshot today's balance for chart — write directly to DB
     const tradeCount = enriched.length;
-    fetch(`${process.env.NEXTAUTH_URL || 'https://app.yourvantage.ai'}/api/user/chart`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Cookie': '' },
-      body: JSON.stringify({
-        balance_cents: balance?.balance ?? 0,
-        portfolio_value_cents: balance?.portfolio_value ?? 0,
-        total_pnl: 0,
-        trade_count: tradeCount,
-      }),
-    }).catch(() => {}); // non-blocking
+    const today = new Date().toISOString().slice(0, 10);
+    sql`
+      INSERT INTO portfolio_snapshots (user_id, snapshot_date, balance_cents, portfolio_value_cents, total_pnl, trade_count)
+      VALUES (${userId}, ${today}, ${balance?.balance ?? 0}, ${balance?.portfolio_value ?? 0}, ${0}, ${tradeCount})
+      ON CONFLICT (user_id, snapshot_date) DO UPDATE SET
+        balance_cents = EXCLUDED.balance_cents,
+        portfolio_value_cents = EXCLUDED.portfolio_value_cents,
+        trade_count = EXCLUDED.trade_count
+    `.catch(() => {}); // non-blocking
 
     return NextResponse.json({
       balance: balance?.balance ?? null,           // in cents
