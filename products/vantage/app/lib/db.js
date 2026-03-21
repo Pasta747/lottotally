@@ -44,3 +44,10 @@ export async function initDB() {
     UNIQUE(user_id, snapshot_date)
   )`;
 }
+export async function migrateV2() {
+  // Add columns that may be missing from initial schema
+  await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'vantage'`;
+  await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS kalshi_order_id TEXT`;
+  await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS execution_price DECIMAL(10,4)`;
+  await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS signal_strength DECIMAL(6,4)`;
+}

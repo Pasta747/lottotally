@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { initDB } from '../../../lib/db';
+import { initDB, migrateV2 } from '../../../lib/db';
 
 export async function POST(request) {
   // Simple secret check to prevent public access
@@ -9,6 +9,7 @@ export async function POST(request) {
   }
   try {
     await initDB();
+    await migrateV2();
     return NextResponse.json({ success: true, message: 'Tables created/verified.' });
   } catch (error) {
     console.error('Migration error:', error);

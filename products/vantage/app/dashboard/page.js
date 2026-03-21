@@ -25,6 +25,17 @@ export default function Dashboard() {
     if (status === 'authenticated') fetchData();
   }, [status]);
 
+  const [syncing, setSyncing] = useState(false);
+  const syncFromKalshi = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch('/api/kalshi/sync', { method: 'POST' });
+      const d = await res.json();
+      if (d.synced > 0) await fetchData();
+    } catch (e) { console.error(e); }
+    finally { setSyncing(false); }
+  };
+
   const fetchData = async () => {
     try {
       const [statsRes, tradesRes, kalshiRes, chartRes] = await Promise.all([
@@ -217,7 +228,7 @@ export default function Dashboard() {
                 </table>
               </div>
             ) : (
-              <EmptyState tab={activeTab} onSettings={() => setSettingsOpen(true)} />
+              <EmptyState tab={activeTab} noKeys={noKeys} onSettings={() => setSettingsOpen(true)} onSync={syncFromKalshi} syncing={syncing} />
             )}
           </div>
         </>
@@ -345,13 +356,13 @@ function Pill({ text, color }) {
   return <span style={{ ...s.pill, ...colors[color] }}>{text}</span>;
 }
 
-function EmptyState({ tab, noKeys, onSettings }) {
+function EmptyState({ tab, noKeys, onSettings, onSync, syncing }) {
   const messages = {
     Positions: noKeys
       ? { icon: '🔑', title: 'Connect your Kalshi account', text: 'Add your Kalshi API keys in Settings to see live positions.' }
       : { icon: '📭', title: 'No open positions', text: 'Live positions from your Kalshi account will appear here.' },
     Pending: { icon: '⏳', title: 'No pending orders', text: 'Orders waiting to fill will appear here.' },
-    History: { icon: '📋', title: 'No trade history yet', text: 'Connect your Kalshi API keys to start scanning and trading.' },
+    History: { icon: '📋', title: 'No trade history yet', text: 'Sync your Kalshi order history to see past trades, or start trading and history will appear automatically.' },
   };
   const { icon, title, text } = messages[tab] || messages.History;
   return (
@@ -359,8 +370,13 @@ function EmptyState({ tab, noKeys, onSettings }) {
       <div style={s.emptyIcon}>{icon}</div>
       <div style={s.emptyTitle}>{title}</div>
       <div style={s.emptyText}>{text}</div>
-      {(tab === 'History' || noKeys) && (
+      {noKeys && (
         <button onClick={onSettings} style={s.btnPrimary}>Open Settings →</button>
+      )}
+      {tab === 'History' && !noKeys && onSync && (
+        <button onClick={onSync} disabled={syncing} style={s.btnPrimary}>
+          {syncing ? 'Syncing…' : 'Sync from Kalshi →'}
+        </button>
       )}
     </div>
   );
