@@ -2,57 +2,38 @@
  * executor.js — Vantage Trade Executor
  *
  * Modes:
- *   PAPER   — logs trade locally, no API call (default for beta users)
- *   FOUNDER — places real Kalshi orders using Mario's live account
- *             with hard safety rails (see FOUNDER_LIMITS below)
+ *   paper   — logs trade locally, no real API call (beta users w/o live keys)
+ *   live    — places real Kalshi orders using the user's stored API keys
  *
- * FOUNDER mode is the intelligence-gathering layer: every $1 real wager
- * generates real settlement data that trains the Vantage signal engine.
- * Beta users see paper trades; founder sees real trades + real P&L.
+ * Everything flows through executeSignalForUser(), which:
+ *   1. Reads the user's live settings from Postgres (risk_level, limits)
+ *   2. Applies the risk-level signal strength gate (filters weak signals)
+ *   3. Kelly-sizes the wager using the user's fraction + bankroll
+ *   4. Enforces hard daily spend/count limits
+ *   5. Places the order (or logs it as paper)
+ *   6. Writes full audit log
  *
- * Safety rails for FOUNDER mode:
- *   - Max $1.00 per order (hard-coded, not configurable at runtime)
- *   - Max 100 orders per calendar day
- *   - Min signal strength threshold before placing (configurable)
- *   - Daily spend cap ($100/day absolute max)
- *   - Full audit log of every order attempt and result
+ * Risk level effects:
+ *   conservative  kellyFraction=0.10, minStrength=8%, maxWager user-set
+ *   moderate      kellyFraction=0.25, minStrength=5%, maxWager user-set
+ *   aggressive    kellyFraction=0.50, minStrength=3%, maxWager user-set
  */
 
 'use strict';
 
 const fs   = require('fs');
 const path = require('path');
+const { calcKellyStake } = require('/root/PastaOS/Plutus/oddstool-v2/kelly');
 
-// ─── Storage paths ────────────────────────────────────────────────────────────
+// ─── Storage ──────────────────────────────────────────────────────────────────
 const DATA_DIR    = path.join(__dirname, '..', 'data');
 const TRADES_FILE = path.join(DATA_DIR, 'vantage-trades.json');
 const AUDIT_FILE  = path.join(DATA_DIR, 'founder-audit.json');
 
-// ─── FOUNDER mode safety limits (hard-coded) ─────────────────────────────────
-const FOUNDER_LIMITS = {
-  MAX_ORDER_CENTS:    100,   // $1.00 max per order
-  MAX_ORDERS_PER_DAY: 100,   // 100 orders/day max
-  MAX_SPEND_PER_DAY:  10000, // $100/day absolute cap (in cents)
-  MIN_SIGNAL_STRENGTH: 0.05, // must have ≥5% edge to place
-};
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function ensureDir() {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-
-function readJSON(file, fallback) {
-  try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
-  catch (_) { return fallback; }
-}
-
-function writeJSON(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
-}
-
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
-}
+function ensureDir()             { fs.mkdirSync(DATA_DIR, { recursive: true }); }
+function readJSON(f, fb)         { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return fb; } }
+function writeJSON(f, d)         { fs.writeFileSync(f, JSON.stringify(d, null, 2) + '\n'); }
+function todayStr()              { return new Date().toISOString().slice(0, 10); }
 
 // ─── Audit log ────────────────────────────────────────────────────────────────
 function auditLog(entry) {
@@ -62,18 +43,7 @@ function auditLog(entry) {
   writeJSON(AUDIT_FILE, log);
 }
 
-// ─── Daily spend tracker ──────────────────────────────────────────────────────
-function getDailyStats() {
-  const audit = readJSON(AUDIT_FILE, []);
-  const today = todayStr();
-  const todayOrders = audit.filter(e => e.ts?.startsWith(today) && e.mode === 'founder' && e.result === 'PLACED');
-  return {
-    orderCount: todayOrders.length,
-    totalCents: todayOrders.reduce((s, e) => s + (e.costCents || 0), 0),
-  };
-}
-
-// ─── Paper trade logger ───────────────────────────────────────────────────────
+// ─── Trade log ────────────────────────────────────────────────────────────────
 function logTrade(t) {
   ensureDir();
   const rows = readJSON(TRADES_FILE, []);
@@ -81,111 +51,180 @@ function logTrade(t) {
   writeJSON(TRADES_FILE, rows);
 }
 
-// ─── Main executor ────────────────────────────────────────────────────────────
-async function executeSignal(signal, opts = {}) {
-  const mode = opts.mode || 'paper'; // 'paper' | 'founder'
+// ─── Daily spend tracker (reads audit log) ───────────────────────────────────
+function getDailyStats(userId) {
+  const today  = todayStr();
+  const audit  = readJSON(AUDIT_FILE, []);
+  const placed = audit.filter(e =>
+    e.ts?.startsWith(today) &&
+    e.result === 'PLACED' &&
+    (!userId || e.userId === userId)
+  );
+  return {
+    orderCount: placed.length,
+    totalDollars: placed.reduce((s, e) => s + (e.wagerDollars || 0), 0),
+  };
+}
 
-  // ── PAPER MODE ──────────────────────────────────────────────────────────────
+// ─── Kelly sizing ─────────────────────────────────────────────────────────────
+/**
+ * Compute the wager size for this signal given the user's profile.
+ *
+ * Kelly formula:  f* = (b·p - q) / b  where b = decimal_odds - 1
+ * We then apply: stake = bankroll × (kellyFraction × f*)
+ * And hard-cap at: min(stake, user.maxWagerDollars)
+ *
+ * For Kalshi binary markets (payout = $1/contract):
+ *   decimal odds = 1 / yes_ask   (e.g. yes_ask=0.65 → odds=1.538)
+ */
+function computeWager(signal, userProfile) {
+  const { bankroll, kellyFraction, maxWagerDollars } = userProfile;
+  const askPrice = signal.executionPrice; // 0.0–1.0 (Kalshi cents/100)
+
+  if (!askPrice || askPrice <= 0 || askPrice >= 1) {
+    // No price info — fall back to minimum bet
+    return Math.min(1.00, maxWagerDollars);
+  }
+
+  const decimalOdds = 1 / askPrice;         // implied payout odds
+  const trueProb    = signal.estimatedProb; // our model's estimate
+
+  const kelly = calcKellyStake({
+    decimalOdds,
+    trueProb,
+    bankroll: Math.max(bankroll, 1),
+    fraction: kellyFraction,
+    maxBet: maxWagerDollars,
+    minBet: 0.01,
+  });
+
+  // Final: clamp between $0.01 and user's configured max wager
+  const wager = Math.min(kelly.stake, maxWagerDollars);
+  return Math.max(0.01, Math.round(wager * 100) / 100); // round to cents
+}
+
+// ─── Main executor ────────────────────────────────────────────────────────────
+/**
+ * Execute a signal for a specific user, applying all their risk settings.
+ *
+ * @param {Object} signal      — from scanner (ticker, side, signalStrength, estimatedProb, executionPrice, …)
+ * @param {Object} userProfile — from user-profile.js (loadUserProfile / loadActiveUsers)
+ * @param {Object} opts        — { forceMode: 'paper' | 'live' }  (overrides userProfile.kalshiMode)
+ */
+async function executeSignalForUser(signal, userProfile, opts = {}) {
+  const mode = opts.forceMode || (userProfile.kalshiMode === 'live' ? 'live' : 'paper');
+  const uid  = userProfile.userId;
+
+  // ── 1. Signal strength gate (risk_level controlled) ──────────────────────
+  const strength = signal.signalStrength || 0;
+  if (strength < userProfile.minSignalStrength) {
+    const reason = `signal_too_weak (${(strength * 100).toFixed(1)}% < ${(userProfile.minSignalStrength * 100).toFixed(1)}% threshold for ${userProfile.riskLevel})`;
+    auditLog({ userId: uid, ticker: signal.ticker, result: 'REJECTED', reason, mode });
+    return { ok: false, reason, signal, userProfile };
+  }
+
+  // ── 2. Daily limits gate ─────────────────────────────────────────────────
+  const daily = getDailyStats(uid);
+  if (daily.orderCount >= userProfile.maxOrdersPerDay) {
+    const reason = `daily_order_limit (${daily.orderCount}/${userProfile.maxOrdersPerDay})`;
+    auditLog({ userId: uid, ticker: signal.ticker, result: 'REJECTED', reason, mode });
+    return { ok: false, reason, daily };
+  }
+  if (daily.totalDollars >= userProfile.maxDailySpend) {
+    const reason = `daily_spend_limit ($${daily.totalDollars.toFixed(2)}/$${userProfile.maxDailySpend.toFixed(2)})`;
+    auditLog({ userId: uid, ticker: signal.ticker, result: 'REJECTED', reason, mode });
+    return { ok: false, reason, daily };
+  }
+
+  // ── 3. Kelly-size the wager ───────────────────────────────────────────────
+  const wagerDollars = computeWager(signal, userProfile);
+
+  // ── 4. Build the trade record ─────────────────────────────────────────────
+  const trade = {
+    userId: uid,
+    layer: signal.layer,
+    category: signal.category,
+    source: signal.source || null,
+    ticker: signal.ticker,
+    title: signal.title || null,
+    side: signal.side,
+    marketPrice: signal.marketPrice,
+    estimatedProb: signal.estimatedProb,
+    executionPrice: signal.executionPrice,
+    signalStrength: strength,
+    // Risk profile at execution time (for retrospective analysis)
+    riskLevel: userProfile.riskLevel,
+    kellyFraction: userProfile.kellyFraction,
+    bankrollAtExecution: userProfile.bankroll,
+    wagerDollars,
+    mode,
+    settlementResult: null,
+  };
+
+  // ── 5a. PAPER mode ────────────────────────────────────────────────────────
   if (mode === 'paper') {
-    const trade = {
-      layer: signal.layer,
-      category: signal.category,
-      source: signal.source || null,
-      signalStrength: signal.signalStrength,
-      ticker: signal.ticker,
-      title: signal.title || null,
-      side: signal.side,
-      marketPrice: signal.marketPrice,
-      estimatedProb: signal.estimatedProb,
-      executionPrice: signal.executionPrice,
-      settlementResult: null,
-      mode: 'paper',
-      status: 'EXECUTED_PAPER',
-    };
+    trade.status = 'EXECUTED_PAPER';
     logTrade(trade);
-    auditLog({ mode: 'paper', ticker: signal.ticker, side: signal.side, result: 'LOGGED' });
+    auditLog({ userId: uid, ticker: signal.ticker, side: signal.side, result: 'PLACED', mode: 'paper', wagerDollars });
     return { ok: true, paper: true, trade };
   }
 
-  // ── FOUNDER MODE ────────────────────────────────────────────────────────────
-  if (mode === 'founder') {
-    // 1. Signal strength gate
-    if ((signal.signalStrength || 0) < FOUNDER_LIMITS.MIN_SIGNAL_STRENGTH) {
-      auditLog({ mode: 'founder', ticker: signal.ticker, result: 'REJECTED_LOW_SIGNAL', signalStrength: signal.signalStrength });
-      return { ok: false, reason: 'signal_too_weak', signalStrength: signal.signalStrength };
-    }
-
-    // 2. Daily limits gate
-    const daily = getDailyStats();
-    if (daily.orderCount >= FOUNDER_LIMITS.MAX_ORDERS_PER_DAY) {
-      auditLog({ mode: 'founder', ticker: signal.ticker, result: 'REJECTED_DAILY_ORDER_LIMIT', daily });
-      return { ok: false, reason: 'daily_order_limit', count: daily.orderCount };
-    }
-    if (daily.totalCents >= FOUNDER_LIMITS.MAX_SPEND_PER_DAY) {
-      auditLog({ mode: 'founder', ticker: signal.ticker, result: 'REJECTED_DAILY_SPEND_LIMIT', daily });
-      return { ok: false, reason: 'daily_spend_limit', spentCents: daily.totalCents };
-    }
-
-    // 3. Determine order cost — hard cap at $1.00 (100 cents)
-    // Kalshi: count=1 contract, cost = yes_ask price (in cents)
-    const askPrice = signal.executionPrice; // e.g. 0.65 = 65 cents
-    if (!askPrice || askPrice <= 0) {
-      auditLog({ mode: 'founder', ticker: signal.ticker, result: 'REJECTED_NO_PRICE' });
-      return { ok: false, reason: 'no_execution_price' };
-    }
-    const askCents = Math.round(askPrice * 100);
-    const costCents = Math.min(askCents, FOUNDER_LIMITS.MAX_ORDER_CENTS); // never > $1
-
-    // 4. Place the order
-    let kalshiResult = null;
-    try {
-      const { KalshiClient } = require('/root/PastaOS/Plutus/oddstool-v2/kalshi-client');
-      const client = new KalshiClient({ demo: false }); // live account
-
-      const orderParams = {
-        ticker: signal.ticker,
-        action: 'buy',
-        side: signal.side,       // 'yes' or 'no'
-        type: 'market',
-        count: 1,                // 1 contract = max $1 payout
-      };
-
-      kalshiResult = await client.placeOrder(orderParams);
-    } catch (err) {
-      auditLog({ mode: 'founder', ticker: signal.ticker, result: 'ERROR', error: err.message, costCents });
-      return { ok: false, reason: 'api_error', error: err.message };
-    }
-
-    if (!kalshiResult?.ok) {
-      auditLog({ mode: 'founder', ticker: signal.ticker, result: 'KALSHI_REJECTED', kalshiResult, costCents });
-      return { ok: false, reason: 'kalshi_rejected', detail: kalshiResult };
-    }
-
-    // 5. Log the placed trade
-    const trade = {
-      layer: signal.layer,
-      category: signal.category,
-      source: signal.source || null,
-      signalStrength: signal.signalStrength,
-      ticker: signal.ticker,
-      title: signal.title || null,
-      side: signal.side,
-      marketPrice: signal.marketPrice,
-      estimatedProb: signal.estimatedProb,
-      executionPrice: askPrice,
-      costCents,
-      kalshiOrderId: kalshiResult?.data?.order?.id || null,
-      settlementResult: null,
-      mode: 'founder',
-      status: 'PLACED_LIVE',
-    };
-    logTrade(trade);
-    auditLog({ mode: 'founder', ticker: signal.ticker, side: signal.side, result: 'PLACED', costCents, orderId: trade.kalshiOrderId });
-
-    return { ok: true, live: true, trade, kalshiOrderId: trade.kalshiOrderId };
+  // ── 5b. LIVE mode — place real Kalshi order ───────────────────────────────
+  if (!userProfile.kalshiKeyId || !userProfile.kalshiSecretEncrypted) {
+    const reason = 'no_kalshi_keys';
+    auditLog({ userId: uid, ticker: signal.ticker, result: 'REJECTED', reason });
+    return { ok: false, reason };
   }
 
-  return { ok: false, reason: 'unknown_mode', mode };
+  let kalshiResult;
+  try {
+    // Decrypt stored private key
+    const { decrypt } = require('../app/utils/encryption.js');
+    const privateKeyPem = decrypt(userProfile.kalshiSecretEncrypted);
+
+    const { KalshiClient } = require('/root/PastaOS/Plutus/oddstool-v2/kalshi-client');
+    const isDemo = userProfile.kalshiMode !== 'live';
+    const client = new KalshiClient({ demo: isDemo });
+    // Override auth with user's own keys
+    client.apiKeyId      = userProfile.kalshiKeyId;
+    client.privateKeyPem = privateKeyPem;
+
+    kalshiResult = await client.placeOrder({
+      ticker: signal.ticker,
+      action: 'buy',
+      side:   signal.side,
+      type:   'market',
+      count:  Math.max(1, Math.round(wagerDollars)), // Kalshi counts in $1 contracts
+    });
+  } catch (err) {
+    auditLog({ userId: uid, ticker: signal.ticker, result: 'ERROR', error: err.message, wagerDollars });
+    return { ok: false, reason: 'api_error', error: err.message };
+  }
+
+  if (!kalshiResult?.ok) {
+    auditLog({ userId: uid, ticker: signal.ticker, result: 'KALSHI_REJECTED', detail: kalshiResult, wagerDollars });
+    return { ok: false, reason: 'kalshi_rejected', detail: kalshiResult };
+  }
+
+  trade.status       = 'PLACED_LIVE';
+  trade.kalshiOrderId = kalshiResult?.data?.order?.id || null;
+  logTrade(trade);
+  auditLog({ userId: uid, ticker: signal.ticker, side: signal.side, result: 'PLACED', mode: 'live', wagerDollars, orderId: trade.kalshiOrderId });
+
+  return { ok: true, live: true, trade, kalshiOrderId: trade.kalshiOrderId };
 }
 
-module.exports = { executeSignal, logTrade, getDailyStats, FOUNDER_LIMITS };
+// ─── Legacy single-user paper execute (backward compat) ─────────────────────
+async function executeSignal(signal, opts = {}) {
+  const { loadUserProfile } = require('./user-profile');
+  // For legacy calls without userId, use a minimal paper profile
+  const profile = opts.userId
+    ? await loadUserProfile(opts.userId)
+    : { userId: 'legacy', bankroll: 0, riskLevel: 'moderate', kellyFraction: 0.25,
+        minSignalStrength: 0.05, categoryMultiplier: 1, maxWagerDollars: 1,
+        maxOrdersPerDay: 100, maxDailySpend: 100, kalshiMode: 'paper',
+        kalshiKeyId: null, kalshiSecretEncrypted: null, autoExecute: false };
+  return executeSignalForUser(signal, profile, { forceMode: 'paper' });
+}
+
+module.exports = { executeSignalForUser, executeSignal, logTrade, getDailyStats };
