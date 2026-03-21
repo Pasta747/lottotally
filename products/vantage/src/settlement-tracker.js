@@ -11,8 +11,14 @@
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: '/root/PastaOS/.env' });
+
+// node-fetch v2 compatible import
+const fetch = (...args) => import('node-fetch').then(m => m.default(...args));
+
 const { KalshiClient } = require('/root/PastaOS/Plutus/oddstool-v2/kalshi-client');
 const { updateWeightsFromOutcome } = require('./atlas-manager');
+const { loadActiveUsers } = require('./user-profile');
+const { decrypt } = require('../app/utils/encryption.js');
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const SETTLEMENTS_FILE = path.join(DATA_DIR, 'settlements.json');
@@ -86,33 +92,84 @@ async function apiSettleTrade(baseUrl, secret, tradeId, body) {
 }
 
 async function run() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_BASE_URL || process.env.APP_BASE_URL || 'http://localhost:3000';
+  const baseUrl = 'https://app.yourvantage.ai';
   const secret = process.env.INTERNAL_API_SECRET;
 
-  if (!secret) {
-    throw new Error('Missing INTERNAL_API_SECRET env var');
+  if (!secret) throw new Error('Missing INTERNAL_API_SECRET in /root/PastaOS/.env');
+
+  // Load user profiles to get their Kalshi keys for settlement checks
+  const users = await loadActiveUsers();
+  const userKeyMap = {};
+  for (const u of users) {
+    if (u.kalshiKeyId && u.kalshiSecretEncrypted) {
+      try {
+        const pem = decrypt(u.kalshiSecretEncrypted);
+        const isDemo = u.kalshiMode !== 'live';
+        const client = new KalshiClient({ demo: isDemo });
+        client.apiKeyId = u.kalshiKeyId;
+        client.privateKeyPem = pem;
+        userKeyMap[u.userId] = client;
+      } catch (_) {}
+    }
   }
 
-  // Settlement truth must come from live Kalshi market results.
-  // Explicitly enable live-read gate for this worker context.
-  if (process.env.KALSHI_LIVE_ENABLED !== 'true') {
-    process.env.KALSHI_LIVE_ENABLED = 'true';
+  // Fallback: public market endpoint (no auth needed for result field)
+  const publicKalshiDemoBase = 'https://demo-api.kalshi.co/trade-api/v2';
+  const publicKalshiLiveBase = 'https://trading-api.kalshi.com/trade-api/v2';
+
+  async function checkMarketResult(ticker, userId) {
+    // Try authenticated client first (user-specific)
+    const client = userKeyMap[userId];
+    if (client) {
+      const res = await client._request('GET', `/markets/${ticker}`);
+      const result = res?.data?.market?.result;
+      if (result !== undefined) return result;
+    }
+    // Fallback: unauthenticated public endpoint (result field is public)
+    for (const base of [publicKalshiDemoBase, publicKalshiLiveBase]) {
+      try {
+        const res = await fetch(`${base}/markets/${ticker}`);
+        const d = await res.json();
+        const result = d?.market?.result;
+        if (result !== undefined) return result;
+      } catch (_) {}
+    }
+    return null;
   }
-  const kalshi = new KalshiClient({ demo: false });
+
   const pending = await apiGetPendingTrades(baseUrl, secret);
 
   const summary = { checked: pending.length, settled: 0, wins: 0, losses: 0, skipped: 0, errors: 0 };
 
   for (const trade of pending) {
     try {
+      // market field may contain ticker OR title — also try kalshi_order_id lookup
       const ticker = trade.market;
       if (!ticker) {
         summary.skipped += 1;
         continue;
       }
 
-      const market = await kalshi._request('GET', `/markets/${ticker}`);
-      const settledResult = normalizeKalshiResult(market?.data?.market?.result);
+      // If market looks like a title (not a ticker), try to find ticker via order
+      // Kalshi tickers are UPPER_CASE with no spaces; titles have spaces
+      const looksLikeTicker = /^[A-Z0-9_-]+$/.test(ticker) && !ticker.includes(' ');
+
+      let rawResult = null;
+      if (looksLikeTicker) {
+        rawResult = await checkMarketResult(ticker, trade.user_id);
+      } else if (trade.kalshi_order_id) {
+        // Look up market via order ID
+        const client = userKeyMap[trade.user_id];
+        if (client) {
+          try {
+            const orderRes = await client._request('GET', `/portfolio/orders/${trade.kalshi_order_id}`);
+            const orderTicker = orderRes?.data?.order?.ticker;
+            if (orderTicker) rawResult = await checkMarketResult(orderTicker, trade.user_id);
+          } catch (_) {}
+        }
+      }
+
+      const settledResult = normalizeKalshiResult(rawResult);
       if (!settledResult) {
         summary.skipped += 1;
         continue;

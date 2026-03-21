@@ -21,7 +21,7 @@ export async function GET(request) {
 
   try {
     const result = await sql`
-      SELECT id, user_id, market, category, layer, source, side, outcome, pnl, kelly_amount, execution_price, contracts, created_at
+      SELECT id, user_id, market, category, layer, source, side, outcome, pnl, kelly_amount, execution_price, contracts, kalshi_order_id, created_at
       FROM trades
       WHERE outcome = 'pending'
       ORDER BY created_at ASC

@@ -84,6 +84,7 @@ export async function POST() {
         const mkt = await kalshiFetch(base, keyId, pem, `/markets/${o.ticker}`);
         marketTitle = mkt?.market?.title || o.ticker;
       } catch (_) {}
+      const ticker = o.ticker; // always store the raw ticker for settlement lookup
 
       // Determine category from ticker
       const t = o.ticker?.toLowerCase() || '';
@@ -96,8 +97,8 @@ export async function POST() {
       const outcome = o.status === 'executed' ? 'pending' : 'pending';
 
       await sql`
-        INSERT INTO trades (id, user_id, date, market, category, layer, side, ev_pct, kelly_amount, outcome, pnl, kalshi_order_id, execution_price, source)
-        VALUES (${randomUUID()}, ${userId}, ${today}, ${marketTitle}, ${category}, ${'kalshi'}, ${side}, ${0}, ${cost}, ${outcome}, ${0}, ${o.order_id}, ${price}, ${'kalshi_sync'})
+        INSERT INTO trades (id, user_id, date, market, category, layer, side, ev_pct, kelly_amount, outcome, pnl, kalshi_order_id, execution_price, source, signal_strength)
+        VALUES (${randomUUID()}, ${userId}, ${today}, ${ticker}, ${category}, ${'kalshi'}, ${side}, ${0}, ${cost}, ${outcome}, ${0}, ${o.order_id}, ${price}, ${'kalshi_sync'}, ${0})
         ON CONFLICT DO NOTHING
       `;
       synced++;
