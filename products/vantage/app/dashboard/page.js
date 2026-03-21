@@ -139,7 +139,7 @@ export default function Dashboard() {
                 <span style={s.chartTitle}>Portfolio Performance</span>
                 <span style={s.chartSub}>Balance over time</span>
               </div>
-              <PerformanceChart data={chartData} bankroll={totalValue || chartData?.bankroll} />
+              <PerformanceChart data={chartData} bankroll={null} currentBalance={totalValue} />
             </div>
           </div>
 
@@ -240,21 +240,27 @@ export default function Dashboard() {
 }
 
 // ─── Performance Chart (pure SVG, no deps) ──────────────────────────────────
-function PerformanceChart({ data, bankroll }) {
-  if (!data?.points?.length) {
+function PerformanceChart({ data, bankroll, currentBalance }) {
+  if (!data?.points?.length || (data.points.length < 2 && !currentBalance)) {
     return (
-      <div style={{ height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 13 }}>
-        No performance data yet — data will appear as you trade.
+      <div style={{ height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4b5563', fontSize: 13 }}>
+        Chart will populate as daily snapshots accumulate.
       </div>
     );
   }
 
-  const points = data.points;
+  // Build points — if only 1 snapshot, synthesize a second from current balance
+  let points = [...data.points];
+  if (points.length === 1 && currentBalance) {
+    points.push({ date: new Date().toISOString().slice(0,10), balance: currentBalance, pnl: 0 });
+  }
+
   const W = 900, H = 120, PAD = { t: 12, r: 16, b: 28, l: 52 };
   const vals = points.map(p => p.balance);
   const minV = Math.min(...vals) * 0.998;
   const maxV = Math.max(...vals) * 1.002;
-  const baseline = bankroll || vals[0];
+  // Baseline = first snapshot (actual starting point), not bankroll setting
+  const baseline = vals[0];
   const range = maxV - minV || 1;
   const innerW = W - PAD.l - PAD.r;
   const innerH = H - PAD.t - PAD.b;

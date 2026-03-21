@@ -39,12 +39,8 @@ export async function GET() {
       trades: r.trade_count,
     }));
 
-    // If no snapshots yet, return a single baseline point
-    if (points.length === 0) {
-      const startDate = createdAt ? new Date(createdAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
-      points.push({ date: startDate, balance: bankroll, pnl: 0, trades: 0 });
-    }
-
+    // If no snapshots yet, return empty — chart will show placeholder message
+    // Do NOT seed with bankroll setting (misleading baseline)
     return NextResponse.json({ points, bankroll });
 
   } catch (error) {
