@@ -1,4 +1,10 @@
 const path = require('path');
+const fs = require('fs');
+
+const SP500_FILE = path.join(__dirname, 'sp500.json');
+const SP500_UNIVERSE = fs.existsSync(SP500_FILE)
+  ? JSON.parse(fs.readFileSync(SP500_FILE, 'utf8'))
+  : [];
 
 module.exports = {
   PAPER_ACCOUNT_ID: 'DUP472682',
@@ -14,18 +20,10 @@ module.exports = {
   STOP_LOSS_PCT: Number(process.env.STOP_LOSS_PCT || 2),
   TAKE_PROFIT_PCT: Number(process.env.TAKE_PROFIT_PCT || 5),
 
-  // S&P 100 starter universe (can expand to full 500 after perf validation)
-  UNIVERSE: [
-    'AAPL','ABBV','ABT','ACN','ADBE','AIG','AMD','AMGN','AMT','AMZN',
-    'AVGO','AXP','BA','BAC','BK','BKNG','BLK','BMY','BRK.B','C','CAT',
-    'CHTR','CL','CMCSA','COF','COP','COST','CRM','CSCO','CVS','CVX',
-    'DD','DHR','DIS','DOW','DUK','EMR','F','FDX','GD','GE',
-    'GILD','GM','GOOG','GOOGL','GS','HD','HON','IBM','INTC','INTU',
-    'JNJ','JPM','KHC','KO','LIN','LLY','LMT','LOW','MA','MCD',
-    'MDLZ','MDT','META','MMM','MO','MRK','MS','MSFT','NEE','NFLX',
-    'NKE','NVDA','ORCL','PEP','PFE','PG','PM','PYPL','QCOM','RTX',
-    'SBUX','SCHW','SO','SPG','T','TGT','TMO','TSLA','TXN','UNH',
-    'UNP','UPS','USB','V','VZ','WBA','WFC','WMT','XOM','CME'
+  // Full S&P 500 universe loaded from sp500.json (503 tickers)
+  UNIVERSE: SP500_UNIVERSE.length ? SP500_UNIVERSE : [
+    'AAPL','MSFT','AMZN','NVDA','META','TSLA','GOOGL','GOOG','AMD','INTC',
+    'BAC','JPM','WFC','GS','MS','XOM','CVX','COP','SLB','PFE'
   ],
 
   SECTOR_ETFS: ['XLK','XLF','XLE','XLV','XLY','XLP','XLI','XLU','XLRE','XLC','XLB'],

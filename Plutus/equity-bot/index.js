@@ -12,8 +12,21 @@ const { fetchOBB, normalizeBars, logSignals } = require('./strategies/utils');
 
 ensureDataFiles();
 
+// EQ-IBKR fix: make IBKR optional — paper trading doesn't need live broker connection
+const USE_IBKR = String(process.env.EQUITY_USE_IBKR || 'false').toLowerCase() === 'true';
 const ibkr = new IbkrClient();
 const paper = new PaperTrader();
+
+async function placePaperOrder(symbol, side, qty) {
+  if (!USE_IBKR) {
+    return { ok: true, simulated: true, symbol, side, qty, reason: 'IBKR disabled (paper mode)' };
+  }
+  try {
+    return await ibkr.placeOrder(symbol, side, qty, 'MKT');
+  } catch (err) {
+    return { ok: true, simulated: true, symbol, side, qty, reason: `IBKR unavailable: ${err.message}` };
+  }
+}
 
 function loadStrategies() {
   const dir = path.join(__dirname, 'strategies');
@@ -83,7 +96,7 @@ async function executeSignals(signals) {
         continue;
       }
 
-      const order = await ibkr.placeOrder(sig.symbol, 'BUY', qty, 'MKT');
+      const order = await placePaperOrder(sig.symbol, 'BUY', qty);
       const trade = paper.recordTrade({ strategy: sig.strategy, symbol: sig.symbol, side: 'BUY', qty, price: sig.price });
       openPositions[sig.symbol] = { symbol: sig.symbol, qty, entryPrice: sig.price, strategy: sig.strategy };
       actions.push({ ...sig, executed: true, order, trade });
@@ -92,10 +105,14 @@ async function executeSignals(signals) {
     if (sig.side === 'SELL') {
       if (!hasPos) continue;
       const qty = openPositions[sig.symbol].qty;
+      // EQ-EXITBUG fix: fetch live price at exit time instead of using stale signal price
+      // (strategy signals use daily close = same as entry price → PnL always $0)
+      const livePrices = await fetchLastPrices([sig.symbol]);
+      const exitPrice = livePrices[sig.symbol] || sig.price;
       const order = await ibkr.placeOrder(sig.symbol, 'SELL', qty, 'MKT');
-      const trade = paper.recordTrade({ strategy: sig.strategy, symbol: sig.symbol, side: 'SELL', qty, price: sig.price });
+      const trade = paper.recordTrade({ strategy: sig.strategy, symbol: sig.symbol, side: 'SELL', qty, price: exitPrice });
       delete openPositions[sig.symbol];
-      actions.push({ ...sig, executed: true, order, trade });
+      actions.push({ ...sig, executed: true, order, trade, exitPrice });
     }
   }
 
@@ -200,6 +217,10 @@ async function showPnl() {
 }
 
 async function showAccount() {
+  if (!USE_IBKR) {
+    console.log('=== IBKR disabled (paper mode) — use --pnl for local P&L ===');
+    return;
+  }
   const summary = await ibkr.getAccountSummary();
   const mine = summary.filter((r) => r.account === config.PAPER_ACCOUNT_ID);
   console.log('=== IBKR Account Summary ===');
@@ -304,7 +325,7 @@ async function main() {
 
     console.log('No command specified. Try --help');
   } finally {
-    ibkr.disconnect();
+    if (USE_IBKR) ibkr.disconnect();
   }
 }
 

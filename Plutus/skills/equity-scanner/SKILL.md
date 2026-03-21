@@ -14,9 +14,9 @@ cd /root/PastaOS/Plutus/equity-bot && STRATEGY_TIMEOUT_MS=3000 timeout 90 node i
 **Important:** Scanner now runs strategies in parallel with per-strategy timeout guard. Use `timeout 90` at cron level to cap total runtime.
 
 ## Universe
-S&P 100 starter universe (100 tickers) + sector ETFs for macro context.
+Full S&P 500 constituent set (503 tickers) loaded from `sp500.json`.
 
-This is the bridge step before full S&P 500 rollout: larger than the original 50 while keeping runtime manageable under parallel execution.
+Scanner runs strategies in parallel with per-strategy timeout to keep cron runtime bounded.
 
 ## Strategies Active (20 total)
 momentum, mean-reversion, earnings-play, gap-fill, vwap-bounce, breakout, pullback-buy, sector-rotation, pairs-trading, golden-cross, rsi-divergence, macd-crossover, bollinger-squeeze, high-short-interest, insider-buying, dividend-capture, opening-range-breakout, relative-strength, volume-spike, support-resistance
