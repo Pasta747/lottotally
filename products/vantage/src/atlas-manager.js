@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 const WEIGHTS_FILE = path.join(__dirname, '..', 'data', 'atlas-weights.json');
+const MIN_WEIGHT = 0.5;
+const MAX_WEIGHT = 2.0;
 
 const DEFAULT = {
   layers: {
@@ -53,4 +55,61 @@ function weightedSignalStrength({ baseStrength, layer, categoryKey, sourceKey })
   return Number((baseStrength * layerWeight * categoryWeight * sourceWeight).toFixed(4));
 }
 
-module.exports = { loadWeights, saveWeights, weightedSignalStrength };
+function clampWeight(value) {
+  return Math.min(MAX_WEIGHT, Math.max(MIN_WEIGHT, Number(value.toFixed(4))));
+}
+
+function toCategoryKey(signal = {}) {
+  if (signal.categoryKey) return signal.categoryKey;
+  const raw = String(signal.category || '').trim().toLowerCase();
+  if (!raw) return null;
+  return raw.endsWith('_weight') ? raw : `${raw}_weight`;
+}
+
+function toSourceKey(signal = {}) {
+  if (signal.sourceKey) return signal.sourceKey;
+  const raw = String(signal.source || '').trim().toLowerCase();
+  if (!raw) return null;
+  return raw.endsWith('_weight') ? raw : `${raw}_weight`;
+}
+
+function updateWeightsFromOutcome(signal = {}, outcome) {
+  const normalizedOutcome = String(outcome || '').toLowerCase();
+  if (!['win', 'loss'].includes(normalizedOutcome)) {
+    return { ok: false, reason: 'invalid_outcome' };
+  }
+
+  const factor = normalizedOutcome === 'win' ? 1.05 : 0.95;
+  const weights = loadWeights();
+  const updates = {};
+
+  const layer = signal.layer;
+  if (layer) {
+    const current = weights.layers[layer]?.weight ?? 1;
+    const next = clampWeight(current * factor);
+    if (!weights.layers[layer]) weights.layers[layer] = { weight: 1 };
+    weights.layers[layer].weight = next;
+    updates.layer = { key: layer, from: current, to: next };
+  }
+
+  const categoryKey = toCategoryKey(signal);
+  if (categoryKey) {
+    const current = weights.categories[categoryKey] ?? 1;
+    const next = clampWeight(current * factor);
+    weights.categories[categoryKey] = next;
+    updates.category = { key: categoryKey, from: current, to: next };
+  }
+
+  const sourceKey = toSourceKey(signal);
+  if (sourceKey) {
+    const current = weights.sources[sourceKey] ?? 1;
+    const next = clampWeight(current * factor);
+    weights.sources[sourceKey] = next;
+    updates.source = { key: sourceKey, from: current, to: next };
+  }
+
+  saveWeights(weights);
+  return { ok: true, outcome: normalizedOutcome, factor, updates, weights };
+}
+
+module.exports = { loadWeights, saveWeights, weightedSignalStrength, updateWeightsFromOutcome };

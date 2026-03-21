@@ -1,66 +1,80 @@
 /**
  * place-demo-order.js
- * Places a test order on KXQUICKSETTLE (demo env) to validate the full pipeline.
- * Market opens at 18:50 UTC (11:50 AM PDT), closes at 19:00 UTC (12:00 PM PDT).
- * "Will 1+1 = 2?" — guaranteed YES resolution.
+ * Places a test order using Mario's stored Vantage API keys (from DB).
+ * No .env keys — everything comes from the user's Vantage settings.
  */
 
 'use strict';
 
-const { KalshiClient } = require('/root/PastaOS/Plutus/oddstool-v2/kalshi-client');
+require('dotenv').config({ path: '/root/PastaOS/.env' });
 
-const TARGET_TICKER = 'KXQUICKSETTLE-26MAR21H1500-2';
-const OPEN_TIME_UTC = new Date('2026-03-21T18:50:00Z');
+const { loadActiveUsers } = require('../src/user-profile');
+const { KalshiClient }    = require('/root/PastaOS/Plutus/oddstool-v2/kalshi-client');
 
 async function main() {
-  const client = new KalshiClient({ demo: true, verbose: true });
-
-  // Check balance
-  const bal = await client.getBalance();
-  console.log(`Demo balance: $${(bal.balance / 100).toFixed(2)}`);
-
-  // Wait for market to open if needed
-  const now = new Date();
-  const msUntilOpen = OPEN_TIME_UTC - now;
-  if (msUntilOpen > 0) {
-    const mins = Math.ceil(msUntilOpen / 60000);
-    console.log(`Market opens in ~${mins} min (${OPEN_TIME_UTC.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles' })} PDT). Waiting...`);
-    await new Promise(r => setTimeout(r, msUntilOpen + 5000)); // 5s buffer
-  }
-
-  // Verify market is open
-  const mktRes = await client._request('GET', `/markets/${TARGET_TICKER}`);
-  const mkt = mktRes?.data?.market;
-  if (!mkt) { console.error('Market not found'); process.exit(1); }
-  console.log(`Market status: ${mkt.status} | yes_ask: $${mkt.yes_ask_dollars}`);
-
-  if (mkt.status !== 'active' && mkt.status !== 'open') {
-    console.log('Market not yet active, status:', mkt.status);
+  // Load user from Vantage DB
+  const users = await loadActiveUsers();
+  if (!users.length) {
+    console.error('No users with API keys found in Vantage DB. Save your keys in Settings first.');
     process.exit(1);
   }
 
-  // Place 1 contract YES order at market price
-  console.log('\nPlacing order: BUY YES 1 contract on', TARGET_TICKER);
+  const user = users[0];
+  console.log(`Using keys for: ${user.email} (mode: ${user.kalshiMode})`);
+  console.log(`Key ID: ${user.kalshiKeyId}`);
+
+  // Decrypt stored key
+  const { decrypt } = require('../app/utils/encryption.js');
+  const privateKeyPem = decrypt(user.kalshiSecretEncrypted);
+
+  const isDemo = user.kalshiMode !== 'live';
+  const client = new KalshiClient({ demo: isDemo, verbose: true });
+  client.apiKeyId      = user.kalshiKeyId;
+  client.privateKeyPem = privateKeyPem;
+
+  // Check balance
+  const bal = await client.getBalance();
+  console.log(`Balance: $${(bal.balance / 100).toFixed(2)} | Portfolio: $${(bal.portfolio_value / 100).toFixed(2)}`);
+
+  // Find next open QuickSettle market
+  const res = await client._request('GET', '/markets?limit=50');
+  const qs = (res?.data?.markets || [])
+    .filter(m => m.ticker?.includes('KXQUICKSETTLE') && m.ticker?.endsWith('-2') && new Date(m.close_time) > new Date())
+    .sort((a, b) => new Date(a.close_time) - new Date(b.close_time));
+
+  if (!qs.length) {
+    console.log('No open QuickSettle markets found right now.');
+    process.exit(0);
+  }
+
+  const target = qs[0];
+  const ct = new Date(target.close_time);
+  const pdt = ct.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit' });
+  console.log(`\nTarget: ${target.ticker} (settles ${pdt} PDT)`);
+  console.log(`Status: ${target.status}`);
+
+  if (target.status !== 'active') {
+    console.log('Market not yet active. Try again closer to open time.');
+    process.exit(0);
+  }
+
   const orderRes = await client.placeOrder({
-    ticker: TARGET_TICKER,
+    ticker: target.ticker,
     action: 'buy',
     side: 'yes',
-    type: 'market',
+    type: 'limit',
     count: 1,
+    yes_price: 99,
   });
 
-  console.log('\nOrder result:', JSON.stringify(orderRes, null, 2));
-
   if (orderRes.ok) {
-    const order = orderRes?.data?.order || orderRes?.data;
-    console.log('\n✅ Demo order placed!');
-    console.log('  Order ID:', order?.id || '(check Kalshi dashboard)');
-    console.log('  Ticker:', TARGET_TICKER);
-    console.log('  Side: YES');
-    console.log('  Settles: 12:00 PM PDT (guaranteed YES = profit)');
-    console.log('\nCheck your Kalshi demo account at demo.kalshi.com to see the position.');
+    const order = orderRes?.data?.order;
+    console.log('\n✅ Order placed!');
+    console.log('  Order ID:', order?.order_id);
+    console.log('  Price: $' + order?.yes_price_dollars);
+    console.log('  Status:', order?.status);
   } else {
-    console.error('❌ Order failed:', orderRes.error || JSON.stringify(orderRes));
+    console.error('❌ Order failed:', orderRes.error, JSON.stringify(orderRes.data));
   }
 }
 

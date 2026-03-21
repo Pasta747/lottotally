@@ -36,9 +36,16 @@ async function main() {
   const targetUserId = allArgs[allArgs.indexOf('--user') + 1] || null;
 
   // ── Scan ──────────────────────────────────────────────────────────────────
+  // Load first active user's profile for authenticated scanning (keys for L2/L3)
+  let primaryUser = null;
+  if (doExec || targetUserId) {
+    const usersForScan = targetUserId ? [await loadUserProfile(targetUserId)] : await loadActiveUsers();
+    primaryUser = usersForScan[0] || null;
+  }
+
   const signals = [];
   if (runL1) signals.push(...(await scanSportsLayer()));
-  if (runL2) signals.push(...(await scanKalshiNativeLayer()));
+  if (runL2) signals.push(...(await scanKalshiNativeLayer(primaryUser)));
   if (runL3) signals.push(...(await scanNewsLayer()));
 
   // Sort by signal strength descending

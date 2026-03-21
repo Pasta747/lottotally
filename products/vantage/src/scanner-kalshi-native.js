@@ -54,8 +54,21 @@ async function fetchAllActiveMarkets(client) {
   return all;
 }
 
-async function scanKalshiNativeLayer() {
-  const client = new KalshiClient({ demo: true });
+async function scanKalshiNativeLayer(userProfile = null) {
+  // Use user's stored keys if provided, otherwise fall back to read-only market data
+  // (no auth needed for public market listings)
+  let client;
+  if (userProfile?.kalshiKeyId && userProfile?.kalshiSecretEncrypted) {
+    const { decrypt } = require('../app/utils/encryption.js');
+    const privateKeyPem = decrypt(userProfile.kalshiSecretEncrypted);
+    const isDemo = userProfile.kalshiMode !== 'live';
+    client = new KalshiClient({ demo: isDemo });
+    client.apiKeyId = userProfile.kalshiKeyId;
+    client.privateKeyPem = privateKeyPem;
+  } else {
+    // Public market data only (no auth) — scanner still works for signal generation
+    client = new KalshiClient({ demo: true });
+  }
   const markets = await fetchAllActiveMarkets(client);
 
   const sameDay = markets.filter((m) => {
