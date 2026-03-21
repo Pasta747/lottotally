@@ -1,27 +1,8 @@
 import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import AppleProvider from 'next-auth/providers/apple';
-import { ensureSchema, sql } from '../../../lib/db';
+import { sql } from '@vercel/postgres';
 
-const providers = [
-  CredentialsProvider({
-    name: 'Credentials',
-    credentials: {
-      email: { label: 'Email', type: 'email' },
-      password: { label: 'Password', type: 'password' },
-    },
-    async authorize(credentials) {
-      if (!credentials?.email || !credentials?.password) return null;
-      return {
-        id: credentials.email,
-        email: credentials.email,
-        name: credentials.email.split('@')[0],
-        provider: 'credentials',
-      };
-    },
-  }),
-];
+const providers = [];
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   providers.push(
@@ -33,43 +14,40 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   );
 }
 
-if (process.env.APPLE_CLIENT_ID && process.env.APPLE_CLIENT_SECRET) {
-  providers.push(
-    AppleProvider({
-      clientId: process.env.APPLE_CLIENT_ID,
-      clientSecret: process.env.APPLE_CLIENT_SECRET,
-    })
-  );
-}
-
 export const authOptions = {
   providers,
   callbacks: {
-    async signIn({ user }) {
-      if (!user?.email) return false;
-      await ensureSchema();
-      const id = user.id || user.email;
-      await sql`INSERT INTO users (id, email, name)
-                VALUES (${id}, ${user.email}, ${user.name || null})
-                ON CONFLICT (id)
-                DO UPDATE SET email = EXCLUDED.email, name = COALESCE(EXCLUDED.name, users.name)`;
-      return true;
-    },
     async jwt({ token, user, account }) {
-      if (user) {
-        token.id = user.id || user.email;
-        token.email = user.email;
-        token.name = user.name;
-      }
+      if (user) token.id = user.id || user.email;
       if (account?.provider) token.provider = account.provider;
+      if (user?.email) token.email = user.email;
+      if (user?.name) token.name = user.name;
+      if (user?.image) token.picture = user.image;
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id;
-        session.user.provider = token.provider || 'credentials';
+        session.user.provider = token.provider || 'google';
       }
       return session;
+    },
+    async signIn({ user, account, profile }) {
+      // Auto-provision user record on login
+      if (user?.email) {
+        try {
+          const userId = user.id || user.email;
+          await sql`
+            INSERT INTO users (id, email, name)
+            VALUES (${userId}, ${user.email}, ${user.name || user.email.split('@')[0]})
+            ON CONFLICT (id) DO UPDATE SET
+              name = EXCLUDED.name
+          `;
+        } catch (error) {
+          console.error('User provisioning error:', error);
+        }
+      }
+      return true;
     },
     async redirect({ url, baseUrl }) {
       const appBase = process.env.NEXT_PUBLIC_APP_BASE_URL || 'https://app.yourvantage.ai';

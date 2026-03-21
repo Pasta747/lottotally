@@ -2,7 +2,7 @@ import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
-import { encrypt, hashKey } from '../../../../src/utils/crypto';
+import { encrypt } from '../../../utils/encryption';
 
 export async function POST(request) {
   try {
@@ -12,47 +12,36 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const { apiKey } = await request.json();
+    const { kalshi_key_id, kalshi_secret } = await request.json();
     
-    if (!apiKey || !apiKey.startsWith('KALSHI_')) {
-      return NextResponse.json({ error: 'Invalid API key format' }, { status: 400 });
+    if (!kalshi_key_id || !kalshi_secret) {
+      return NextResponse.json({ error: 'Missing key ID or secret' }, { status: 400 });
     }
+
+    const userId = session.user.id || session.user.email;
     
-    // Get user ID
-    const userResult = await sql`
-      SELECT id FROM users WHERE email = ${session.user.email}
-    `;
+    // Encrypt the secret
+    const encryptedSecret = encrypt(kalshi_secret);
     
-    if (userResult.rows.length === 0) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    
-    const userId = userResult.rows[0].id;
-    
-    // Encrypt the API key
-    const encryptionResult = encrypt(apiKey);
-    const keyHash = hashKey(apiKey);
-    
-    // Save encrypted key to database
-    await sql`
-      INSERT INTO user_api_keys (user_id, encrypted_key, key_hash, iv, auth_tag)
-      VALUES (${userId}, ${encryptionResult.encrypted}, ${keyHash}, ${encryptionResult.iv}, ${encryptionResult.tag})
+    // Save encrypted key
+    const result = await sql`
+      INSERT INTO user_api_keys (user_id, kalshi_key_id, kalshi_secret_encrypted)
+      VALUES (${userId}, ${kalshi_key_id}, ${encryptedSecret})
       ON CONFLICT (user_id) 
       DO UPDATE SET 
-        encrypted_key = ${encryptionResult.encrypted},
-        key_hash = ${keyHash},
-        iv = ${encryptionResult.iv},
-        auth_tag = ${encryptionResult.tag},
-        created_at = CURRENT_TIMESTAMP
+        kalshi_key_id = EXCLUDED.kalshi_key_id,
+        kalshi_secret_encrypted = EXCLUDED.kalshi_secret_encrypted,
+        updated_at = NOW()
+      RETURNING kalshi_key_id, updated_at
     `;
     
     return NextResponse.json({ 
       success: true,
-      message: 'API key saved and encrypted successfully'
+      key: result.rows[0]
     });
     
   } catch (error) {
     console.error('API key save error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
 }
