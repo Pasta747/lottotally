@@ -4,6 +4,10 @@ import { Providers } from './providers';
 export const metadata = {
   title: 'Vantage — Your AI prediction market agent',
   description: 'Paper-only beta agent for Kalshi prediction markets.',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
 };
 
 export default function RootLayout({ children }) {

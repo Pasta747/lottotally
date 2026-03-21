@@ -4,6 +4,8 @@ import { useSession, signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const TABS = ['Positions', 'Pending', 'History'];
+
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -11,253 +13,321 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [trades, setTrades] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('History');
 
-  // Redirect to signup if not authenticated
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/signup');
-    }
+    if (status === 'unauthenticated') router.push('/signup');
   }, [status, router]);
 
-  // Fetch real data
   useEffect(() => {
-    if (status === 'authenticated') {
-      fetchData();
-    }
+    if (status === 'authenticated') fetchData();
   }, [status]);
 
   const fetchData = async () => {
     try {
-      // Fetch stats
-      const statsRes = await fetch('/api/user/stats');
-      if (statsRes.ok) {
-        const statsData = await statsRes.json();
-        setStats(statsData.stats);
-      }
-
-      // Fetch trades
-      const tradesRes = await fetch('/api/user/trades');
-      if (tradesRes.ok) {
-        const tradesData = await tradesRes.json();
-        setTrades(tradesData.trades);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
+      const [statsRes, tradesRes] = await Promise.all([
+        fetch('/api/user/stats'),
+        fetch('/api/user/trades'),
+      ]);
+      if (statsRes.ok) setStats((await statsRes.json()).stats);
+      if (tradesRes.ok) setTrades((await tradesRes.json()).trades);
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoading(false);
     }
   };
 
-  if (status === 'loading') {
-    return <div style={{ padding: 24 }}>Loading...</div>;
-  }
+  if (status === 'loading') return <Loader />;
+  if (!session) return null;
 
-  if (!session) {
-    return null;
-  }
+  const pnl = stats ? parseFloat(stats.pnl) : 0;
+  const pnlPositive = pnl >= 0;
+  const hasTrades = trades.length > 0;
+
+  // Filter trades by tab
+  const tabTrades = {
+    Positions: trades.filter(t => t.outcome === 'open'),
+    Pending: trades.filter(t => t.outcome === 'pending'),
+    History: trades.filter(t => !['open', 'pending'].includes(t.outcome)),
+  };
+  const visibleTrades = tabTrades[activeTab] || [];
 
   return (
-    <main style={{ maxWidth: 1100, margin: '0 auto', padding: 20 }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-          <a href="https://yourvantage.ai" style={{ fontWeight: 700 }}>🔭 Vantage</a>
-          <a href="/dashboard">Dashboard</a>
-          <a href="#trades">Trades</a>
-          <button onClick={() => setSettingsOpen(true)} style={linkBtn}>Settings</button>
+    <div style={s.page}>
+      {/* Nav */}
+      <nav style={s.nav}>
+        <div style={s.navLeft}>
+          <span style={s.logo}>
+            <img src="/logo.png" alt="Vantage" style={{ height: 28, width: 28, objectFit: 'contain', marginRight: 6, verticalAlign: 'middle' }} />
+            Vantage
+          </span>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <span>{session.user?.name || session.user?.email}</span>
-          <button onClick={() => signOut({ callbackUrl: 'https://yourvantage.ai' })} style={linkBtn}>Sign out</button>
+        <div style={s.navRight}>
+          <span style={s.userName}>{session.user?.name || session.user?.email}</span>
+          <button onClick={() => setSettingsOpen(true)} style={s.btnOutline}>Settings</button>
+          <button onClick={() => signOut({ callbackUrl: 'https://yourvantage.ai' })} style={s.btnGhost}>Sign out</button>
         </div>
-      </header>
+      </nav>
 
-      {loading ? (
-        <div>Loading dashboard data...</div>
-      ) : (
+      {loading ? <Loader /> : (
         <>
-          <section style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0,1fr))', gap: 10 }}>
-            {stats && Object.entries({
-              'P&L': `$${stats.totalTrades > 0 ? (stats.winRate * stats.totalTrades / 100 * 10).toFixed(2) : '0.00'}`,
-              'Win Rate': `${stats.winRate}%`,
-              'ROI': `${(stats.winRate * 0.1).toFixed(2)}%`,
-              'Wagered': `$${stats.totalTrades * 10}`,
-              'Rank': '#2'
-            }).map(([k, v]) => (
-              <div key={k} style={card}>
-                <div style={{ fontSize: 12, color: '#666' }}>{k.toUpperCase()}</div>
-                <div style={{ fontSize: 22, fontWeight: 700 }}>{v}</div>
+          {/* Portfolio Hero */}
+          <div style={s.hero}>
+            <div style={s.heroInner}>
+              <div style={s.heroLeft}>
+                <div style={s.heroLabel}>Portfolio</div>
+                <div style={s.heroValue}>${Math.abs(pnl).toFixed(2)}</div>
+                <div style={{ ...s.heroDelta, color: pnlPositive ? '#4ade80' : '#f87171' }}>
+                  {pnlPositive ? '▲' : '▼'} ${Math.abs(pnl).toFixed(2)} ({stats?.roi || '0.00'}%) all time
+                </div>
               </div>
-            ))}
-          </section>
-
-          <section id="trades" style={{ marginTop: 22 }}>
-            <h2>Order History</h2>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 10 }}>
-              <thead>
-                <tr>
-                  {['Date', 'Market', 'Category', 'Layer', 'Side', 'EV%', 'Kelly', 'Outcome', 'P&L'].map(h => (
-                    <th key={h} style={th}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {trades.map((trade, i) => (
-                  <tr key={trade.id}>
-                    <td style={td}>{new Date(trade.created_at).toLocaleDateString()}</td>
-                    <td style={td}>{trade.ticker}</td>
-                    <td style={td}>{trade.category}</td>
-                    <td style={td}>L{trade.layer}</td>
-                    <td style={td}>{trade.side.toUpperCase()}</td>
-                    <td style={td}>{(parseFloat(trade.estimated_prob) * 100).toFixed(1)}%</td>
-                    <td style={td}>${(parseFloat(trade.signal_strength) * 100).toFixed(0)}</td>
-                    <td style={td}>{trade.status === 'pending' ? 'Pending' : trade.status === 'win' ? 'Win' : 'Loss'}</td>
-                    <td style={td}>{trade.status === 'win' ? '+$10' : trade.status === 'loss' ? '-$10' : '$0'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-
-          <section style={{ marginTop: 22 }}>
-            <h2>Strategy Breakdown</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 8 }}>
-              <div style={card}>By category: Sports +2.1%, Economics +5.8%, Crypto -0.7%</div>
-              <div style={card}>By layer: L1 +1.2%, L2 +2.9%, L3 +4.4%</div>
+              <div style={s.heroStats}>
+                <HeroStat label="Win Rate" value={stats ? `${stats.winRate}%` : '—'} />
+                <HeroStat label="Wagered" value={stats ? `$${stats.wagered}` : '—'} />
+                <HeroStat label="Total Trades" value={hasTrades ? trades.length : '—'} />
+                <HeroStat label="Rank" value={stats?.rank || '—'} accent />
+              </div>
             </div>
-          </section>
+          </div>
+
+          {/* Tabs + Table */}
+          <div style={s.content}>
+            <div style={s.tabBar}>
+              {TABS.map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  style={{ ...s.tab, ...(activeTab === tab ? s.tabActive : {}) }}
+                >
+                  {tab}
+                  {tabTrades[tab]?.length > 0 && (
+                    <span style={{ ...s.tabCount, background: activeTab === tab ? '#111' : '#e5e7eb', color: activeTab === tab ? '#fff' : '#6b7280' }}>
+                      {tabTrades[tab].length}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {visibleTrades.length > 0 ? (
+              <div style={s.tableWrap}>
+                <table style={s.table}>
+                  <thead>
+                    <tr>
+                      {['Date', 'Market', 'Category', 'Side', 'EV%', 'Kelly', 'Outcome', 'P&L'].map(h => (
+                        <th key={h} style={s.th}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visibleTrades.map((trade) => {
+                      const tradePnl = parseFloat(trade.pnl);
+                      return (
+                        <tr key={trade.id}>
+                          <td style={s.td}>{new Date(trade.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
+                          <td style={{ ...s.td, maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#111', fontWeight: 500 }}>{trade.market}</td>
+                          <td style={s.td}>{trade.category}</td>
+                          <td style={s.td}>
+                            <Pill text={trade.side.toUpperCase()} color={trade.side === 'yes' ? 'green' : 'red'} />
+                          </td>
+                          <td style={s.td}>{(parseFloat(trade.ev_pct) * 100).toFixed(2)}%</td>
+                          <td style={s.td}>${parseFloat(trade.kelly_amount).toFixed(2)}</td>
+                          <td style={s.td}>
+                            <Pill text={trade.outcome.charAt(0).toUpperCase() + trade.outcome.slice(1)} color={trade.outcome === 'win' ? 'green' : trade.outcome === 'loss' ? 'red' : 'gray'} />
+                          </td>
+                          <td style={{ ...s.td, fontWeight: 700, color: tradePnl > 0 ? '#16a34a' : tradePnl < 0 ? '#dc2626' : '#6b7280' }}>
+                            {tradePnl > 0 ? '+' : ''}${tradePnl.toFixed(2)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <EmptyState tab={activeTab} onSettings={() => setSettingsOpen(true)} />
+            )}
+          </div>
         </>
       )}
 
       {settingsOpen && <SettingsPane onClose={() => setSettingsOpen(false)} onSave={fetchData} />}
-    </main>
+    </div>
   );
 }
 
+function HeroStat({ label, value, accent }) {
+  return (
+    <div style={s.heroStat}>
+      <div style={s.heroStatLabel}>{label}</div>
+      <div style={{ ...s.heroStatValue, color: accent ? '#4ade80' : '#fff' }}>{value}</div>
+    </div>
+  );
+}
+
+function Pill({ text, color }) {
+  const colors = {
+    green: { background: '#dcfce7', color: '#15803d' },
+    red: { background: '#fee2e2', color: '#b91c1c' },
+    gray: { background: '#f3f4f6', color: '#6b7280' },
+  };
+  return <span style={{ ...s.pill, ...colors[color] }}>{text}</span>;
+}
+
+function EmptyState({ tab, onSettings }) {
+  const messages = {
+    Positions: { icon: '📭', title: 'No open positions', text: 'Active trades will appear here once Vantage executes.' },
+    Pending: { icon: '⏳', title: 'No pending orders', text: 'Orders waiting to fill will appear here.' },
+    History: { icon: '📋', title: 'No trade history yet', text: 'Connect your Kalshi API keys to start scanning and trading.' },
+  };
+  const { icon, title, text } = messages[tab] || messages.History;
+  return (
+    <div style={s.empty}>
+      <div style={s.emptyIcon}>{icon}</div>
+      <div style={s.emptyTitle}>{title}</div>
+      <div style={s.emptyText}>{text}</div>
+      {tab === 'History' && (
+        <button onClick={onSettings} style={s.btnPrimary}>Open Settings →</button>
+      )}
+    </div>
+  );
+}
+
+function Loader() {
+  return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: '#9ca3af', fontFamily: 'system-ui', fontSize: 14 }}>Loading…</div>;
+}
+
 function SettingsPane({ onClose, onSave }) {
-  const [apiKey, setApiKey] = useState('');
+  const [apiKeyId, setApiKeyId] = useState('');
+  const [apiSecret, setApiSecret] = useState('');
   const [bankroll, setBankroll] = useState(1000);
   const [riskLevel, setRiskLevel] = useState('moderate');
-  const [notifications, setNotifications] = useState({
-    email: true,
-    sms: false,
-    slack: false,
-    discord: false
-  });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
   const handleSave = async () => {
     setSaving(true);
     setMessage('');
-    
     try {
-      // Save API key if provided
-      if (apiKey) {
+      if (apiKeyId && apiSecret) {
         const keyRes = await fetch('/api/user/keys', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ apiKey })
+          body: JSON.stringify({ kalshi_key_id: apiKeyId, kalshi_secret: apiSecret }),
         });
-        
-        if (!keyRes.ok) {
-          const error = await keyRes.json();
-          throw new Error(error.error || 'Failed to save API key');
-        }
+        if (!keyRes.ok) throw new Error((await keyRes.json()).error || 'Failed to save API key');
       }
-      
-      // Save config
       const configRes = await fetch('/api/user/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bankroll, riskLevel, notifications })
+        body: JSON.stringify({ bankroll: parseFloat(bankroll) || undefined, risk_level: riskLevel || undefined }),
       });
-      
-      if (!configRes.ok) {
-        const error = await configRes.json();
-        throw new Error(error.error || 'Failed to save config');
-      }
-      
-      setMessage('Settings saved successfully!');
-      setTimeout(() => {
-        onClose();
-        onSave();
-      }, 1000);
-    } catch (error) {
-      console.error('Save error:', error);
-      setMessage(error.message || 'Failed to save settings');
+      if (!configRes.ok) throw new Error((await configRes.json()).error || 'Failed to save config');
+      setMessage('✅ Settings saved!');
+      setTimeout(() => { onClose(); onSave(); }, 1000);
+    } catch (e) {
+      setMessage(e.message || 'Failed to save settings');
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div style={overlay}>
-      <aside style={pane}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <h3>Settings</h3>
-          <button onClick={onClose} style={linkBtn}>Close</button>
+    <div style={s.overlay}>
+      <aside style={s.settingsPane}>
+        <div style={s.settingsHeader}>
+          <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: '#111' }}>Settings</h3>
+          <button onClick={onClose} style={{ background: '#f3f4f6', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 13, color: '#374151', cursor: 'pointer', fontWeight: 500 }}>✕ Close</button>
         </div>
-        
-        <label style={lbl}>Kalshi API Key<input style={inp} type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="KALSHI_..." /></label>
-        <label style={lbl}>Bankroll<input style={inp} type="number" value={bankroll} onChange={(e) => setBankroll(e.target.value)} /></label>
-        <label style={lbl}>Risk Level
-          <select style={inp} value={riskLevel} onChange={(e) => setRiskLevel(e.target.value)}>
-            <option value="conservative">Conservative</option>
-            <option value="moderate">Moderate</option>
-            <option value="aggressive">Aggressive</option>
-          </select>
-        </label>
-        
-        <h4 style={{ marginTop: 16 }}>Notifications</h4>
-        {Object.entries(notifications).map(([key, value]) => (
-          <label key={key} style={{ display: 'flex', alignItems: 'center', margin: '8px 0' }}>
-            <input 
-              type="checkbox" 
-              checked={value} 
-              onChange={(e) => setNotifications({...notifications, [key]: e.target.checked})} 
-              style={{ marginRight: 8 }}
-            />
-            {key.charAt(0).toUpperCase() + key.slice(1)}
+
+        <div style={s.settingsSection}>
+          <div style={s.settingsSectionTitle}>Kalshi API Keys</div>
+          <label style={s.lbl}>Kalshi API Key ID<input style={s.inp} type="text" value={apiKeyId} onChange={e => setApiKeyId(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" /></label>
+          <label style={s.lbl}>Kalshi Private Key<input style={s.inp} type="password" value={apiSecret} onChange={e => setApiSecret(e.target.value)} placeholder="••••••••" /></label>
+        </div>
+
+        <div style={s.settingsSection}>
+          <div style={s.settingsSectionTitle}>Risk Configuration</div>
+          <label style={s.lbl}>Bankroll ($)<input style={s.inp} type="number" value={bankroll} onChange={e => setBankroll(e.target.value)} /></label>
+          <label style={s.lbl}>Risk Level
+            <select style={s.inp} value={riskLevel} onChange={e => setRiskLevel(e.target.value)}>
+              <option value="conservative">Conservative</option>
+              <option value="moderate">Moderate</option>
+              <option value="aggressive">Aggressive</option>
+            </select>
           </label>
-        ))}
-        
+        </div>
+
         {message && (
-          <div style={{ 
-            padding: 10, 
-            borderRadius: 6, 
-            backgroundColor: message.includes('success') ? '#d4edda' : '#f8d7da',
-            color: message.includes('success') ? '#155724' : '#721c24',
-            marginTop: 10
-          }}>
+          <div style={{ padding: '10px 14px', borderRadius: 8, background: message.startsWith('✅') ? '#f0fdf4' : '#fef2f2', color: message.startsWith('✅') ? '#15803d' : '#b91c1c', fontSize: 14, marginBottom: 12 }}>
             {message}
           </div>
         )}
-        
-        <button 
-          onClick={handleSave} 
-          disabled={saving}
-          style={{ 
-            ...linkBtn, 
-            background: '#111', 
-            color: '#fff', 
-            borderRadius: 6, 
-            padding: '10px 14px',
-            marginTop: 10,
-            cursor: saving ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {saving ? 'Saving...' : 'Save'}
+
+        <button onClick={handleSave} disabled={saving} style={{ ...s.btnPrimary, width: '100%', marginTop: 'auto', padding: 12, borderRadius: 10, fontSize: 15, opacity: saving ? 0.7 : 1 }}>
+          {saving ? 'Saving…' : 'Save Settings'}
         </button>
       </aside>
     </div>
   );
 }
 
-const card = { border: '1px solid #e5e5e5', borderRadius: 10, padding: 14, background: '#fff' };
-const th = { textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8, fontSize: 12, color: '#666' };
-const td = { borderBottom: '1px solid #f0f0f0', padding: 8, fontSize: 13 };
-const linkBtn = { border: '1px solid #ddd', background: '#fff', padding: '6px 10px', borderRadius: 6, cursor: 'pointer' };
-const overlay = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', justifyContent: 'flex-end' };
-const pane = { width: 420, background: '#fff', height: '100%', padding: 16, display: 'grid', gap: 10, overflowY: 'auto' };
-const lbl = { display: 'grid', gap: 6, fontSize: 13 };
-const inp = { border: '1px solid #ddd', borderRadius: 6, padding: 10 };
+const s = {
+  page: { minHeight: '100vh', background: '#f9fafb', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' },
+
+  // Nav
+  nav: { background: '#fff', borderBottom: '1px solid #e5e7eb', padding: '0 32px', height: 54, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10 },
+  navLeft: { display: 'flex', alignItems: 'center', gap: 24 },
+  navRight: { display: 'flex', alignItems: 'center', gap: 12 },
+  logo: { fontWeight: 800, fontSize: 16, letterSpacing: '-0.3px', color: '#111' },
+  userName: { fontSize: 13, color: '#9ca3af' },
+
+  // Hero
+  hero: { background: '#0a0a0a', color: '#fff', padding: '40px 32px 32px' },
+  heroInner: { maxWidth: 1060, margin: '0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 },
+  heroLeft: {},
+  heroLabel: { fontSize: 13, color: '#9ca3af', marginBottom: 6, fontWeight: 500 },
+  heroValue: { fontSize: 42, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, marginBottom: 8 },
+  heroDelta: { fontSize: 13, fontWeight: 600 },
+  heroStats: { display: 'flex', gap: 40, flexWrap: 'wrap' },
+  heroStat: { textAlign: 'right' },
+  heroStatLabel: { fontSize: 11, color: '#6b7280', marginBottom: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' },
+  heroStatValue: { fontSize: 20, fontWeight: 700, letterSpacing: '-0.3px' },
+
+  // Content
+  content: { maxWidth: 1060, margin: '0 auto', padding: '0 32px 48px' },
+
+  // Tabs
+  tabBar: { display: 'flex', gap: 0, borderBottom: '1px solid #e5e7eb', marginBottom: 0, marginTop: 32 },
+  tab: { background: 'none', border: 'none', borderBottom: '2px solid transparent', padding: '10px 18px', fontSize: 14, fontWeight: 600, color: '#9ca3af', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, marginBottom: -1 },
+  tabActive: { color: '#111', borderBottomColor: '#111' },
+  tabCount: { fontSize: 11, fontWeight: 700, padding: '2px 7px', borderRadius: 20 },
+
+  // Table
+  tableWrap: { background: '#fff', border: '1px solid #e5e7eb', borderTop: 'none', borderRadius: '0 0 12px 12px', overflow: 'hidden' },
+  table: { width: '100%', borderCollapse: 'collapse' },
+  th: { textAlign: 'left', padding: '12px 16px', fontSize: 11, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.06em', textTransform: 'uppercase', borderBottom: '1px solid #e5e7eb', background: '#fafafa' },
+  td: { padding: '13px 16px', fontSize: 13, color: '#6b7280', borderBottom: '1px solid #f3f4f6' },
+  pill: { display: 'inline-block', padding: '2px 9px', borderRadius: 20, fontSize: 11, fontWeight: 700 },
+
+  // Empty
+  empty: { background: '#fff', border: '1px solid #e5e7eb', borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '64px 32px', textAlign: 'center' },
+  emptyIcon: { fontSize: 36, marginBottom: 14 },
+  emptyTitle: { fontSize: 17, fontWeight: 700, color: '#111', marginBottom: 8 },
+  emptyText: { fontSize: 14, color: '#6b7280', maxWidth: 360, margin: '0 auto 24px', lineHeight: 1.6 },
+
+  // Buttons
+  btnPrimary: { background: '#111', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' },
+  btnOutline: { background: '#fff', color: '#374151', border: '1px solid #d1d5db', padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer' },
+  btnGhost: { background: 'transparent', color: '#6b7280', border: 'none', padding: '6px 10px', borderRadius: 6, fontSize: 13, cursor: 'pointer' },
+
+  // Settings
+  overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', justifyContent: 'flex-end', zIndex: 100 },
+  settingsPane: { width: 380, background: '#fff', height: '100%', padding: '20px 24px', overflowY: 'auto', display: 'flex', flexDirection: 'column' },
+  settingsHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, paddingBottom: 16, borderBottom: '1px solid #f3f4f6' },
+  settingsSection: { marginBottom: 24 },
+  settingsSectionTitle: { fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 },
+  lbl: { display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, fontWeight: 500, color: '#374151', marginBottom: 12 },
+  inp: { border: '1px solid #e5e7eb', borderRadius: 8, padding: '9px 12px', fontSize: 14, outline: 'none', background: '#f9fafb', color: '#111' },
+};
