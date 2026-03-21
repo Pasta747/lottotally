@@ -45,9 +45,31 @@ export async function initDB() {
   )`;
 }
 export async function migrateV2() {
-  // Add columns that may be missing from initial schema
   await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'vantage'`;
   await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS kalshi_order_id TEXT`;
   await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS execution_price DECIMAL(10,4)`;
   await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS signal_strength DECIMAL(6,4)`;
+
+  // Remove duplicate trades (same order_id + user_id), keep the one with latest outcome
+  await sql`
+    DELETE FROM trades
+    WHERE id IN (
+      SELECT id FROM (
+        SELECT id,
+               ROW_NUMBER() OVER (
+                 PARTITION BY user_id, kalshi_order_id
+                 ORDER BY CASE WHEN outcome != 'pending' THEN 0 ELSE 1 END, created_at DESC
+               ) AS rn
+        FROM trades
+        WHERE kalshi_order_id IS NOT NULL
+      ) t WHERE rn > 1
+    )
+  `;
+
+  // Add unique constraint to prevent future dupes
+  await sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS trades_user_order_uniq
+    ON trades(user_id, kalshi_order_id)
+    WHERE kalshi_order_id IS NOT NULL
+  `;
 }

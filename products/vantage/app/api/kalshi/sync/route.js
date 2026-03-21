@@ -99,7 +99,7 @@ export async function POST() {
       await sql`
         INSERT INTO trades (id, user_id, date, market, category, layer, side, ev_pct, kelly_amount, outcome, pnl, kalshi_order_id, execution_price, source, signal_strength)
         VALUES (${randomUUID()}, ${userId}, ${today}, ${ticker}, ${category}, ${'kalshi'}, ${side}, ${0}, ${cost}, ${outcome}, ${0}, ${o.order_id}, ${price}, ${'kalshi_sync'}, ${0})
-        ON CONFLICT DO NOTHING
+        ON CONFLICT (user_id, kalshi_order_id) DO NOTHING
       `;
       synced++;
     }
