@@ -47,15 +47,23 @@ export default function Dashboard() {
   if (status === 'loading') return <Loader />;
   if (!session) return null;
 
-  const pnl = stats ? parseFloat(stats.pnl) : 0;
-  const pnlPositive = pnl >= 0;
   const hasTrades = trades.length > 0;
 
-  // Live Kalshi data
-  const kalshiBalance = kalshi?.balance != null ? (kalshi.balance / 100).toFixed(2) : null;
-  const kalshiPortfolio = kalshi?.portfolio_value != null ? (kalshi.portfolio_value / 100).toFixed(2) : null;
+  // Live Kalshi data — single source of truth for the hero
+  const kalshiBalanceCents = kalshi?.balance ?? null;
+  const kalshiPortfolioCents = kalshi?.portfolio_value ?? 0;
   const livePositions = kalshi?.positions || [];
   const noKeys = kalshi?.noKeys;
+
+  // Hero numbers: use Kalshi balance as the primary value
+  const totalValue = kalshiBalanceCents != null
+    ? ((kalshiBalanceCents + kalshiPortfolioCents) / 100)
+    : null;
+  const kalshiBalance = kalshiBalanceCents != null ? (kalshiBalanceCents / 100).toFixed(2) : null;
+
+  // P&L from trade history (DB) for win rate etc
+  const pnl = stats ? parseFloat(stats.pnl) : 0;
+  const pnlPositive = pnl >= 0;
 
   // Filter trades by tab — Positions tab uses live Kalshi data
   const tabTrades = {
@@ -94,16 +102,20 @@ export default function Dashboard() {
           <div style={s.hero}>
             <div style={s.heroInner}>
               <div style={s.heroLeft}>
-                <div style={s.heroLabel}>Portfolio</div>
-                <div style={s.heroValue}>${Math.abs(pnl).toFixed(2)}</div>
-                <div style={{ ...s.heroDelta, color: pnlPositive ? '#4ade80' : '#f87171' }}>
-                  {pnlPositive ? '▲' : '▼'} ${Math.abs(pnl).toFixed(2)} ({stats?.roi || '0.00'}%) all time
+                <div style={s.heroLabel}>Kalshi Balance</div>
+                <div style={s.heroValue}>
+                  {totalValue != null ? `$${totalValue.toFixed(2)}` : (noKeys ? '—' : '…')}
+                </div>
+                <div style={{ ...s.heroDelta, color: pnl >= 0 ? '#4ade80' : '#f87171' }}>
+                  {hasTrades
+                    ? `${pnl >= 0 ? '▲' : '▼'} $${Math.abs(pnl).toFixed(2)} (${stats?.roi || '0.00'}%) all time`
+                    : 'No trade history yet'}
                 </div>
               </div>
               <div style={s.heroStats}>
-                <HeroStat label="Kalshi Balance" value={kalshiBalance ? `$${kalshiBalance}` : '—'} />
+                <HeroStat label="Cash Available" value={kalshiBalance ? `$${kalshiBalance}` : '—'} />
                 <HeroStat label="Open Positions" value={livePositions.length > 0 ? livePositions.length : (noKeys ? '—' : '0')} />
-                <HeroStat label="Win Rate" value={stats ? `${stats.winRate}%` : '—'} />
+                <HeroStat label="Win Rate" value={hasTrades ? `${stats.winRate}%` : '—'} />
                 <HeroStat label="Total Trades" value={hasTrades ? trades.length : '—'} />
               </div>
             </div>
@@ -116,7 +128,7 @@ export default function Dashboard() {
                 <span style={s.chartTitle}>Portfolio Performance</span>
                 <span style={s.chartSub}>Balance over time</span>
               </div>
-              <PerformanceChart data={chartData} bankroll={chartData?.bankroll} />
+              <PerformanceChart data={chartData} bankroll={totalValue || chartData?.bankroll} />
             </div>
           </div>
 
