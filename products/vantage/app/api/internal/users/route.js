@@ -25,10 +25,10 @@ export async function GET(request) {
       SELECT
         u.id, u.email, u.bankroll, u.risk_level, u.auto_execute, u.kalshi_mode,
         u.max_wager_dollars, u.max_orders_per_day, u.max_daily_spend,
-        k.kalshi_key_id, k.kalshi_secret_encrypted, k.kalshi_mode AS key_mode
+        k.kalshi_key_id, k.kalshi_secret_encrypted, k.kalshi_mode AS key_mode, k.kalshi_live_key_id, k.kalshi_live_secret_encrypted
       FROM users u
       INNER JOIN user_api_keys k ON k.user_id = u.id
-      WHERE k.kalshi_secret_encrypted IS NOT NULL
+      WHERE (k.kalshi_secret_encrypted IS NOT NULL OR k.kalshi_live_secret_encrypted IS NOT NULL)
       ORDER BY u.created_at ASC
     `;
 

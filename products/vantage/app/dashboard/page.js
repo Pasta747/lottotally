@@ -393,9 +393,13 @@ function Loader() {
 }
 
 function SettingsPane({ onClose, onSave }) {
-  const [apiKeyId, setApiKeyId] = useState('');
-  const [apiSecret, setApiSecret] = useState('');
   const [kalshiMode, setKalshiMode] = useState('demo');
+  // Demo keys
+  const [demoKeyId, setDemoKeyId] = useState('');
+  const [demoSecret, setDemoSecret] = useState('');
+  // Live keys
+  const [liveKeyId, setLiveKeyId] = useState('');
+  const [liveSecret, setLiveSecret] = useState('');
   const [bankroll, setBankroll] = useState('');
   const [riskLevel, setRiskLevel] = useState('moderate');
   const [maxWager, setMaxWager] = useState('1.00');
@@ -404,7 +408,6 @@ function SettingsPane({ onClose, onSave }) {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
-  // Load existing config on mount
   useEffect(() => {
     fetch('/api/user/config').then(r => r.json()).then(d => {
       if (d.config) {
@@ -422,13 +425,21 @@ function SettingsPane({ onClose, onSave }) {
     setSaving(true);
     setMessage('');
     try {
-      if (apiKeyId && apiSecret) {
-        const keyRes = await fetch('/api/user/keys', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ kalshi_key_id: apiKeyId, kalshi_secret: apiSecret }),
+      // Save demo keys if provided
+      if (demoKeyId && demoSecret) {
+        const r = await fetch('/api/user/keys', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kalshi_key_id: demoKeyId, kalshi_secret: demoSecret, mode: 'demo' }),
         });
-        if (!keyRes.ok) throw new Error((await keyRes.json()).error || 'Failed to save API key');
+        if (!r.ok) throw new Error((await r.json()).error || 'Failed to save demo keys');
+      }
+      // Save live keys if provided
+      if (liveKeyId && liveSecret) {
+        const r = await fetch('/api/user/keys', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kalshi_key_id: liveKeyId, kalshi_secret: liveSecret, mode: 'live' }),
+        });
+        if (!r.ok) throw new Error((await r.json()).error || 'Failed to save live keys');
       }
       const configRes = await fetch('/api/user/config', {
         method: 'POST',
@@ -462,26 +473,41 @@ function SettingsPane({ onClose, onSave }) {
 
         <div style={s.settingsSection}>
           <div style={s.settingsSectionTitle}>Kalshi API Connection</div>
-          <label style={s.lbl}>Mode
+          <label style={s.lbl}>Active Mode
             <select style={s.inp} value={kalshiMode} onChange={e => setKalshiMode(e.target.value)}>
-              <option value="demo">Demo (Paper trades, fake funds)</option>
-              <option value="live">Live (Real money)</option>
+              <option value="demo">Demo — paper trades, fake funds</option>
+              <option value="live">Live — real money</option>
             </select>
+            <span style={s.hint}>Vantage will use the key set matching this mode for scanning and execution.</span>
           </label>
-          <label style={s.lbl}>
-            API Key ID
-            <input style={s.inp} type="text" value={apiKeyId} onChange={e => setApiKeyId(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
-            <span style={s.hint}>The UUID shown under your API key name (e.g. a916...412a)</span>
-          </label>
-          <label style={s.lbl}>
-            Private Key (PEM)
-            <textarea style={{ ...s.inp, height: 100, resize: 'vertical', fontSize: 11, fontFamily: 'monospace' }}
-              value={apiSecret} onChange={e => setApiSecret(e.target.value)}
-              placeholder="-----BEGIN RSA PRIVATE KEY-----&#10;MIIEpAIBAAK...&#10;-----END RSA PRIVATE KEY-----" />
-            <span style={s.hint}>The full RSA private key — only shown once when you create the API key on Kalshi</span>
-          </label>
-          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: -4, marginBottom: 4, lineHeight: 1.5 }}>
-            Kalshi → Settings → API Access → Create Key → copy <strong>Key ID</strong> and <strong>Private Key</strong> separately
+
+          {/* Demo keys */}
+          <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, padding: '12px 14px', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Demo Keys</div>
+            <label style={s.lbl}>Key ID
+              <input style={s.inp} type="text" value={demoKeyId} onChange={e => setDemoKeyId(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+            </label>
+            <label style={s.lbl}>Private Key (PEM)
+              <textarea style={{ ...s.inp, height: 80, resize: 'vertical', fontSize: 11, fontFamily: 'monospace' }}
+                value={demoSecret} onChange={e => setDemoSecret(e.target.value)}
+                placeholder="-----BEGIN RSA PRIVATE KEY-----&#10;...&#10;-----END RSA PRIVATE KEY-----" />
+            </label>
+          </div>
+
+          {/* Live keys */}
+          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '12px 14px', marginBottom: 4 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Live Keys — Real Money ⚠️</div>
+            <label style={s.lbl}>Key ID
+              <input style={s.inp} type="text" value={liveKeyId} onChange={e => setLiveKeyId(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+            </label>
+            <label style={s.lbl}>Private Key (PEM)
+              <textarea style={{ ...s.inp, height: 80, resize: 'vertical', fontSize: 11, fontFamily: 'monospace' }}
+                value={liveSecret} onChange={e => setLiveSecret(e.target.value)}
+                placeholder="-----BEGIN RSA PRIVATE KEY-----&#10;...&#10;-----END RSA PRIVATE KEY-----" />
+            </label>
+          </div>
+          <div style={{ fontSize: 11, color: '#9ca3af', lineHeight: 1.5, marginBottom: 4 }}>
+            Kalshi → Settings → API Access → Create Key → copy Key ID and Private Key separately
           </div>
         </div>
 

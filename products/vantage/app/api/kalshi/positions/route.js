@@ -56,17 +56,28 @@ export async function GET() {
 
     // Load stored encrypted keys
     const keyRow = await sql`
-      SELECT kalshi_key_id, kalshi_secret_encrypted, kalshi_mode
+      SELECT kalshi_key_id, kalshi_secret_encrypted, kalshi_mode,
+             kalshi_live_key_id, kalshi_live_secret_encrypted
       FROM user_api_keys WHERE user_id = ${userId}
     `;
-    if (!keyRow.rows.length || !keyRow.rows[0].kalshi_secret_encrypted) {
+    if (!keyRow.rows.length) {
       return NextResponse.json({ error: 'No Kalshi API keys configured', noKeys: true }, { status: 200 });
     }
 
-    let { kalshi_key_id: keyId, kalshi_secret_encrypted: encSecret, kalshi_mode: mode } = keyRow.rows[0];
-    // Normalize key ID — strip anything after ':' (Kalshi copy-paste artifact)
+    const row = keyRow.rows[0];
+    const mode = row.kalshi_mode || 'demo';
+
+    // Pick live or demo keys based on mode
+    let rawKeyId = mode === 'live' ? (row.kalshi_live_key_id || row.kalshi_key_id) : row.kalshi_key_id;
+    let encSecret = mode === 'live' ? (row.kalshi_live_secret_encrypted || row.kalshi_secret_encrypted) : row.kalshi_secret_encrypted;
+
+    if (!rawKeyId || !encSecret) {
+      return NextResponse.json({ error: 'No Kalshi API keys configured', noKeys: true }, { status: 200 });
+    }
+
+    // Normalize key ID
+    let keyId = rawKeyId;
     if (keyId && keyId.includes(':')) keyId = keyId.split(':')[0].trim();
-    // Also handle base64-encoded combined key (copy-paste into wrong field)
     try {
       const decoded = Buffer.from(keyId, 'base64').toString('utf-8');
       if (decoded.match(/^[0-9a-f-]{36}/i)) keyId = decoded.split(':')[0].trim();
