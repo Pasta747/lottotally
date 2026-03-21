@@ -12,8 +12,9 @@ export default function Dashboard() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [stats, setStats] = useState(null);
   const [trades, setTrades] = useState([]);
+  const [kalshi, setKalshi] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('History');
+  const [activeTab, setActiveTab] = useState('Positions');
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/signup');
@@ -25,12 +26,14 @@ export default function Dashboard() {
 
   const fetchData = async () => {
     try {
-      const [statsRes, tradesRes] = await Promise.all([
+      const [statsRes, tradesRes, kalshiRes] = await Promise.all([
         fetch('/api/user/stats'),
         fetch('/api/user/trades'),
+        fetch('/api/kalshi/positions'),
       ]);
       if (statsRes.ok) setStats((await statsRes.json()).stats);
       if (tradesRes.ok) setTrades((await tradesRes.json()).trades);
+      if (kalshiRes.ok) setKalshi(await kalshiRes.json());
     } catch (e) {
       console.error(e);
     } finally {
@@ -45,9 +48,15 @@ export default function Dashboard() {
   const pnlPositive = pnl >= 0;
   const hasTrades = trades.length > 0;
 
-  // Filter trades by tab
+  // Live Kalshi data
+  const kalshiBalance = kalshi?.balance != null ? (kalshi.balance / 100).toFixed(2) : null;
+  const kalshiPortfolio = kalshi?.portfolio_value != null ? (kalshi.portfolio_value / 100).toFixed(2) : null;
+  const livePositions = kalshi?.positions || [];
+  const noKeys = kalshi?.noKeys;
+
+  // Filter trades by tab — Positions tab uses live Kalshi data
   const tabTrades = {
-    Positions: trades.filter(t => t.outcome === 'open'),
+    Positions: livePositions,
     Pending: trades.filter(t => t.outcome === 'pending'),
     History: trades.filter(t => !['open', 'pending'].includes(t.outcome)),
   };
@@ -64,6 +73,12 @@ export default function Dashboard() {
           </span>
         </div>
         <div style={s.navRight}>
+          {kalshi && !kalshi.noKeys && (
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#15803d', background: '#dcfce7', padding: '3px 10px', borderRadius: 20, display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
+              Kalshi Live
+            </span>
+          )}
           <span style={s.userName}>{session.user?.name || session.user?.email}</span>
           <button onClick={() => setSettingsOpen(true)} style={s.btnOutline}>Settings</button>
           <button onClick={() => signOut({ callbackUrl: 'https://yourvantage.ai' })} style={s.btnGhost}>Sign out</button>
@@ -83,10 +98,10 @@ export default function Dashboard() {
                 </div>
               </div>
               <div style={s.heroStats}>
+                <HeroStat label="Kalshi Balance" value={kalshiBalance ? `$${kalshiBalance}` : '—'} />
+                <HeroStat label="Open Positions" value={livePositions.length > 0 ? livePositions.length : (noKeys ? '—' : '0')} />
                 <HeroStat label="Win Rate" value={stats ? `${stats.winRate}%` : '—'} />
-                <HeroStat label="Wagered" value={stats ? `$${stats.wagered}` : '—'} />
                 <HeroStat label="Total Trades" value={hasTrades ? trades.length : '—'} />
-                <HeroStat label="Rank" value={stats?.rank || '—'} accent />
               </div>
             </div>
           </div>
@@ -110,7 +125,41 @@ export default function Dashboard() {
               ))}
             </div>
 
-            {visibleTrades.length > 0 ? (
+            {activeTab === 'Positions' ? (
+              livePositions.length > 0 ? (
+                <div style={s.tableWrap}>
+                  <table style={s.table}>
+                    <thead>
+                      <tr>
+                        {['Market', 'Side', 'Contracts', 'Unrealized P&L', 'Settles'].map(h => (
+                          <th key={h} style={s.th}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {livePositions.map((pos, i) => {
+                        const contracts = Math.abs(pos.yes_contracts || pos.no_contracts || 0);
+                        const unrealPnl = pos.unrealized_pnl != null ? (pos.unrealized_pnl / 100) : null;
+                        const settles = pos.close_time ? new Date(pos.close_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'America/Los_Angeles' }) : '—';
+                        return (
+                          <tr key={pos.ticker + i}>
+                            <td style={{ ...s.td, maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#111', fontWeight: 500 }}>{pos.market_title || pos.ticker}</td>
+                            <td style={s.td}><Pill text={pos.side.toUpperCase()} color={pos.side === 'yes' ? 'green' : 'red'} /></td>
+                            <td style={s.td}>{contracts}</td>
+                            <td style={{ ...s.td, fontWeight: 700, color: unrealPnl > 0 ? '#16a34a' : unrealPnl < 0 ? '#dc2626' : '#6b7280' }}>
+                              {unrealPnl != null ? `${unrealPnl >= 0 ? '+' : ''}$${unrealPnl.toFixed(2)}` : '—'}
+                            </td>
+                            <td style={s.td}>{settles}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <EmptyState tab="Positions" noKeys={noKeys} onSettings={() => setSettingsOpen(true)} />
+              )
+            ) : visibleTrades.length > 0 ? (
               <div style={s.tableWrap}>
                 <table style={s.table}>
                   <thead>
@@ -128,14 +177,10 @@ export default function Dashboard() {
                           <td style={s.td}>{new Date(trade.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
                           <td style={{ ...s.td, maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#111', fontWeight: 500 }}>{trade.market}</td>
                           <td style={s.td}>{trade.category}</td>
-                          <td style={s.td}>
-                            <Pill text={trade.side.toUpperCase()} color={trade.side === 'yes' ? 'green' : 'red'} />
-                          </td>
+                          <td style={s.td}><Pill text={trade.side.toUpperCase()} color={trade.side === 'yes' ? 'green' : 'red'} /></td>
                           <td style={s.td}>{(parseFloat(trade.ev_pct) * 100).toFixed(2)}%</td>
                           <td style={s.td}>${parseFloat(trade.kelly_amount).toFixed(2)}</td>
-                          <td style={s.td}>
-                            <Pill text={trade.outcome.charAt(0).toUpperCase() + trade.outcome.slice(1)} color={trade.outcome === 'win' ? 'green' : trade.outcome === 'loss' ? 'red' : 'gray'} />
-                          </td>
+                          <td style={s.td}><Pill text={trade.outcome.charAt(0).toUpperCase() + trade.outcome.slice(1)} color={trade.outcome === 'win' ? 'green' : trade.outcome === 'loss' ? 'red' : 'gray'} /></td>
                           <td style={{ ...s.td, fontWeight: 700, color: tradePnl > 0 ? '#16a34a' : tradePnl < 0 ? '#dc2626' : '#6b7280' }}>
                             {tradePnl > 0 ? '+' : ''}${tradePnl.toFixed(2)}
                           </td>
@@ -175,9 +220,11 @@ function Pill({ text, color }) {
   return <span style={{ ...s.pill, ...colors[color] }}>{text}</span>;
 }
 
-function EmptyState({ tab, onSettings }) {
+function EmptyState({ tab, noKeys, onSettings }) {
   const messages = {
-    Positions: { icon: '📭', title: 'No open positions', text: 'Active trades will appear here once Vantage executes.' },
+    Positions: noKeys
+      ? { icon: '🔑', title: 'Connect your Kalshi account', text: 'Add your Kalshi API keys in Settings to see live positions.' }
+      : { icon: '📭', title: 'No open positions', text: 'Live positions from your Kalshi account will appear here.' },
     Pending: { icon: '⏳', title: 'No pending orders', text: 'Orders waiting to fill will appear here.' },
     History: { icon: '📋', title: 'No trade history yet', text: 'Connect your Kalshi API keys to start scanning and trading.' },
   };
@@ -187,7 +234,7 @@ function EmptyState({ tab, onSettings }) {
       <div style={s.emptyIcon}>{icon}</div>
       <div style={s.emptyTitle}>{title}</div>
       <div style={s.emptyText}>{text}</div>
-      {tab === 'History' && (
+      {(tab === 'History' || noKeys) && (
         <button onClick={onSettings} style={s.btnPrimary}>Open Settings →</button>
       )}
     </div>
