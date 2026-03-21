@@ -55,7 +55,14 @@ export async function GET() {
       return NextResponse.json({ error: 'No Kalshi API keys configured', noKeys: true }, { status: 200 });
     }
 
-    const { kalshi_key_id: keyId, kalshi_secret_encrypted: encSecret, kalshi_mode: mode } = keyRow.rows[0];
+    let { kalshi_key_id: keyId, kalshi_secret_encrypted: encSecret, kalshi_mode: mode } = keyRow.rows[0];
+    // Normalize key ID — strip anything after ':' (Kalshi copy-paste artifact)
+    if (keyId && keyId.includes(':')) keyId = keyId.split(':')[0].trim();
+    // Also handle base64-encoded combined key (copy-paste into wrong field)
+    try {
+      const decoded = Buffer.from(keyId, 'base64').toString('utf-8');
+      if (decoded.match(/^[0-9a-f-]{36}/i)) keyId = decoded.split(':')[0].trim();
+    } catch (_) {}
 
     // Decrypt the private key
     let privateKeyPem;

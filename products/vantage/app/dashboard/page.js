@@ -434,15 +434,20 @@ function SettingsPane({ onClose, onSave }) {
               <option value="live">Live (Real money)</option>
             </select>
           </label>
-          <label style={s.lbl}>API Key ID<input style={s.inp} type="text" value={apiKeyId} onChange={e => setApiKeyId(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" /></label>
+          <label style={s.lbl}>
+            API Key ID
+            <input style={s.inp} type="text" value={apiKeyId} onChange={e => setApiKeyId(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+            <span style={s.hint}>The UUID shown under your API key name (e.g. a916...412a)</span>
+          </label>
           <label style={s.lbl}>
             Private Key (PEM)
-            <textarea style={{ ...s.inp, height: 80, resize: 'vertical', fontSize: 11, fontFamily: 'monospace' }}
+            <textarea style={{ ...s.inp, height: 100, resize: 'vertical', fontSize: 11, fontFamily: 'monospace' }}
               value={apiSecret} onChange={e => setApiSecret(e.target.value)}
-              placeholder="-----BEGIN RSA PRIVATE KEY-----&#10;...&#10;-----END RSA PRIVATE KEY-----" />
+              placeholder="-----BEGIN RSA PRIVATE KEY-----&#10;MIIEpAIBAAK...&#10;-----END RSA PRIVATE KEY-----" />
+            <span style={s.hint}>The full RSA private key — only shown once when you create the API key on Kalshi</span>
           </label>
-          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: -8, marginBottom: 4 }}>
-            Find your API key in your Kalshi account → Settings → API Access
+          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: -4, marginBottom: 4, lineHeight: 1.5 }}>
+            Kalshi → Settings → API Access → Create Key → copy <strong>Key ID</strong> and <strong>Private Key</strong> separately
           </div>
         </div>
 

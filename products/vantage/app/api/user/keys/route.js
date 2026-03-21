@@ -12,10 +12,23 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const { kalshi_key_id, kalshi_secret } = await request.json();
+    let { kalshi_key_id, kalshi_secret } = await request.json();
     
     if (!kalshi_key_id || !kalshi_secret) {
       return NextResponse.json({ error: 'Missing key ID or secret' }, { status: 400 });
+    }
+
+    // Kalshi's copy button sometimes pastes "keyId:secret" combined into the key ID field.
+    // Detect and split it automatically.
+    if (kalshi_key_id.includes(':') && !kalshi_secret.includes('-----BEGIN')) {
+      const colonIdx = kalshi_key_id.indexOf(':');
+      const possibleId = kalshi_key_id.slice(0, colonIdx);
+      const possibleSecret = kalshi_key_id.slice(colonIdx + 1);
+      // UUID format check: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      if (/^[0-9a-f-]{36}$/i.test(possibleId)) {
+        kalshi_key_id = possibleId;
+        kalshi_secret = possibleSecret + (kalshi_secret ? '\n' + kalshi_secret : '');
+      }
     }
 
     const userId = session.user.id || session.user.email;

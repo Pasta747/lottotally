@@ -1,7 +1,9 @@
 /**
- * POST /api/internal/trades
- * Called by the scan engine to record executed trades into the DB.
- * Protected by INTERNAL_API_SECRET.
+ * /api/internal/trades
+ * GET  -> list pending trades for settlement polling
+ * POST -> record executed trades from scan engine
+ *
+ * Protected by INTERNAL_API_SECRET via x-internal-secret header.
  */
 
 import { sql } from '@vercel/postgres';
@@ -12,13 +14,32 @@ function checkSecret(request) {
   return request.headers.get('x-internal-secret') === process.env.INTERNAL_API_SECRET;
 }
 
+export async function GET(request) {
+  if (!checkSecret(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const result = await sql`
+      SELECT id, user_id, market, category, layer, source, side, outcome, pnl, kelly_amount, execution_price, contracts, created_at
+      FROM trades
+      WHERE outcome = 'pending'
+      ORDER BY created_at ASC
+    `;
+
+    return NextResponse.json({ trades: result.rows });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
 export async function POST(request) {
   if (!checkSecret(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const { userId, ticker, title, category, side, ev_pct, kelly_amount, outcome, pnl, mode } = await request.json();
+    const { userId, ticker, title, category, layer, source, side, ev_pct, kelly_amount, execution_price, contracts, outcome, pnl } = await request.json();
 
     if (!userId || !ticker || !side) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -28,23 +49,26 @@ export async function POST(request) {
     const today = new Date().toISOString().slice(0, 10);
 
     await sql`
-      INSERT INTO trades (id, user_id, date, market, category, layer, side, ev_pct, kelly_amount, outcome, pnl)
+      INSERT INTO trades (id, user_id, date, market, category, layer, source, side, ev_pct, kelly_amount, execution_price, contracts, outcome, pnl)
       VALUES (
         ${id},
         ${userId},
         ${today},
-        ${title || ticker},
+        ${ticker},
         ${category || 'kalshi'},
-        ${'kalshi_native'},
+        ${layer || 'kalshi_native'},
+        ${source || null},
         ${side},
         ${ev_pct || 0},
         ${kelly_amount || 0},
+        ${execution_price ?? null},
+        ${contracts ?? null},
         ${outcome || 'pending'},
         ${pnl || 0}
       )
     `;
 
-    return NextResponse.json({ success: true, tradeId: id });
+    return NextResponse.json({ success: true, tradeId: id, market: ticker, title: title || null });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
