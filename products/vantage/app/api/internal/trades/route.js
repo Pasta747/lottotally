@@ -21,7 +21,9 @@ export async function GET(request) {
 
   try {
     const result = await sql`
-      SELECT id, user_id, market, category, layer, source, side, outcome, pnl, kelly_amount, execution_price, contracts, kalshi_order_id, created_at
+      SELECT id, user_id, market, category, layer, source, side, outcome, pnl, kelly_amount, execution_price, contracts, kalshi_order_id, signal_strength, created_at,
+             -- If market looks like a ticker (no spaces), use it directly; otherwise it's a title
+             CASE WHEN market NOT LIKE '% %' AND market = upper(market) THEN market ELSE NULL END as ticker
       FROM trades
       WHERE outcome = 'pending'
       ORDER BY created_at ASC
