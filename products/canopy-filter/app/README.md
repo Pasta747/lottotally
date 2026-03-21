@@ -1,79 +1,45 @@
 # Canopy Filter App (Next.js)
 
-## Local dev
+Canopy helps creators filter and review YouTube comments with category-level intelligence (toxic, spam, constructive, positive), then act from a cleaner dashboard.
+
+## Current Implementation Status
+
+Implemented now:
+- Waitlist API + confirmation emails
+- Stripe checkout session creation (`CREATOR`, `PRO`, `STUDIO`)
+- YouTube OAuth connect/callback
+- Channel comment ingestion and classification persistence
+- Dashboard with category filters and per-video review
+- Manual digest trigger endpoint (`/api/digest/run`)
+- Ops preflight endpoint (`/api/ops/preflight`)
+
+## Docs
+See `/docs`:
+- `docs/getting-started.md`
+- `docs/api-reference.md`
+- `docs/oauth-youtube.md`
+- `docs/data-model.md`
+- `docs/ops-runbook.md`
+
+## Local Dev
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Required env vars
+## Core Environment Variables
 
-Already in prod:
 - `DATABASE_URL`
-- `AGENTMAIL_API_KEY`
-- `AGENTMAIL_HELLO_INBOX`
-- `POSTHOG_API_KEY`
-- `POSTHOG_HOST`
-
-Required for Stripe checkout:
+- `CRON_SECRET`
 - `STRIPE_SECRET_KEY`
 - `STRIPE_PRICE_CREATOR`
 - `STRIPE_PRICE_PRO`
 - `STRIPE_PRICE_STUDIO`
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (recommended)
-
-Required for YouTube OAuth:
-- `GOOGLE_CLIENT_ID` (or `GOOGLE_OAUTH_CLIENT_ID`)
-- `GOOGLE_CLIENT_SECRET` (or `GOOGLE_OAUTH_CLIENT_SECRET`)
-- `NEXT_PUBLIC_APP_URL` (recommended, e.g. `https://canopyfilter.com`)
-
-## YouTube OAuth flow implemented
-
-- Entry: `GET /api/youtube/connect`
-  - sets `canopy_creator_id` cookie (session identity)
-  - sets OAuth state cookie
-  - redirects to Google OAuth consent with `youtube.readonly`
-- Callback: `GET /api/youtube/callback`
-  - validates OAuth state
-  - exchanges code for tokens
-  - fetches channel + subscriber count + 5 recent upload videos
-  - upserts into `canopy_youtube_connections`
-- UI: `/`
-  - shows **Connect Your Channel** button when disconnected
-  - shows connected channel summary + recent videos when connected
-
-## DB table added
-
-`canopy_youtube_connections`
-- `creator_id` (PK)
-- `channel_id`, `channel_title`, `subscriber_count`
-- `access_token`, `refresh_token`, `token_scope`, `token_type`, `token_expires_at`
-- `recent_videos` (jsonb)
-- `connected_at`, `updated_at`
-
-## Ops preflight
-
-`GET /api/ops/preflight` with header `Authorization: Bearer <CRON_SECRET>`
-
-Checks:
-- DB connectivity/tables
-- Stripe checkout env completeness
-- basic counts (waitlist signups, YouTube connections)
-
-## Digest delivery (manual trigger for beta)
-
-`POST /api/digest/run` with auth header `Authorization: Bearer <CRON_SECRET>`
-
-Body:
-```json
-{
-  "creatorId": "<canopy_creator_id>",
-  "toEmail": "creator@example.com"
-}
-```
-
-Returns digest stats and sends an email digest via AgentMail.
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (or `GOOGLE_OAUTH_*` aliases)
+- `NEXT_PUBLIC_APP_URL`
+- `AGENTMAIL_API_KEY`
+- `AGENTMAIL_HELLO_INBOX`
 
 ## Deploy
 
