@@ -13,7 +13,7 @@ import crypto from 'crypto';
 
 const KALSHI_BASES = {
   demo: 'https://demo-api.kalshi.co/trade-api/v2',
-  live: 'https://trading-api.kalshi.com/trade-api/v2',
+  live: 'https://api.elections.kalshi.com/trade-api/v2',
 };
 const API_PREFIX = '/trade-api/v2';
 
