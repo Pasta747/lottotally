@@ -48,7 +48,7 @@ async function main() {
 
     for (const user of users) {
       const stake = suggestedStake(user, opp);
-      const msg = `🎯 Sharpr Signal\n${opp.game}\n${opp.market} — ${opp.betSide}\nEV: ${opp.evPct}\nSuggested: $${stake} (Kelly-sized to your $${user.bankroll})\nReply YES to execute or PASS.`;
+      const msg = `🎯 Vantage Signal (AUTO-PAPER)\n${opp.game}\n${opp.market} — ${opp.betSide}\nEV: ${opp.evPct}\nAuto-executed size: $${stake} (Kelly-sized to your $${user.bankroll})`;
 
       const signalPayload = {
         signalId,
@@ -59,26 +59,24 @@ async function main() {
         evPct: opp.evPct,
         odds: opp.bookmakerOdds,
         suggestedStake: stake,
-        autoExecute: !!user.autoExecute,
-        status: user.autoExecute ? 'AUTO_EXECUTED' : 'PENDING_APPROVAL',
+        autoExecute: true,
+        status: 'AUTO_EXECUTED',
         createdAt: new Date().toISOString(),
       };
 
       logSignal(user.userId, signalPayload);
       sendSignalMessage(user, msg);
 
-      if (user.autoExecute) {
-        logTrade(user.userId, {
-          signalId,
-          mode: user.kalshiMode || 'paper',
-          side: opp.betSide,
-          game: opp.game,
-          market: opp.market,
-          odds: opp.bookmakerOdds,
-          stake,
-          status: 'EXECUTED',
-        });
-      }
+      logTrade(user.userId, {
+        signalId,
+        mode: user.kalshiMode || 'paper',
+        side: opp.betSide,
+        game: opp.game,
+        market: opp.market,
+        odds: opp.bookmakerOdds,
+        stake,
+        status: 'EXECUTED',
+      });
     }
   }
 
