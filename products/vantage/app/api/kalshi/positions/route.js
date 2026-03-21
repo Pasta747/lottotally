@@ -96,17 +96,25 @@ export async function GET() {
     const pendingOrders = ordersRes.ok ? (ordersRes.data?.orders || []) : [];
 
     // Enrich positions with market titles if needed
-    const enriched = positions.map(p => ({
-      ticker: p.ticker,
-      market_title: p.market?.title || p.title || p.ticker,
-      yes_contracts: p.position || p.yes_contracts || 0,
-      no_contracts: p.no_position || p.no_contracts || 0,
-      cost: p.cost_asked || p.average_price || null,
-      pnl: p.realised_pnl ?? p.pnl ?? null,
-      unrealized_pnl: p.unrealised_pnl ?? null,
-      close_time: p.market?.close_time || p.close_time || null,
-      side: (p.position || 0) > 0 ? 'yes' : 'no',
-    }));
+    const enriched = positions.map(p => {
+      // Kalshi positions API uses position_fp (float) — positive = YES contracts, negative = NO contracts
+      const qty = parseFloat(p.position_fp ?? p.position ?? p.yes_position ?? 0);
+      const noQty = parseFloat(p.no_position_fp ?? p.no_position ?? 0);
+      const isYes = qty > 0 || (qty === 0 && noQty === 0);
+      const contracts = Math.abs(qty || noQty);
+      return {
+        ticker: p.ticker,
+        market_title: p.market?.title || p.title || p.ticker,
+        yes_contracts: isYes ? contracts : 0,
+        no_contracts: isYes ? 0 : contracts,
+        cost: parseFloat(p.market_exposure_dollars ?? p.cost_asked ?? p.average_price ?? 0),
+        pnl: parseFloat(p.realized_pnl ?? p.realised_pnl ?? p.pnl ?? 0),
+        unrealized_pnl: parseFloat(p.unrealized_pnl ?? p.unrealised_pnl ?? 0),
+        close_time: p.market?.close_time || p.expiration_time || p.close_time || null,
+        side: isYes ? 'yes' : 'no',
+        contracts,
+      };
+    });
 
     // Snapshot today's balance for chart (fire-and-forget)
     const tradeCount = enriched.length;

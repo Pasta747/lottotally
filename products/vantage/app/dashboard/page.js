@@ -145,23 +145,23 @@ export default function Dashboard() {
                   <table style={s.table}>
                     <thead>
                       <tr>
-                        {['Market', 'Side', 'Contracts', 'Unrealized P&L', 'Settles'].map(h => (
+                        {['Market', 'Side', 'Qty', 'Cost', 'Settles'].map(h => (
                           <th key={h} style={s.th}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {livePositions.map((pos, i) => {
-                        const contracts = Math.abs(pos.yes_contracts || pos.no_contracts || 0);
+                        const contracts = pos.contracts || Math.abs(pos.yes_contracts || pos.no_contracts || 0);
                         const unrealPnl = pos.unrealized_pnl != null ? (pos.unrealized_pnl / 100) : null;
                         const settles = pos.close_time ? new Date(pos.close_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'America/Los_Angeles' }) : '—';
                         return (
                           <tr key={pos.ticker + i}>
                             <td style={{ ...s.td, maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#111', fontWeight: 500 }}>{pos.market_title || pos.ticker}</td>
                             <td style={s.td}><Pill text={pos.side.toUpperCase()} color={pos.side === 'yes' ? 'green' : 'red'} /></td>
-                            <td style={s.td}>{contracts}</td>
-                            <td style={{ ...s.td, fontWeight: 700, color: unrealPnl > 0 ? '#16a34a' : unrealPnl < 0 ? '#dc2626' : '#6b7280' }}>
-                              {unrealPnl != null ? `${unrealPnl >= 0 ? '+' : ''}$${unrealPnl.toFixed(2)}` : '—'}
+                            <td style={s.td}>{contracts || 1}</td>
+                            <td style={{ ...s.td, color: '#6b7280' }}>
+                              {pos.cost ? `$${pos.cost.toFixed(2)}` : '—'}
                             </td>
                             <td style={s.td}>{settles}</td>
                           </tr>
