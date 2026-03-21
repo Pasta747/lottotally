@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Positions');
+  const [historyMode, setHistoryMode] = useState('live'); // 'live' | 'demo' | 'all'
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/signup');
@@ -40,7 +41,7 @@ export default function Dashboard() {
     try {
       const [statsRes, tradesRes, kalshiRes, chartRes] = await Promise.all([
         fetch('/api/user/stats'),
-        fetch('/api/user/trades'),
+        fetch(`/api/user/trades?mode=${historyMode}`),
         fetch('/api/kalshi/positions'),
         fetch('/api/user/chart'),
       ]);
@@ -145,21 +146,35 @@ export default function Dashboard() {
 
           {/* Tabs + Table */}
           <div style={s.content}>
-            <div style={s.tabBar}>
-              {TABS.map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  style={{ ...s.tab, ...(activeTab === tab ? s.tabActive : {}) }}
-                >
-                  {tab}
-                  {tabTrades[tab]?.length > 0 && (
-                    <span style={{ ...s.tabCount, background: activeTab === tab ? '#111' : '#e5e7eb', color: activeTab === tab ? '#fff' : '#6b7280' }}>
-                      {tabTrades[tab].length}
-                    </span>
-                  )}
-                </button>
-              ))}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginTop: 32 }}>
+              <div style={s.tabBar}>
+                {TABS.map(tab => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    style={{ ...s.tab, ...(activeTab === tab ? s.tabActive : {}) }}
+                  >
+                    {tab}
+                    {tabTrades[tab]?.length > 0 && (
+                      <span style={{ ...s.tabCount, background: activeTab === tab ? '#111' : '#e5e7eb', color: activeTab === tab ? '#fff' : '#6b7280' }}>
+                        {tabTrades[tab].length}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              {(activeTab === 'History' || activeTab === 'Awaiting Settlement') && (
+                <div style={{ display: 'flex', gap: 4, padding: '4px', background: '#f3f4f6', borderRadius: 8 }}>
+                  {['live','demo','all'].map(m => (
+                    <button key={m} onClick={() => { setHistoryMode(m); fetchData(); }}
+                      style={{ padding: '4px 12px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                        background: historyMode === m ? '#111' : 'transparent',
+                        color: historyMode === m ? '#fff' : '#6b7280' }}>
+                      {m.charAt(0).toUpperCase()+m.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {activeTab === 'Positions' ? (
@@ -197,35 +212,40 @@ export default function Dashboard() {
                 <EmptyState tab="Positions" noKeys={noKeys} onSettings={() => setSettingsOpen(true)} />
               )
             ) : visibleTrades.length > 0 ? (
-              <div style={s.tableWrap}>
-                <table style={s.table}>
-                  <thead>
-                    <tr>
-                      {['Date', 'Market', 'Category', 'Side', 'EV%', 'Kelly', 'Outcome', 'P&L'].map(h => (
-                        <th key={h} style={s.th}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visibleTrades.map((trade) => {
+              <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderTop: 'none', borderRadius: '0 0 12px 12px', overflow: 'hidden' }}>
+                {visibleTrades.map((trade) => {
                       const tradePnl = parseFloat(trade.pnl);
+                      const isWin = trade.outcome === 'win';
+                      const isLoss = trade.outcome === 'loss';
                       return (
-                        <tr key={trade.id}>
-                          <td style={s.td}>{new Date(trade.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
-                          <td style={{ ...s.td, maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#111', fontWeight: 500 }}>{trade.market}</td>
-                          <td style={s.td}>{trade.category}</td>
-                          <td style={s.td}><Pill text={trade.side.toUpperCase()} color={trade.side === 'yes' ? 'green' : 'red'} /></td>
-                          <td style={s.td}>{(parseFloat(trade.ev_pct) * 100).toFixed(2)}%</td>
-                          <td style={s.td}>${parseFloat(trade.kelly_amount).toFixed(2)}</td>
-                          <td style={s.td}><Pill text={trade.outcome.charAt(0).toUpperCase() + trade.outcome.slice(1)} color={trade.outcome === 'win' ? 'green' : trade.outcome === 'loss' ? 'red' : 'gray'} /></td>
-                          <td style={{ ...s.td, fontWeight: 700, color: tradePnl > 0 ? '#16a34a' : tradePnl < 0 ? '#dc2626' : '#6b7280' }}>
-                            {tradePnl > 0 ? '+' : ''}${tradePnl.toFixed(2)}
-                          </td>
-                        </tr>
+                        <div key={trade.id} style={{ padding: '12px 16px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: 12 }}>
+                          {/* Outcome indicator */}
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: isWin ? '#16a34a' : isLoss ? '#dc2626' : '#d1d5db' }} />
+                          {/* Main info */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {trade.market}
+                            </div>
+                            <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2, display: 'flex', gap: 8 }}>
+                              <span>{new Date(trade.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                              <span>•</span>
+                              <span>{trade.category}</span>
+                              <span>•</span>
+                              <span style={{ color: trade.side === 'yes' ? '#15803d' : '#b91c1c', fontWeight: 600 }}>{trade.side?.toUpperCase()}</span>
+                            </div>
+                          </div>
+                          {/* P&L */}
+                          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: tradePnl > 0 ? '#16a34a' : tradePnl < 0 ? '#dc2626' : '#6b7280' }}>
+                              {tradePnl > 0 ? '+' : ''}${tradePnl.toFixed(2)}
+                            </div>
+                            <div style={{ fontSize: 11, color: '#9ca3af' }}>
+                              {isWin ? 'Win' : isLoss ? 'Loss' : 'Pending'}
+                            </div>
+                          </div>
+                        </div>
                       );
                     })}
-                  </tbody>
-                </table>
               </div>
             ) : (
               <EmptyState tab={activeTab} noKeys={noKeys} onSettings={() => setSettingsOpen(true)} onSync={syncFromKalshi} syncing={syncing} />

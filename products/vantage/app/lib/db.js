@@ -51,6 +51,9 @@ export async function migrateV2() {
   await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS kalshi_order_id TEXT`;
   await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS execution_price DECIMAL(10,4)`;
   await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS signal_strength DECIMAL(6,4)`;
+  await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS account_mode TEXT DEFAULT 'demo'`;
+  // Tag existing synced trades as demo
+  await sql`UPDATE trades SET account_mode = 'demo' WHERE source = 'kalshi_sync' AND account_mode IS NULL`;
 
   // Remove duplicate trades (same order_id + user_id), keep the one with latest outcome
   await sql`
