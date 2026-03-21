@@ -11,30 +11,38 @@ import { sql } from '@vercel/postgres';
 import { decrypt } from '../../../utils/encryption';
 import crypto from 'crypto';
 
-const KALSHI_BASE = 'https://trading-api.kalshi.com/trade-api/v2';
+const KALSHI_BASES = {
+  demo: 'https://demo-api.kalshi.co/trade-api/v2',
+  live: 'https://trading-api.kalshi.com/trade-api/v2',
+};
+const API_PREFIX = '/trade-api/v2';
 
 function kalshiSign(privateKeyPem, method, path, timestampMs) {
-  const message = `${timestampMs}${method.toUpperCase()}${path}`;
+  // Kalshi signature format: {timestampMs}{METHOD}{/trade-api/v2}{path_no_query}
+  const cleanPath = path.split('?')[0];
+  const message = `${timestampMs}${method.toUpperCase()}${API_PREFIX}${cleanPath}`;
   const sign = crypto.createSign('RSA-SHA256');
   sign.update(message);
   sign.end();
   return sign.sign({ key: privateKeyPem, padding: crypto.constants.RSA_PKCS1_PSS_PADDING, saltLength: 32 }, 'base64');
 }
 
-async function kalshiFetch(keyId, privateKeyPem, method, path, body = null) {
-  const ts = Date.now();
-  const sig = kalshiSign(privateKeyPem, method, path, ts);
-  const headers = {
-    'KALSHI-ACCESS-KEY': keyId,
-    'KALSHI-ACCESS-TIMESTAMP': String(ts),
-    'KALSHI-ACCESS-SIGNATURE': sig,
-    'Content-Type': 'application/json',
+function makeKalshiFetch(base, keyId, privateKeyPem) {
+  return async (method, path, body = null) => {
+    const ts = Date.now();
+    const sig = kalshiSign(privateKeyPem, method, path, ts);
+    const headers = {
+      'KALSHI-ACCESS-KEY': keyId,
+      'KALSHI-ACCESS-TIMESTAMP': String(ts),
+      'KALSHI-ACCESS-SIGNATURE': sig,
+      'Content-Type': 'application/json',
+    };
+    const opts = { method, headers };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(`${base}${path}`, opts);
+    const data = await res.json().catch(() => null);
+    return { ok: res.ok, status: res.status, data };
   };
-  const opts = { method, headers };
-  if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(`${KALSHI_BASE}${path}`, opts);
-  const data = await res.json().catch(() => null);
-  return { ok: res.ok, status: res.status, data };
 }
 
 export async function GET() {
@@ -73,26 +81,8 @@ export async function GET() {
     }
 
     // Determine base URL based on mode
-    const base = mode === 'demo'
-      ? 'https://demo-api.kalshi.co/trade-api/v2'
-      : 'https://trading-api.kalshi.com/trade-api/v2';
-
-    // Override base in kalshiFetch inline
-    const fetchKalshi = async (method, path, body = null) => {
-      const ts = Date.now();
-      const sig = kalshiSign(privateKeyPem, method, path, ts);
-      const headers = {
-        'KALSHI-ACCESS-KEY': keyId,
-        'KALSHI-ACCESS-TIMESTAMP': String(ts),
-        'KALSHI-ACCESS-SIGNATURE': sig,
-        'Content-Type': 'application/json',
-      };
-      const opts = { method, headers };
-      if (body) opts.body = JSON.stringify(body);
-      const res = await fetch(`${base}${path}`, opts);
-      const data = await res.json().catch(() => null);
-      return { ok: res.ok, status: res.status, data };
-    };
+    const base = KALSHI_BASES[mode] || KALSHI_BASES.demo;
+    const fetchKalshi = makeKalshiFetch(base, keyId, privateKeyPem);
 
     // Fetch balance + positions in parallel
     const [balRes, posRes, ordersRes] = await Promise.all([
