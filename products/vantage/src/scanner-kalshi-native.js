@@ -76,20 +76,12 @@ async function fetchAllActiveMarkets(client) {
 }
 
 async function scanKalshiNativeLayer(userProfile = null) {
-  // Use user's stored keys if provided, otherwise fall back to read-only market data
-  // (no auth needed for public market listings)
-  let client;
-  if (userProfile?.kalshiKeyId && userProfile?.kalshiSecretEncrypted) {
-    const { decrypt } = require('../app/utils/encryption.js');
-    const privateKeyPem = decrypt(userProfile.kalshiSecretEncrypted);
-    const isDemo = userProfile.kalshiMode !== 'live';
-    client = new KalshiClient({ demo: isDemo });
-    client.apiKeyId = userProfile.kalshiKeyId;
-    client.privateKeyPem = privateKeyPem;
-  } else {
-    // Public market data only (no auth) — scanner still works for signal generation
-    client = new KalshiClient({ demo: true });
-  }
+  // Market data is PUBLIC — no auth needed for scanning.
+  // Use live markets by default (real prices, real liquidity).
+  // Auth keys are only needed for ORDER PLACEMENT (handled separately via Vercel API).
+  const isDemo = userProfile?.kalshiMode === 'demo';
+  const client = new KalshiClient({ demo: isDemo });
+  // No keys needed for public market listing — null keys = unauthenticated read
   const markets = await fetchAllActiveMarkets(client);
 
   const sameDay = markets.filter((m) => {

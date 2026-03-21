@@ -36,12 +36,18 @@ async function main() {
   const targetUserId = allArgs[allArgs.indexOf('--user') + 1] || null;
 
   // ── Scan ──────────────────────────────────────────────────────────────────
-  // Load first active user's profile for authenticated scanning (keys for L2/L3)
+  // Always load user profile to determine market mode (live vs demo)
+  // Keys are NOT used locally — order placement happens via Vercel API
   let primaryUser = null;
-  if (doExec || targetUserId) {
+  try {
     const usersForScan = targetUserId ? [await loadUserProfile(targetUserId)] : await loadActiveUsers();
     primaryUser = usersForScan[0] || null;
-  }
+    if (primaryUser) console.log(`Scanning in ${primaryUser.kalshiMode?.toUpperCase() || 'LIVE'} mode for ${primaryUser.email}`);
+  } catch (_) {}
+  // Default to live markets if no user profile (real prices, real liquidity)
+  if (!primaryUser) primaryUser = { kalshiMode: 'live', userId: null, email: null, bankroll: 0,
+    kellyFraction: 0.25, minSignalStrength: 0.05, maxWagerDollars: 1, maxOrdersPerDay: 100,
+    maxDailySpend: 100, kalshiKeyId: null, kalshiSecretEncrypted: null, autoExecute: false };
 
   const signals = [];
   if (runL1) signals.push(...(await scanSportsLayer()));

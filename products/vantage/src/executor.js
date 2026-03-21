@@ -169,49 +169,44 @@ async function executeSignalForUser(signal, userProfile, opts = {}) {
     return { ok: true, paper: true, trade };
   }
 
-  // ── 5b. LIVE mode — place real Kalshi order ───────────────────────────────
-  if (!userProfile.kalshiKeyId || !userProfile.kalshiSecretEncrypted) {
-    const reason = 'no_kalshi_keys';
-    auditLog({ userId: uid, ticker: signal.ticker, result: 'REJECTED', reason });
-    return { ok: false, reason };
-  }
+  // ── 5b. LIVE mode — place order via Vercel API (has ENCRYPTION_KEY) ─────
+  const fetch = (...args) => import('node-fetch').then(m => m.default(...args));
+  const secret = process.env.INTERNAL_API_SECRET;
+  const appBase = 'https://app.yourvantage.ai';
 
-  let kalshiResult;
+  let execResult;
   try {
-    // Decrypt stored private key
-    const { decrypt } = require('../app/utils/encryption.js');
-    const privateKeyPem = decrypt(userProfile.kalshiSecretEncrypted);
-
-    const { KalshiClient } = require('/root/PastaOS/Plutus/oddstool-v2/kalshi-client');
-    const isDemo = userProfile.kalshiMode !== 'live';
-    const client = new KalshiClient({ demo: isDemo });
-    // Override auth with user's own keys
-    client.apiKeyId      = userProfile.kalshiKeyId;
-    client.privateKeyPem = privateKeyPem;
-
-    kalshiResult = await client.placeOrder({
-      ticker: signal.ticker,
-      action: 'buy',
-      side:   signal.side,
-      type:   'market',
-      count:  Math.max(1, Math.round(wagerDollars)), // Kalshi counts in $1 contracts
+    const r = await fetch(`${appBase}/api/internal/execute`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-internal-secret': secret },
+      body: JSON.stringify({
+        userId: uid,
+        ticker: signal.ticker,
+        side: signal.side,
+        count: 1,
+        wagerDollars,
+        signalStrength: signal.signalStrength,
+        category: signal.category,
+        layer: signal.layer,
+      }),
     });
+    execResult = await r.json();
   } catch (err) {
     auditLog({ userId: uid, ticker: signal.ticker, result: 'ERROR', error: err.message, wagerDollars });
     return { ok: false, reason: 'api_error', error: err.message };
   }
 
-  if (!kalshiResult?.ok) {
-    auditLog({ userId: uid, ticker: signal.ticker, result: 'KALSHI_REJECTED', detail: kalshiResult, wagerDollars });
-    return { ok: false, reason: 'kalshi_rejected', detail: kalshiResult };
+  if (!execResult?.ok) {
+    auditLog({ userId: uid, ticker: signal.ticker, result: 'REJECTED', reason: execResult?.error || 'unknown', wagerDollars });
+    return { ok: false, reason: execResult?.error || 'execution_failed', detail: execResult };
   }
 
-  trade.status       = 'PLACED_LIVE';
-  trade.kalshiOrderId = kalshiResult?.data?.order?.id || null;
+  trade.status = 'PLACED_LIVE';
+  trade.kalshiOrderId = execResult.orderId || null;
   logTrade(trade);
-  auditLog({ userId: uid, ticker: signal.ticker, side: signal.side, result: 'PLACED', mode: 'live', wagerDollars, orderId: trade.kalshiOrderId });
+  auditLog({ userId: uid, ticker: signal.ticker, side: signal.side, result: 'PLACED', mode: 'live', wagerDollars, orderId: execResult.orderId });
 
-  return { ok: true, live: true, trade, kalshiOrderId: trade.kalshiOrderId };
+  return { ok: true, live: true, trade, kalshiOrderId: execResult.orderId };
 }
 
 // ─── Legacy single-user paper execute (backward compat) ─────────────────────
