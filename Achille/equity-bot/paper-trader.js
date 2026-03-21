@@ -64,6 +64,8 @@ class PaperTrader {
     const trades = this.getTrades();
     const positions = this.getOpenPositions();
     const closed = this.getClosedTrades();
+    const minHoldMs = Number(process.env.EQUITY_MIN_HOLD_MS || 5 * 60 * 1000);
+    const crossStrategyGuardMs = Number(process.env.EQUITY_CROSS_STRATEGY_EXIT_GUARD_MS || 5 * 60 * 1000);
 
     const ts = new Date().toISOString();
     const trade = {
@@ -87,9 +89,17 @@ class PaperTrader {
       };
     } else if (side === 'SELL' && positions[symbol]) {
       const entry = positions[symbol];
-      const pnl = Number(((price - entry.entryPrice) * qty).toFixed(2));
       const holdMs = new Date(ts).getTime() - new Date(entry.openedAt).getTime();
 
+      if (holdMs < minHoldMs) {
+        return { ...trade, skipped: true, skipReason: 'MIN_HOLD_GUARD' };
+      }
+
+      if (entry.strategy && strategy !== entry.strategy && holdMs < crossStrategyGuardMs) {
+        return { ...trade, skipped: true, skipReason: 'CROSS_STRATEGY_EXIT_GUARD' };
+      }
+
+      const pnl = Number(((price - entry.entryPrice) * qty).toFixed(2));
       const entryNotional = Math.abs(entry.entryPrice * qty) || 1;
       const pnlPct = Number(((pnl / entryNotional) * 100).toFixed(3));
 
