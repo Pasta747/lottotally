@@ -14,6 +14,9 @@ ensureDataFiles();
 
 const ibkr = new IbkrClient();
 const paper = new PaperTrader();
+const USE_IBKR = String(process.env.EQUITY_USE_IBKR || 'false').toLowerCase() === 'true';
+const MIN_HOLD_MS = Number(process.env.EQUITY_MIN_HOLD_MS || 5 * 60 * 1000);
+const CROSS_STRATEGY_EXIT_GUARD_MS = Number(process.env.EQUITY_CROSS_STRATEGY_EXIT_GUARD_MS || 5 * 60 * 1000);
 
 function loadStrategies() {
   const dir = path.join(__dirname, 'strategies');
@@ -61,6 +64,17 @@ function normalizeSignal(sig) {
   };
 }
 
+async function placePaperOrder(symbol, side, qty) {
+  if (!USE_IBKR) {
+    return { ok: true, simulated: true, symbol, side, qty, reason: 'IBKR disabled for paper mode' };
+  }
+  try {
+    return await ibkr.placeOrder(symbol, side, qty, 'MKT');
+  } catch (err) {
+    return { ok: true, simulated: true, symbol, side, qty, reason: `IBKR unavailable: ${err.message}` };
+  }
+}
+
 async function executeSignals(signals) {
   const openPositions = paper.getOpenPositions();
   const actions = [];
@@ -83,7 +97,7 @@ async function executeSignals(signals) {
         continue;
       }
 
-      const order = await ibkr.placeOrder(sig.symbol, 'BUY', qty, 'MKT');
+      const order = await placePaperOrder(sig.symbol, 'BUY', qty);
       const trade = paper.recordTrade({ strategy: sig.strategy, symbol: sig.symbol, side: 'BUY', qty, price: sig.price });
       openPositions[sig.symbol] = { symbol: sig.symbol, qty, entryPrice: sig.price, strategy: sig.strategy };
       actions.push({ ...sig, executed: true, order, trade });
@@ -91,8 +105,23 @@ async function executeSignals(signals) {
 
     if (sig.side === 'SELL') {
       if (!hasPos) continue;
-      const qty = openPositions[sig.symbol].qty;
-      const order = await ibkr.placeOrder(sig.symbol, 'SELL', qty, 'MKT');
+
+      const pos = openPositions[sig.symbol];
+      const openedMs = new Date(pos.openedAt || 0).getTime();
+      const ageMs = Date.now() - openedMs;
+
+      if (ageMs < MIN_HOLD_MS) {
+        actions.push({ ...sig, skipped: true, skipReason: `MIN_HOLD guard (${Math.ceil((MIN_HOLD_MS - ageMs)/1000)}s left)` });
+        continue;
+      }
+
+      if (pos.strategy && sig.strategy !== pos.strategy && ageMs < CROSS_STRATEGY_EXIT_GUARD_MS) {
+        actions.push({ ...sig, skipped: true, skipReason: 'cross-strategy exit guard active' });
+        continue;
+      }
+
+      const qty = pos.qty;
+      const order = await placePaperOrder(sig.symbol, 'SELL', qty);
       const trade = paper.recordTrade({ strategy: sig.strategy, symbol: sig.symbol, side: 'SELL', qty, price: sig.price });
       delete openPositions[sig.symbol];
       actions.push({ ...sig, executed: true, order, trade });
@@ -203,6 +232,11 @@ async function showPnl() {
 }
 
 async function showAccount() {
+  if (!USE_IBKR) {
+    console.log('IBKR integration disabled (EQUITY_USE_IBKR=false).');
+    return;
+  }
+
   const summary = await ibkr.getAccountSummary();
   const mine = summary.filter((r) => r.account === config.PAPER_ACCOUNT_ID);
   console.log('=== IBKR Account Summary ===');
