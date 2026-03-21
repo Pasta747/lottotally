@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [trades, setTrades] = useState([]);
   const [kalshi, setKalshi] = useState(null);
+  const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Positions');
 
@@ -26,14 +27,16 @@ export default function Dashboard() {
 
   const fetchData = async () => {
     try {
-      const [statsRes, tradesRes, kalshiRes] = await Promise.all([
+      const [statsRes, tradesRes, kalshiRes, chartRes] = await Promise.all([
         fetch('/api/user/stats'),
         fetch('/api/user/trades'),
         fetch('/api/kalshi/positions'),
+        fetch('/api/user/chart'),
       ]);
       if (statsRes.ok) setStats((await statsRes.json()).stats);
       if (tradesRes.ok) setTrades((await tradesRes.json()).trades);
       if (kalshiRes.ok) setKalshi(await kalshiRes.json());
+      if (chartRes.ok) setChartData(await chartRes.json());
     } catch (e) {
       console.error(e);
     } finally {
@@ -103,6 +106,17 @@ export default function Dashboard() {
                 <HeroStat label="Win Rate" value={stats ? `${stats.winRate}%` : '—'} />
                 <HeroStat label="Total Trades" value={hasTrades ? trades.length : '—'} />
               </div>
+            </div>
+          </div>
+
+          {/* Performance Chart */}
+          <div style={s.chartSection}>
+            <div style={s.chartInner}>
+              <div style={s.chartHeader}>
+                <span style={s.chartTitle}>Portfolio Performance</span>
+                <span style={s.chartSub}>Balance over time</span>
+              </div>
+              <PerformanceChart data={chartData} bankroll={chartData?.bankroll} />
             </div>
           </div>
 
@@ -202,6 +216,105 @@ export default function Dashboard() {
   );
 }
 
+// ─── Performance Chart (pure SVG, no deps) ──────────────────────────────────
+function PerformanceChart({ data, bankroll }) {
+  if (!data?.points?.length) {
+    return (
+      <div style={{ height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontSize: 13 }}>
+        No performance data yet — data will appear as you trade.
+      </div>
+    );
+  }
+
+  const points = data.points;
+  const W = 900, H = 120, PAD = { t: 12, r: 16, b: 28, l: 52 };
+  const vals = points.map(p => p.balance);
+  const minV = Math.min(...vals) * 0.998;
+  const maxV = Math.max(...vals) * 1.002;
+  const baseline = bankroll || vals[0];
+  const range = maxV - minV || 1;
+  const innerW = W - PAD.l - PAD.r;
+  const innerH = H - PAD.t - PAD.b;
+
+  const px = i => PAD.l + (i / Math.max(points.length - 1, 1)) * innerW;
+  const py = v => PAD.t + innerH - ((v - minV) / range) * innerH;
+
+  // Build SVG path
+  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${px(i).toFixed(1)},${py(p.balance).toFixed(1)}`).join(' ');
+  const areaD = `${pathD} L${px(points.length - 1).toFixed(1)},${(PAD.t + innerH).toFixed(1)} L${PAD.l},${(PAD.t + innerH).toFixed(1)} Z`;
+
+  // Last point value
+  const lastVal = vals[vals.length - 1];
+  const gain = lastVal - baseline;
+  const gainPct = ((gain / baseline) * 100).toFixed(2);
+  const isUp = gain >= 0;
+  const lineColor = isUp ? '#4ade80' : '#f87171';
+
+  // Y axis labels
+  const yLabels = [minV, (minV + maxV) / 2, maxV].map(v => ({
+    y: py(v),
+    label: `$${v.toFixed(0)}`,
+  }));
+
+  // X axis labels (show up to 6 dates)
+  const step = Math.max(1, Math.floor(points.length / 5));
+  const xLabels = points.filter((_, i) => i % step === 0 || i === points.length - 1).map((p, _, arr) => {
+    const i = points.indexOf(p);
+    const d = new Date(p.date);
+    return { x: px(i), label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) };
+  });
+
+  // Baseline (starting bankroll) line
+  const baselineY = py(baseline);
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
+        <span style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.5px' }}>${lastVal.toFixed(2)}</span>
+        <span style={{ fontSize: 13, fontWeight: 600, color: isUp ? '#4ade80' : '#f87171' }}>
+          {isUp ? '▲' : '▼'} ${Math.abs(gain).toFixed(2)} ({gainPct}%)
+        </span>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
+        <defs>
+          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={lineColor} stopOpacity="0.18" />
+            <stop offset="100%" stopColor={lineColor} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+
+        {/* Baseline reference line */}
+        {baselineY > PAD.t && baselineY < PAD.t + innerH && (
+          <line x1={PAD.l} y1={baselineY} x2={PAD.l + innerW} y2={baselineY}
+            stroke="#ffffff18" strokeWidth="1" strokeDasharray="4,4" />
+        )}
+
+        {/* Y grid lines */}
+        {yLabels.map((yl, i) => (
+          <g key={i}>
+            <line x1={PAD.l} y1={yl.y} x2={PAD.l + innerW} y2={yl.y} stroke="#ffffff0a" strokeWidth="1" />
+            <text x={PAD.l - 6} y={yl.y + 4} fill="#6b7280" fontSize="10" textAnchor="end">{yl.label}</text>
+          </g>
+        ))}
+
+        {/* Area fill */}
+        <path d={areaD} fill="url(#areaGrad)" />
+
+        {/* Line */}
+        <path d={pathD} fill="none" stroke={lineColor} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+
+        {/* Last point dot */}
+        <circle cx={px(points.length - 1)} cy={py(lastVal)} r="4" fill={lineColor} />
+
+        {/* X axis labels */}
+        {xLabels.map((xl, i) => (
+          <text key={i} x={xl.x} y={H - 4} fill="#6b7280" fontSize="10" textAnchor="middle">{xl.label}</text>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
 function HeroStat({ label, value, accent }) {
   return (
     <div style={s.heroStat}>
@@ -248,10 +361,28 @@ function Loader() {
 function SettingsPane({ onClose, onSave }) {
   const [apiKeyId, setApiKeyId] = useState('');
   const [apiSecret, setApiSecret] = useState('');
-  const [bankroll, setBankroll] = useState(1000);
+  const [kalshiMode, setKalshiMode] = useState('demo');
+  const [bankroll, setBankroll] = useState('');
   const [riskLevel, setRiskLevel] = useState('moderate');
+  const [maxWager, setMaxWager] = useState('1.00');
+  const [maxOrdersPerDay, setMaxOrdersPerDay] = useState('10');
+  const [maxDailySpend, setMaxDailySpend] = useState('10.00');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+
+  // Load existing config on mount
+  useEffect(() => {
+    fetch('/api/user/config').then(r => r.json()).then(d => {
+      if (d.config) {
+        setBankroll(d.config.bankroll || '');
+        setRiskLevel(d.config.risk_level || 'moderate');
+        setMaxWager(d.config.max_wager_dollars || '1.00');
+        setMaxOrdersPerDay(d.config.max_orders_per_day || '10');
+        setMaxDailySpend(d.config.max_daily_spend || '10.00');
+        setKalshiMode(d.config.kalshi_mode || 'demo');
+      }
+    }).catch(() => {});
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);
@@ -268,11 +399,18 @@ function SettingsPane({ onClose, onSave }) {
       const configRes = await fetch('/api/user/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bankroll: parseFloat(bankroll) || undefined, risk_level: riskLevel || undefined }),
+        body: JSON.stringify({
+          bankroll: parseFloat(bankroll) || undefined,
+          risk_level: riskLevel || undefined,
+          max_wager_dollars: parseFloat(maxWager) || undefined,
+          max_orders_per_day: parseInt(maxOrdersPerDay) || undefined,
+          max_daily_spend: parseFloat(maxDailySpend) || undefined,
+          kalshi_mode: kalshiMode,
+        }),
       });
       if (!configRes.ok) throw new Error((await configRes.json()).error || 'Failed to save config');
       setMessage('✅ Settings saved!');
-      setTimeout(() => { onClose(); onSave(); }, 1000);
+      setTimeout(() => { onClose(); onSave(); }, 1200);
     } catch (e) {
       setMessage(e.message || 'Failed to save settings');
     } finally {
@@ -289,19 +427,56 @@ function SettingsPane({ onClose, onSave }) {
         </div>
 
         <div style={s.settingsSection}>
-          <div style={s.settingsSectionTitle}>Kalshi API Keys</div>
-          <label style={s.lbl}>Kalshi API Key ID<input style={s.inp} type="text" value={apiKeyId} onChange={e => setApiKeyId(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" /></label>
-          <label style={s.lbl}>Kalshi Private Key<input style={s.inp} type="password" value={apiSecret} onChange={e => setApiSecret(e.target.value)} placeholder="••••••••" /></label>
+          <div style={s.settingsSectionTitle}>Kalshi API Connection</div>
+          <label style={s.lbl}>Mode
+            <select style={s.inp} value={kalshiMode} onChange={e => setKalshiMode(e.target.value)}>
+              <option value="demo">Demo (Paper trades, fake funds)</option>
+              <option value="live">Live (Real money)</option>
+            </select>
+          </label>
+          <label style={s.lbl}>API Key ID<input style={s.inp} type="text" value={apiKeyId} onChange={e => setApiKeyId(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" /></label>
+          <label style={s.lbl}>
+            Private Key (PEM)
+            <textarea style={{ ...s.inp, height: 80, resize: 'vertical', fontSize: 11, fontFamily: 'monospace' }}
+              value={apiSecret} onChange={e => setApiSecret(e.target.value)}
+              placeholder="-----BEGIN RSA PRIVATE KEY-----&#10;...&#10;-----END RSA PRIVATE KEY-----" />
+          </label>
+          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: -8, marginBottom: 4 }}>
+            Find your API key in your Kalshi account → Settings → API Access
+          </div>
         </div>
 
         <div style={s.settingsSection}>
-          <div style={s.settingsSectionTitle}>Risk Configuration</div>
-          <label style={s.lbl}>Bankroll ($)<input style={s.inp} type="number" value={bankroll} onChange={e => setBankroll(e.target.value)} /></label>
+          <div style={s.settingsSectionTitle}>Trading Budget</div>
+          <label style={s.lbl}>
+            Total Bankroll ($)
+            <input style={s.inp} type="number" min="0" step="10" value={bankroll} onChange={e => setBankroll(e.target.value)} placeholder="e.g. 500" />
+            <span style={s.hint}>Total amount available for Vantage to trade with</span>
+          </label>
+          <label style={s.lbl}>
+            Max Wager per Trade ($)
+            <input style={s.inp} type="number" min="0.01" max="100" step="0.01" value={maxWager} onChange={e => setMaxWager(e.target.value)} />
+            <span style={s.hint}>Hard cap per individual order (recommended: $1–$5 for beta)</span>
+          </label>
+          <label style={s.lbl}>
+            Max Orders per Day
+            <input style={s.inp} type="number" min="1" max="100" step="1" value={maxOrdersPerDay} onChange={e => setMaxOrdersPerDay(e.target.value)} />
+            <span style={s.hint}>Maximum number of trades Vantage can place in a single day</span>
+          </label>
+          <label style={s.lbl}>
+            Daily Spend Limit ($)
+            <input style={s.inp} type="number" min="1" step="1" value={maxDailySpend} onChange={e => setMaxDailySpend(e.target.value)} />
+            <span style={s.hint}>Vantage will stop trading once this amount is spent today</span>
+          </label>
+        </div>
+
+        <div style={s.settingsSection}>
+          <div style={s.settingsSectionTitle}>Risk Strategy</div>
           <label style={s.lbl}>Risk Level
             <select style={s.inp} value={riskLevel} onChange={e => setRiskLevel(e.target.value)}>
-              <option value="conservative">Conservative</option>
-              <option value="moderate">Moderate</option>
-              <option value="aggressive">Aggressive</option>
+              <option value="conservative">Conservative — smaller Kelly fraction, higher edge threshold</option>
+              <option value="moderate">Moderate — balanced risk/reward</option>
+              <option value="aggressive">Aggressive — larger position sizes, lower edge threshold</option>
             </select>
           </label>
         </div>
@@ -368,6 +543,16 @@ const s = {
   btnPrimary: { background: '#111', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' },
   btnOutline: { background: '#fff', color: '#374151', border: '1px solid #d1d5db', padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer' },
   btnGhost: { background: 'transparent', color: '#6b7280', border: 'none', padding: '6px 10px', borderRadius: 6, fontSize: 13, cursor: 'pointer' },
+
+  // Chart
+  chartSection: { background: '#0a0a0a', borderTop: '1px solid #1f1f1f', padding: '0 32px 28px' },
+  chartInner: { maxWidth: 1060, margin: '0 auto' },
+  chartHeader: { display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', paddingTop: 20, marginBottom: 4 },
+  chartTitle: { fontSize: 13, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em' },
+  chartSub: { fontSize: 12, color: '#4b5563' },
+
+  // Settings hint
+  hint: { fontSize: 11, color: '#9ca3af', marginTop: 2, lineHeight: 1.4 },
 
   // Settings
   overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', justifyContent: 'flex-end', zIndex: 100 },

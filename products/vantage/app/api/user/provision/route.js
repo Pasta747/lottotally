@@ -11,34 +11,23 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const { email, name, provider } = session.user;
+    const { email, name, id } = session.user;
+    const userId = id || email;
     
-    // Check if user already exists
-    const existingUser = await sql`
-      SELECT id FROM users WHERE email = ${email}
+    // Create or update user
+    const result = await sql`
+      INSERT INTO users (id, email, name)
+      VALUES (${userId}, ${email}, ${name || email.split('@')[0]})
+      ON CONFLICT (email) 
+      DO UPDATE SET 
+        name = EXCLUDED.name,
+        created_at = COALESCE(users.created_at, NOW())
+      RETURNING id, email, name, bankroll, risk_level, whatsapp, auto_execute
     `;
-    
-    let userId;
-    if (existingUser.rows.length > 0) {
-      userId = existingUser.rows[0].id;
-      // Update last login
-      await sql`
-        UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ${userId}
-      `;
-    } else {
-      // Create new user
-      const result = await sql`
-        INSERT INTO users (email, name, provider, last_login)
-        VALUES (${email}, ${name || email.split('@')[0]}, ${provider || 'credentials'}, CURRENT_TIMESTAMP)
-        RETURNING id
-      `;
-      userId = result.rows[0].id;
-    }
     
     return NextResponse.json({ 
       success: true, 
-      userId,
-      message: existingUser.rows.length > 0 ? 'User logged in' : 'User provisioned'
+      user: result.rows[0]
     });
     
   } catch (error) {

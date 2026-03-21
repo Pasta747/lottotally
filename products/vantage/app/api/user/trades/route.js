@@ -11,20 +11,11 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    // Get user ID
-    const userResult = await sql`
-      SELECT id FROM users WHERE email = ${session.user.email}
-    `;
-    
-    if (userResult.rows.length === 0) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    
-    const userId = userResult.rows[0].id;
+    const userId = session.user.id || session.user.email;
     
     // Get user trades
-    const tradesResult = await sql`
-      SELECT id, layer, category, ticker, side, market_price, estimated_prob, signal_strength, execution_price, close_time, status, created_at
+    const result = await sql`
+      SELECT id, date, market, category, layer, side, ev_pct, kelly_amount, outcome, pnl, created_at
       FROM trades
       WHERE user_id = ${userId}
       ORDER BY created_at DESC
@@ -32,7 +23,7 @@ export async function GET(request) {
     `;
     
     return NextResponse.json({ 
-      trades: tradesResult.rows
+      trades: result.rows
     });
     
   } catch (error) {

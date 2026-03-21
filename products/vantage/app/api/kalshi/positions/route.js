@@ -111,6 +111,19 @@ export async function GET() {
       side: (p.position || 0) > 0 ? 'yes' : 'no',
     }));
 
+    // Snapshot today's balance for chart (fire-and-forget)
+    const tradeCount = enriched.length;
+    fetch(`${process.env.NEXTAUTH_URL || 'https://app.yourvantage.ai'}/api/user/chart`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Cookie': '' },
+      body: JSON.stringify({
+        balance_cents: balance?.balance ?? 0,
+        portfolio_value_cents: balance?.portfolio_value ?? 0,
+        total_pnl: 0,
+        trade_count: tradeCount,
+      }),
+    }).catch(() => {}); // non-blocking
+
     return NextResponse.json({
       balance: balance?.balance ?? null,           // in cents
       portfolio_value: balance?.portfolio_value ?? null,

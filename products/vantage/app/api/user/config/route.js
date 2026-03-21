@@ -11,39 +11,22 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const email = session.user.email;
+    const userId = session.user.id || session.user.email;
     
-    // Get user ID
-    const userResult = await sql`
-      SELECT id, email, name, provider FROM users WHERE email = ${email}
+    // Get user config
+    const result = await sql`
+      SELECT bankroll, risk_level, whatsapp, auto_execute,
+             max_wager_dollars, max_orders_per_day, max_daily_spend, kalshi_mode
+      FROM users
+      WHERE id = ${userId}
     `;
     
-    if (userResult.rows.length === 0) {
+    if (result.rows.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
     
-    const user = userResult.rows[0];
-    
-    // Get user config (bankroll, risk level, etc. - to be implemented)
-    const config = {
-      bankroll: 1000, // Default value
-      riskLevel: 'moderate', // Default value
-      notifications: {
-        email: true,
-        sms: false,
-        slack: false,
-        discord: false
-      }
-    };
-    
     return NextResponse.json({ 
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        provider: user.provider
-      },
-      config
+      config: result.rows[0]
     });
     
   } catch (error) {
@@ -60,14 +43,34 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const { bankroll, riskLevel, notifications } = await request.json();
+    const { bankroll, risk_level, whatsapp, auto_execute,
+            max_wager_dollars, max_orders_per_day, max_daily_spend, kalshi_mode } = await request.json();
+    const userId = session.user.id || session.user.email;
+
+    // Update user config
+    const result = await sql`
+      UPDATE users 
+      SET 
+        bankroll = COALESCE(${bankroll ?? null}, bankroll),
+        risk_level = COALESCE(${risk_level ?? null}, risk_level),
+        whatsapp = COALESCE(${whatsapp ?? null}, whatsapp),
+        auto_execute = COALESCE(${auto_execute ?? null}, auto_execute),
+        max_wager_dollars = COALESCE(${max_wager_dollars ?? null}, max_wager_dollars),
+        max_orders_per_day = COALESCE(${max_orders_per_day ?? null}, max_orders_per_day),
+        max_daily_spend = COALESCE(${max_daily_spend ?? null}, max_daily_spend),
+        kalshi_mode = COALESCE(${kalshi_mode ?? null}, kalshi_mode)
+      WHERE id = ${userId}
+      RETURNING bankroll, risk_level, whatsapp, auto_execute,
+                max_wager_dollars, max_orders_per_day, max_daily_spend, kalshi_mode
+    `;
     
-    // In a real implementation, we would save these to a user_config table
-    // For now, we'll just return success
+    if (result.rows.length === 0) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
     
     return NextResponse.json({ 
       success: true,
-      message: 'Configuration saved'
+      config: result.rows[0]
     });
     
   } catch (error) {

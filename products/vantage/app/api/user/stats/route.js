@@ -11,23 +11,15 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    // Get user ID
-    const userResult = await sql`
-      SELECT id FROM users WHERE email = ${session.user.email}
-    `;
-    
-    if (userResult.rows.length === 0) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    
-    const userId = userResult.rows[0].id;
+    const userId = session.user.id || session.user.email;
     
     // Get user stats
     const statsResult = await sql`
       SELECT 
         COUNT(*) as total_trades,
-        SUM(CASE WHEN status = 'win' THEN 1 ELSE 0 END) as winning_trades,
-        AVG(signal_strength) as avg_signal_strength
+        SUM(CASE WHEN outcome = 'win' THEN 1 ELSE 0 END) as winning_trades,
+        SUM(pnl) as total_pnl,
+        AVG(ev_pct) as avg_ev
       FROM trades
       WHERE user_id = ${userId}
     `;
@@ -35,15 +27,20 @@ export async function GET(request) {
     const stats = statsResult.rows[0];
     const winRate = stats.total_trades > 0 ? (parseInt(stats.winning_trades) / parseInt(stats.total_trades)) * 100 : 0;
     
-    const formattedStats = {
-      totalTrades: parseInt(stats.total_trades) || 0,
-      winningTrades: parseInt(stats.winning_trades) || 0,
-      winRate: winRate.toFixed(2),
-      avgSignalStrength: stats.avg_signal_strength ? parseFloat(stats.avg_signal_strength).toFixed(2) : '0.00'
-    };
+    // Calculate wagered amount (simplified)
+    const wagered = parseInt(stats.total_trades) * 10; // Assuming $10 per trade
+    
+    // Calculate ROI (simplified)
+    const roi = wagered > 0 ? (parseFloat(stats.total_pnl) / wagered) * 100 : 0;
     
     return NextResponse.json({ 
-      stats: formattedStats
+      stats: {
+        pnl: parseFloat(stats.total_pnl || 0).toFixed(2),
+        winRate: winRate.toFixed(2),
+        roi: roi.toFixed(2),
+        wagered: wagered.toFixed(2),
+        rank: '#2' // Placeholder
+      }
     });
     
   } catch (error) {
