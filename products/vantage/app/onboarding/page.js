@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const steps = [
   {
@@ -29,6 +31,29 @@ const steps = [
 
 export default function OnboardingPage() {
   const [hovered, setHovered] = useState(null);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status !== 'authenticated') return;
+    // If user already has API keys configured, skip onboarding and go straight to dashboard
+    fetch('/api/user/config')
+      .then(r => r.json())
+      .then(d => {
+        // Check for existing keys
+        return fetch('/api/kalshi/positions');
+      })
+      .then(r => r.json())
+      .then(d => {
+        // If not noKeys (i.e. keys exist), redirect to dashboard
+        if (!d.noKeys) {
+          router.replace('/dashboard');
+        }
+      })
+      .catch(() => {}); // on error, stay on onboarding
+  }, [status, router]);
+
+  if (status === 'loading') return null;
 
   return (
     <main style={{
