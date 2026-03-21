@@ -1,34 +1,53 @@
-import { getServerSession } from 'next-auth';
+import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
-import { ensureSchema, sql } from '../../../lib/db';
 
-export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const userId = session.user.id || session.user.email;
-  await ensureSchema();
-
-  const { rows } = await sql`SELECT
-      COALESCE(SUM(pnl), 0) AS total_pnl,
-      COUNT(*) AS total_trades,
-      COALESCE(SUM(CASE WHEN outcome = 'win' THEN 1 ELSE 0 END), 0) AS wins,
-      COALESCE(SUM(kelly_amount), 0) AS total_wagered
-    FROM trades WHERE user_id = ${userId}`;
-
-  const s = rows[0] || { total_pnl: 0, total_trades: 0, wins: 0, total_wagered: 0 };
-  const totalTrades = Number(s.total_trades || 0);
-  const wins = Number(s.wins || 0);
-  const totalWagered = Number(s.total_wagered || 0);
-  const totalPnl = Number(s.total_pnl || 0);
-  const winRate = totalTrades ? (wins / totalTrades) * 100 : 0;
-  const roi = totalWagered ? (totalPnl / totalWagered) * 100 : 0;
-
-  return NextResponse.json({
-    pnl: totalPnl,
-    totalTrades,
-    winRate,
-    roi,
-    totalWagered,
-  });
+export async function GET(request) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    // Get user ID
+    const userResult = await sql`
+      SELECT id FROM users WHERE email = ${session.user.email}
+    `;
+    
+    if (userResult.rows.length === 0) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+    
+    const userId = userResult.rows[0].id;
+    
+    // Get user stats
+    const statsResult = await sql`
+      SELECT 
+        COUNT(*) as total_trades,
+        SUM(CASE WHEN status = 'win' THEN 1 ELSE 0 END) as winning_trades,
+        AVG(signal_strength) as avg_signal_strength
+      FROM trades
+      WHERE user_id = ${userId}
+    `;
+    
+    const stats = statsResult.rows[0];
+    const winRate = stats.total_trades > 0 ? (parseInt(stats.winning_trades) / parseInt(stats.total_trades)) * 100 : 0;
+    
+    const formattedStats = {
+      totalTrades: parseInt(stats.total_trades) || 0,
+      winningTrades: parseInt(stats.winning_trades) || 0,
+      winRate: winRate.toFixed(2),
+      avgSignalStrength: stats.avg_signal_strength ? parseFloat(stats.avg_signal_strength).toFixed(2) : '0.00'
+    };
+    
+    return NextResponse.json({ 
+      stats: formattedStats
+    });
+    
+  } catch (error) {
+    console.error('Stats GET error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
 }

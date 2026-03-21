@@ -16,7 +16,11 @@ export function encrypt(text) {
   const cipher = crypto.createCipheriv(ALGO, getKey(), iv);
   const encrypted = Buffer.concat([cipher.update(text, 'utf8'), cipher.final()]);
   const tag = cipher.getAuthTag();
-  return `${iv.toString('hex')}:${tag.toString('hex')}:${encrypted.toString('hex')}`;
+  return {
+    encrypted: `${iv.toString('hex')}:${tag.toString('hex')}:${encrypted.toString('hex')}`,
+    iv: iv.toString('hex'),
+    tag: tag.toString('hex')
+  };
 }
 
 export function decrypt(payload) {
