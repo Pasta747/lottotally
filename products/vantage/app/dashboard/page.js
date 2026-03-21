@@ -40,7 +40,7 @@ export default function Dashboard() {
   const fetchData = async () => {
     try {
       const [statsRes, tradesRes, kalshiRes, chartRes] = await Promise.all([
-        fetch('/api/user/stats'),
+        fetch(`/api/user/stats?mode=${historyMode}`),
         fetch(`/api/user/trades?mode=${historyMode}`),
         fetch('/api/kalshi/positions'),
         fetch('/api/user/chart'),
@@ -127,8 +127,8 @@ export default function Dashboard() {
               <div style={s.heroStats}>
                 <HeroStat label="Cash Available" value={kalshiBalance ? `$${kalshiBalance}` : '—'} />
                 <HeroStat label="Open Positions" value={livePositions.length > 0 ? livePositions.length : (noKeys ? '—' : '0')} />
-                <HeroStat label="Win Rate" value={hasTrades ? `${stats.winRate}%` : '—'} />
-                <HeroStat label="Total Trades" value={hasTrades ? trades.length : '—'} />
+                <HeroStat label="Win Rate" value={stats?.total_trades > 0 ? `${stats.winRate}%` : '—'} />
+                <HeroStat label="Total Trades" value={stats?.total_trades > 0 ? stats.total_trades : '—'} />
               </div>
             </div>
           </div>
