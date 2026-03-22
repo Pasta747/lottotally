@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+require('dotenv').config({ path: '/root/PastaOS/.env' });
 /**
  * index.js — Vantage main scan + execute runner
  *
