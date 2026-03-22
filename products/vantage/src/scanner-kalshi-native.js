@@ -62,16 +62,31 @@ function estimatedProb(market, category) {
   return Math.max(0.01, Math.min(0.99, centered + edgeBps / 10000));
 }
 
+// Simple in-memory market cache to avoid hammering the API every minute
+let _marketCache = null;
+let _marketCacheTs = 0;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5-minute cache
+
 async function fetchAllActiveMarkets(client) {
+  const now = Date.now();
+  if (_marketCache && (now - _marketCacheTs) < CACHE_TTL_MS) {
+    return _marketCache;
+  }
+
   let cursor = null;
   const all = [];
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 10; i++) { // reduced from 20 pages
     const res = await client.getMarkets({ limit: 200, cursor: cursor || undefined });
     const markets = res?.markets || res?.data?.markets || [];
     all.push(...markets);
     cursor = res?.cursor || res?.data?.cursor || null;
     if (!cursor || !markets.length) break;
+    // Small delay between pages to avoid rate limits
+    await new Promise(r => setTimeout(r, 200));
   }
+
+  _marketCache = all;
+  _marketCacheTs = now;
   return all;
 }
 
