@@ -32,7 +32,7 @@ export async function POST(request) {
   if (!checkSecret(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { userId, ticker, side, count, wagerDollars, signalStrength, category, layer } = await request.json();
+    const { userId, ticker, side, count, wagerDollars, marketPrice, signalStrength, category, layer } = await request.json();
 
     if (!userId || !ticker || !side) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -70,7 +70,8 @@ export async function POST(request) {
       side,
       type: 'limit',
       count: count || 1,
-      [`${side}_price`]: Math.round((wagerDollars || 0.5) * 100), // price in cents
+      // Kalshi price = market ask price in cents (1-99), NOT the Kelly stake amount
+      [`${side}_price`]: Math.round((marketPrice || 0.5) * 100),
     };
 
     const res = await fetch(`${base}${orderPath}`, {

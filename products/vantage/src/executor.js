@@ -185,6 +185,7 @@ async function executeSignalForUser(signal, userProfile, opts = {}) {
         side: signal.side,
         count: 1,
         wagerDollars,
+        marketPrice: signal.executionPrice, // ask price (0.0-1.0), used for order price
         signalStrength: signal.signalStrength,
         category: signal.category,
         layer: signal.layer,
