@@ -108,6 +108,19 @@ function updateWeightsFromOutcome(signal = {}, outcome) {
     updates.source = { key: sourceKey, from: current, to: next };
   }
 
+  // Track per-model performance for model quality assessment
+  const modelSource = signal.modelSource || 'heuristic';
+  if (!weights.perf[modelSource]) {
+    weights.perf[modelSource] = { wins: 0, losses: 0, edge_sum: 0, count: 0 };
+  }
+  const p = weights.perf[modelSource];
+  if (normalizedOutcome === 'win') p.wins++;
+  else p.losses++;
+  p.count++;
+  p.edge_sum = (p.edge_sum || 0) + (signal.signalStrength || 0);
+  p.win_rate = p.count > 0 ? (p.wins / p.count) : 0;
+  p.avg_edge = p.count > 0 ? (p.edge_sum / p.count) : 0;
+
   saveWeights(weights);
   return { ok: true, outcome: normalizedOutcome, factor, updates, weights };
 }

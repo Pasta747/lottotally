@@ -1,5 +1,7 @@
 const { KalshiClient } = require('/root/PastaOS/Plutus/oddstool-v2/kalshi-client');
 const { weightedSignalStrength } = require('./atlas-manager');
+const { estimateNCAASpreadProbForMarket } = require('./models/ncaa-spread-model');
+const { estimateTennisMatchProbForMarket } = require('./models/tennis-model');
 
 function isWithinHours(closeTime, hours = 48) {
   if (!closeTime) return false;
@@ -43,26 +45,45 @@ function marketPrices(m) {
   return { yes, no };
 }
 
-function estimatedProb(market, category) {
-  // Baseline heuristic model — phase 1 placeholder.
-  // Phase 2 will replace this with category-specific models.
+// Heuristic fallback (used when category-specific model has no data)
+function heuristicProb(market) {
   const { yes } = marketPrices(market);
-  const volume = Number(market.volume ?? market.volume_24h ?? 0);
-  const oi = Number(market.open_interest ?? 0);
+  const volume = Number(market.volume_fp ?? market.volume ?? 0);
+  const oi = Number(market.open_interest_fp ?? market.open_interest ?? 0);
+  const shrink = Math.max(0, Math.min(0.10, 1 / Math.max(10, Math.log10(volume + oi + 10))));
+  return Math.max(0.01, Math.min(0.99, yes * (1 - shrink) + 0.5 * shrink));
+}
 
-  let edgeBps = 0;
-  if (category === 'economics' && volume < 5000) edgeBps = 200;
-  if (category === 'weather' && volume < 3000) edgeBps = 300;
-  if (category === 'politics' && oi > 20000) edgeBps = -100;
-  // New sports categories — thin markets may be mispriced
-  if (category === 'tennis' && volume < 2000) edgeBps = 150;
-  if (category === 'college_basketball' && volume < 3000) edgeBps = 150;
-  if (category === 'soccer' && volume < 2000) edgeBps = 100;
+// Category-specific model results cache (populated asynchronously)
+// Keys: market ticker → { prob, ts }
+const _modelCache = {};
 
-  // Mean-revert noisy small markets toward 50%
-  const shrink = Math.max(0, Math.min(0.15, 1 / Math.max(10, Math.log10(volume + oi + 10))));
-  const centered = yes * (1 - shrink) + 0.5 * shrink;
-  return Math.max(0.01, Math.min(0.99, centered + edgeBps / 10000));
+/**
+ * Synchronous wrapper — returns cached model result or heuristic fallback.
+ * Kicks off async model computation for next scan cycle.
+ */
+function estimatedProb(market, category) {
+  const ticker = market.ticker;
+
+  // Return cached model result if fresh (< 10 min)
+  const cached = _modelCache[ticker];
+  if (cached && Date.now() - cached.ts < 10 * 60 * 1000) {
+    return cached.prob;
+  }
+
+  // Kick off async model computation (result available next cycle)
+  if (category === 'college_basketball' || category === 'ncaa') {
+    estimateNCAASpreadProbForMarket(market).then(r => {
+      if (r?.prob != null) _modelCache[ticker] = { prob: r.prob, ts: Date.now(), source: 'ncaa-model' };
+    }).catch(() => {});
+  } else if (category === 'tennis') {
+    estimateTennisMatchProbForMarket(market).then(r => {
+      if (r?.prob != null) _modelCache[ticker] = { prob: r.prob, ts: Date.now(), source: 'tennis-model' };
+    }).catch(() => {});
+  }
+
+  // Return heuristic for this cycle
+  return heuristicProb(market);
 }
 
 // Target series to scan — specific game markets with real liquidity
