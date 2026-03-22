@@ -165,7 +165,9 @@ async function scanKalshiNativeLayer(userProfile = null) {
       marketPrice: yes,
       estimatedProb: pEst,
       signalStrength,
-      executionPrice: side === 'yes' ? (m.yes_ask ?? m.yes_price ?? null) : (m.no_ask ?? m.no_price ?? null),
+      executionPrice: side === 'yes'
+        ? (m.yes_ask_dollars ?? (m.yes_ask ? m.yes_ask / 100 : null))
+        : (m.no_ask_dollars ?? (m.no_ask ? m.no_ask / 100 : null)),
       closeTime: m.close_time || m.closeTime,
       raw: m,
     });

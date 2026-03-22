@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-require('dotenv').config({ path: '/root/PastaOS/.env' });
+require('dotenv').config({ path: '/root/PastaOS/.env', override: true });
 /**
  * index.js — Vantage main scan + execute runner
  *
@@ -34,7 +34,8 @@ async function main() {
   const doExec = args.has('--exec');
   const dryRun = args.has('--dry-run');
 
-  const targetUserId = allArgs[allArgs.indexOf('--user') + 1] || null;
+  const userFlagIdx = allArgs.indexOf('--user');
+  const targetUserId = (userFlagIdx >= 0 && allArgs[userFlagIdx + 1]) ? allArgs[userFlagIdx + 1] : null;
 
   // ── Scan ──────────────────────────────────────────────────────────────────
   // Always load user profile to determine market mode (live vs demo)
@@ -110,7 +111,7 @@ async function main() {
           console.log(`  ⏭  First rejection: ${result.reason}`);
         }
         // Stop after daily limits hit
-        if (result.reason?.includes('daily_')) break;
+        if (String(result.reason || '').includes('daily_')) break;
       }
     }
 

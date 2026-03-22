@@ -8,15 +8,14 @@
 
 'use strict';
 
-require('dotenv').config({ path: '/root/PastaOS/.env' });
+require('dotenv').config({ path: '/root/PastaOS/.env', override: true });
 
 const fetch = (...args) => import('node-fetch').then(m => m.default(...args));
 
 const API_BASE   = process.env.VANTAGE_APP_URL   || 'https://app.yourvantage.ai';
-const API_SECRET = process.env.INTERNAL_API_SECRET;
-
-if (!API_SECRET) {
-  console.warn('[user-profile] INTERNAL_API_SECRET not set in /root/PastaOS/.env — user loading will fail');
+// Read secret lazily so dotenv has time to load
+function getSecret() {
+  return process.env.INTERNAL_API_SECRET || '';
 }
 
 // ─── Risk profile presets ─────────────────────────────────────────────────────
@@ -40,7 +39,7 @@ const RISK_PRESETS = {
 
 async function apiGet(path) {
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'x-internal-secret': API_SECRET, 'Content-Type': 'application/json' },
+    headers: { 'x-internal-secret': getSecret(), 'Content-Type': 'application/json' },
   });
   if (!res.ok) throw new Error(`Internal API ${path} returned ${res.status}`);
   return res.json();
