@@ -35,9 +35,12 @@ function inferCategory(market) {
 }
 
 function marketPrices(m) {
-  const yes = Number(m.yes_ask ?? m.yes_price ?? m.last_price ?? 0);
-  const no = Number(m.no_ask ?? (yes ? 100 - yes : 0));
-  return { yes: yes / 100, no: no / 100 };
+  // Live API returns _dollars fields (0.0-1.0); demo returns integer cents (0-100)
+  let yes = Number(m.yes_ask_dollars ?? m.yes_ask ?? m.yes_price ?? m.last_price_dollars ?? m.last_price ?? 0);
+  // If value > 1, it's in cents format — convert
+  if (yes > 1) yes = yes / 100;
+  const no = 1 - yes;
+  return { yes, no };
 }
 
 function estimatedProb(market, category) {
@@ -62,31 +65,43 @@ function estimatedProb(market, category) {
   return Math.max(0.01, Math.min(0.99, centered + edgeBps / 10000));
 }
 
-// Simple in-memory market cache to avoid hammering the API every minute
-let _marketCache = null;
-let _marketCacheTs = 0;
+// Target series to scan — specific game markets with real liquidity
+const TARGET_SERIES = [
+  'KXNBAGAME', 'KXNBASPREAD', 'KXNBATOTAL',    // NBA
+  'KXMLBGAME', 'KXMLBSPREAD', 'KXMLBTOTAL',    // MLB
+  'KXATPMATCH', 'KXATPSETWINNER',               // ATP Tennis
+  'KXWTAMATCH',                                  // WTA Tennis
+  'KXNCAAMBSPREAD', 'KXNCAAMBTOTAL',            // College basketball
+  'KXNCAAWBTOTAL',                               // Women's college basketball
+  'KXEPLGOAL', 'KXEPLMATCH',                    // EPL Soccer
+  'KXNHLGOAL', 'KXNHLFIRSTGOAL',               // NHL
+  'KXBTC', 'KXETH',                             // Crypto
+];
+
+// In-memory cache per series
+let _seriesCache = {};
+let _seriesCacheTs = {};
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5-minute cache
 
 async function fetchAllActiveMarkets(client) {
   const now = Date.now();
-  if (_marketCache && (now - _marketCacheTs) < CACHE_TTL_MS) {
-    return _marketCache;
-  }
-
-  let cursor = null;
   const all = [];
-  for (let i = 0; i < 10; i++) { // reduced from 20 pages
-    const res = await client.getMarkets({ limit: 200, cursor: cursor || undefined });
-    const markets = res?.markets || res?.data?.markets || [];
-    all.push(...markets);
-    cursor = res?.cursor || res?.data?.cursor || null;
-    if (!cursor || !markets.length) break;
-    // Small delay between pages to avoid rate limits
-    await new Promise(r => setTimeout(r, 200));
+
+  for (const series of TARGET_SERIES) {
+    if (_seriesCache[series] && (now - (_seriesCacheTs[series] || 0)) < CACHE_TTL_MS) {
+      all.push(..._seriesCache[series]);
+      continue;
+    }
+    try {
+      const res = await client.getMarkets({ limit: 100, series_ticker: series });
+      const markets = res?.data?.markets || res?.markets || [];
+      _seriesCache[series] = markets;
+      _seriesCacheTs[series] = now;
+      all.push(...markets);
+      await new Promise(r => setTimeout(r, 100)); // 100ms between series calls
+    } catch (_) {}
   }
 
-  _marketCache = all;
-  _marketCacheTs = now;
   return all;
 }
 
@@ -102,8 +117,23 @@ async function scanKalshiNativeLayer(userProfile = null) {
   const sameDay = markets.filter((m) => {
     const status = String(m.status || '').toLowerCase();
     const isActive = !status || status === 'active' || status === 'open' || status === 'initialized';
-    // Within 48h for tennis/soccer/college tournaments that span multiple days
-    return isActive && isWithinHours(m.close_time || m.closeTime, 48);
+    if (!isActive) return false;
+
+    const ticker = (m.ticker || '').toUpperCase();
+    const closeTime = m.close_time || m.closeTime || '';
+    const ct = new Date(closeTime);
+    const now = new Date();
+
+    // NBA/MLB game markets close at season end but are live NOW — include if genuinely priced
+    // Exclude: KXMVE (complex parlay markets), price=0 or price=1 (no real market)
+    const isKXMVE = ticker.startsWith('KXMVE');
+    if (isKXMVE) return false;
+    const askDollars = parseFloat(m.yes_ask_dollars ?? m.yes_ask ?? 0);
+    const hasRealPrice = askDollars > 0.02 && askDollars < 0.98; // real two-sided market
+    if (hasRealPrice && ct > now) return true;
+
+    // For all others: within 48h window
+    return isWithinHours(closeTime, 48);
   });
 
   const signals = [];
