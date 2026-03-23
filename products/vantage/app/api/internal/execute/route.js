@@ -96,14 +96,18 @@ export async function POST(request) {
     // Record the trade in DB
     const { randomUUID } = await import('crypto');
     const today = new Date().toISOString().slice(0, 10);
-    await sql`
-      INSERT INTO trades (id, user_id, date, market, category, layer, side, ev_pct, kelly_amount,
-                          outcome, pnl, kalshi_order_id, execution_price, source, account_mode, signal_strength)
-      VALUES (${randomUUID()}, ${userId}, ${today}, ${ticker}, ${category || 'kalshi'}, ${layer || 'kalshi_native'},
-              ${side}, ${signalStrength || 0}, ${wagerDollars || 0}, ${'pending'}, ${0},
-              ${orderId || null}, ${wagerDollars || 0}, ${'vantage_engine'}, ${mode}, ${signalStrength || 0})
-      ON CONFLICT (user_id, kalshi_order_id) DO NOTHING
-    `.catch(() => {}); // non-blocking if unique conflict
+    try {
+      await sql`
+        INSERT INTO trades (id, user_id, date, market, category, layer, side, ev_pct, kelly_amount,
+                            outcome, pnl, kalshi_order_id, execution_price, source, account_mode, signal_strength)
+        VALUES (${randomUUID()}, ${userId}, ${today}, ${ticker}, ${category || 'kalshi'}, ${layer || 'kalshi_native'},
+                ${side}, ${signalStrength || 0}, ${wagerDollars || 0}, ${'pending'}, ${0},
+                ${orderId || null}, ${wagerDollars || 0}, ${'vantage_engine'}, ${mode}, ${signalStrength || 0})
+      `;
+    } catch (dbErr) {
+      console.error('Failed to record trade in DB:', dbErr.message, { orderId, ticker, userId });
+      // Trade was placed on Kalshi but DB insert failed — log but don't block response
+    }
 
     return NextResponse.json({ ok: true, orderId, mode, ticker, side, wagerDollars });
 
