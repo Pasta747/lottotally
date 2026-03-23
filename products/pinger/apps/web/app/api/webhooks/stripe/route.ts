@@ -5,6 +5,58 @@ import { getStripe, getStripeWebhookSecret } from "@/lib/stripe";
 import { planFromPriceId } from "@/lib/billing";
 import { trackFunnelEvent } from "../../../../lib/analytics";
 
+function stripeMoney(amount?: number | null, currency?: string | null) {
+  if (typeof amount !== "number") return null;
+  return {
+    amount,
+    currency: (currency ?? "usd").toUpperCase(),
+    amountDollars: Number((amount / 100).toFixed(2)),
+  };
+}
+
+function inferProductName(obj: Record<string, unknown> | null | undefined): string | null {
+  if (!obj) return null;
+
+  const metadata = (obj.metadata as Record<string, unknown> | undefined) ?? {};
+  const fromMeta = metadata.product_name ?? metadata.product ?? metadata.plan;
+  if (typeof fromMeta === "string" && fromMeta.trim()) return fromMeta;
+
+  if (typeof obj.description === "string" && obj.description.trim()) {
+    return obj.description;
+  }
+
+  return null;
+}
+
+async function captureStripeSignal(event: Stripe.Event) {
+  if (!["payment_intent.succeeded", "charge.refunded", "charge.dispute.created"].includes(event.type)) {
+    return;
+  }
+
+  const object = event.data.object as Record<string, unknown>;
+  const amount = typeof object.amount === "number" ? object.amount : null;
+  const currency = typeof object.currency === "string" ? object.currency : null;
+
+  const customerEmail =
+    (typeof object.receipt_email === "string" && object.receipt_email) ||
+    (typeof object["customer_email"] === "string" && (object["customer_email"] as string)) ||
+    null;
+
+  const normalizedEvent = event.type === "charge.dispute.created" ? "dispute.created" : event.type;
+
+  await trackFunnelEvent({
+    event: `stripe.${normalizedEvent}`,
+    source: "stripe_webhook",
+    metadata: {
+      stripeEventType: event.type,
+      stripeEventId: event.id,
+      customerEmail,
+      productName: inferProductName(object),
+      ...stripeMoney(amount, currency),
+    },
+  });
+}
+
 function toDate(ts?: number | null): Date | null {
   if (!ts) return null;
   return new Date(ts * 1000);
@@ -110,6 +162,8 @@ export async function POST(req: Request) {
 
   try {
     const stripe = getStripe();
+
+    await captureStripeSignal(event).catch(() => undefined);
 
     if (
       event.type === "checkout.session.completed" ||

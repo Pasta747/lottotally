@@ -6,6 +6,7 @@ const upsertSubscription = vi.fn();
 const createEvent = vi.fn();
 const updateEvent = vi.fn();
 const deleteEvent = vi.fn();
+const trackFunnelEvent = vi.fn();
 
 vi.mock("@/lib/billing", () => ({ planFromPriceId: () => "AGENCY" }));
 
@@ -15,6 +16,13 @@ vi.mock("@/lib/stripe", () => ({
     subscriptions: { retrieve: retrieveSubscription },
   }),
   getStripeWebhookSecret: () => "whsec_test",
+}));
+
+vi.mock("@/lib/analytics", () => ({
+  trackFunnelEvent,
+}));
+vi.mock("../lib/analytics", () => ({
+  trackFunnelEvent,
 }));
 
 vi.mock("@/lib/prisma", () => ({
@@ -27,6 +35,7 @@ vi.mock("@/lib/prisma", () => ({
 describe("POST /api/webhooks/stripe", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    trackFunnelEvent.mockResolvedValue(undefined);
   });
 
   it("ignores duplicate webhook events", async () => {
@@ -63,5 +72,39 @@ describe("POST /api/webhooks/stripe", () => {
     expect(res.status).toBe(200);
     expect(upsertSubscription).toHaveBeenCalledOnce();
     expect(updateEvent).toHaveBeenCalledOnce();
+  });
+
+  it("captures payment/refund/dispute events to posthog funnel pipeline", async () => {
+    constructEvent.mockReturnValue({
+      id: "evt_3",
+      type: "payment_intent.succeeded",
+      data: {
+        object: {
+          amount: 7900,
+          currency: "usd",
+          description: "Pinger Studio",
+          receipt_email: "buyer@example.com",
+        },
+      },
+    });
+    createEvent.mockResolvedValue({ id: "w2" });
+
+    const { POST } = await import("../app/api/webhooks/stripe/route");
+    const res = await POST(new Request("http://localhost/api/webhooks/stripe", { method: "POST", headers: { "stripe-signature": "sig" }, body: "{}" }));
+
+    expect(res.status).toBe(200);
+    expect(trackFunnelEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: "stripe.payment_intent.succeeded",
+        source: "stripe_webhook",
+        metadata: expect.objectContaining({
+          customerEmail: "buyer@example.com",
+          productName: "Pinger Studio",
+          amount: 7900,
+          currency: "USD",
+          amountDollars: 79,
+        }),
+      }),
+    );
   });
 });
