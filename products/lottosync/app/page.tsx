@@ -135,6 +135,9 @@ export default function Home() {
               <Link href="/signup" className="rounded-lg bg-indigo-500 px-5 py-3 font-medium text-white hover:bg-indigo-400">
                 Start Free Trial
               </Link>
+              <Link href="/calculator" className="rounded-lg border border-white/20 px-5 py-3 font-medium text-slate-100 hover:bg-white/10">
+                Free Loss Calculator
+              </Link>
               <a href="#pricing" className="rounded-lg border border-white/20 px-5 py-3 font-medium text-slate-100 hover:bg-white/10">
                 View Pricing
               </a>
