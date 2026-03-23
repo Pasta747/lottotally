@@ -1,0 +1,31 @@
+{
+  "layers": {
+    "sports": {
+      "weight": 1
+    },
+    "kalshi_native": {
+      "weight": 0.95
+    },
+    "news": {
+      "weight": 1
+    }
+  },
+  "categories": {
+    "sports_weight": 0.95,
+    "politics_weight": 1,
+    "economics_weight": 1,
+    "weather_weight": 1,
+    "crypto_weight": 1,
+    "entertainment_weight": 1,
+    "tennis_weight": 0.9,
+    "college_basketball_weight": 0.9
+  },
+  "sources": {
+    "fred_weight": 1,
+    "noaa_weight": 1,
+    "newsapi_weight": 1,
+    "coingecko_weight": 1
+  },
+  "perf": {},
+  "updatedAt": "2026-03-23T15:09:42.767Z"
+}

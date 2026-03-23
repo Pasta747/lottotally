@@ -7,8 +7,11 @@
 
 import { NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
-import { decrypt } from '../../../utils/encryption';
+import { decrypt } from '../../../utils/encryption'; // Corrected import path
 import crypto from 'crypto';
+
+// Decision Journal Integration - REMOVED: Cannot import local filesystem modules on Vercel.
+// The Vercel API route should only interact with the database.
 
 const KALSHI_BASES = {
   demo: 'https://demo-api.kalshi.co/trade-api/v2',
@@ -21,7 +24,7 @@ function checkSecret(request) {
 }
 
 function kalshiSign(pem, method, path, ts) {
-  const msg = `${ts}${method.toUpperCase()}${API_PREFIX}${path.split('?')[0]}`;
+  const msg = `\${ts}\${method.toUpperCase()}\${API_PREFIX}\${path.split('?')[0]}`;
   const sign = crypto.createSign('RSA-SHA256');
   sign.update(msg);
   sign.end();
@@ -32,26 +35,31 @@ export async function POST(request) {
   if (!checkSecret(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { userId, ticker, side, count, wagerDollars, marketPrice, signalStrength, category, layer } = await request.json();
+    const body = await request.json();
+    const { userId, ticker, side, count, wagerDollars, marketPrice, signalStrength, category, layer, title } = body;
 
     if (!userId || !ticker || !side) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Load user keys
+    // Look up user's Kalshi API keys
     const keyRow = await sql`
       SELECT kalshi_key_id, kalshi_secret_encrypted, kalshi_mode,
              kalshi_live_key_id, kalshi_live_secret_encrypted
       FROM user_api_keys WHERE user_id = ${userId}
     `;
-    if (!keyRow.rows.length) return NextResponse.json({ error: 'No keys for user' }, { status: 404 });
+    if (!keyRow.rows.length) {
+      return NextResponse.json({ error: 'No keys for user' }, { status: 404 });
+    }
 
     const row = keyRow.rows[0];
     const mode = row.kalshi_mode || 'live';
     const rawKeyId = mode === 'live' ? (row.kalshi_live_key_id || row.kalshi_key_id) : row.kalshi_key_id;
     const encSecret = mode === 'live' ? (row.kalshi_live_secret_encrypted || row.kalshi_secret_encrypted) : row.kalshi_secret_encrypted;
 
-    if (!rawKeyId || !encSecret) return NextResponse.json({ error: 'No keys configured for mode: ' + mode }, { status: 400 });
+    if (!rawKeyId || !encSecret) {
+      return NextResponse.json({ error: `No keys configured for mode: ${mode}` }, { status: 400 });
+    }
 
     let keyId = rawKeyId;
     if (keyId?.includes(':')) keyId = keyId.split(':')[0].trim();
@@ -59,7 +67,7 @@ export async function POST(request) {
     const pem = decrypt(encSecret);
     const base = KALSHI_BASES[mode] || KALSHI_BASES.live;
 
-    // Place the order
+    // Sign and place the order
     const ts = Date.now();
     const orderPath = '/portfolio/orders';
     const sig = kalshiSign(pem, 'POST', orderPath, ts);
@@ -70,7 +78,6 @@ export async function POST(request) {
       side,
       type: 'limit',
       count: count || 1,
-      // Kalshi price = market ask price in cents (1-99), NOT the Kelly stake amount
       [`${side}_price`]: Math.round((marketPrice || 0.5) * 100),
     };
 
@@ -88,25 +95,27 @@ export async function POST(request) {
     const data = await res.json().catch(() => null);
 
     if (!res.ok) {
+      console.error('Kalshi API error:', { status: res.status, error: data?.error || data, ticker, userId, mode });
       return NextResponse.json({ ok: false, status: res.status, error: data?.error || data, mode }, { status: 200 });
     }
 
     const orderId = data?.order?.order_id;
-
-    // Record the trade in DB
-    const { randomUUID } = await import('crypto');
     const today = new Date().toISOString().slice(0, 10);
+
+    // Persist trade to DB — ON CONFLICT updates outcome/pnl for idempotency
     try {
       await sql`
         INSERT INTO trades (id, user_id, date, market, category, layer, side, ev_pct, kelly_amount,
                             outcome, pnl, kalshi_order_id, execution_price, source, account_mode, signal_strength)
-        VALUES (${randomUUID()}, ${userId}, ${today}, ${ticker}, ${category || 'kalshi'}, ${layer || 'kalshi_native'},
-                ${side}, ${signalStrength || 0}, ${wagerDollars || 0}, ${'pending'}, ${0},
-                ${orderId || null}, ${wagerDollars || 0}, ${'vantage_engine'}, ${mode}, ${signalStrength || 0})
+        VALUES (${crypto.randomUUID()}, ${userId}, ${today}, ${ticker}, ${category || 'kalshi'}, ${layer || 'kalshi_native'},
+                ${side}, ${signalStrength || 0}, ${wagerDollars || 0}, 'pending', 0,
+                ${orderId || null}, ${wagerDollars || 0}, 'vantage_engine', ${mode}, ${signalStrength || 0})
       `;
     } catch (dbErr) {
-      console.error('Failed to record trade in DB:', dbErr.message, { orderId, ticker, userId });
-      // Trade was placed on Kalshi but DB insert failed — log but don't block response
+      // CRITICAL: Surface DB errors instead of silently swallowing them
+      console.error('DB INSERT failed for trade:', { orderId, ticker, userId, error: dbErr.message });
+      // Trade was placed on Kalshi successfully, so still return ok but flag DB issue
+      return NextResponse.json({ ok: true, orderId, mode, ticker, side, wagerDollars, dbWarning: 'Trade placed but DB write failed: ' + dbErr.message });
     }
 
     return NextResponse.json({ ok: true, orderId, mode, ticker, side, wagerDollars });

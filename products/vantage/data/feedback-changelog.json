@@ -1,0 +1,25 @@
+[
+  {
+    "ts": "2026-03-23T15:09:42.772Z",
+    "changes": [
+      {
+        "type": "category_decrease",
+        "category": "tennis",
+        "winRate": "0.0%",
+        "oldWeight": 1,
+        "newWeight": 0.9,
+        "reason": "Win rate below 30%"
+      },
+      {
+        "type": "category_decrease",
+        "category": "college_basketball",
+        "winRate": "5.9%",
+        "oldWeight": 1,
+        "newWeight": 0.9,
+        "reason": "Win rate below 30%"
+      }
+    ],
+    "atlasUpdates": 0,
+    "reportDate": "2026-03-23T15:09:42.698Z"
+  }
+]

@@ -1,0 +1,94 @@
+{
+  "generatedAt": "2026-03-23T15:09:42.698Z",
+  "totalTrades": 100,
+  "byCategory": {
+    "tennis": {
+      "trades": 15,
+      "wins": 0,
+      "losses": 10,
+      "pending": 5,
+      "totalPnl": -10,
+      "winRate": "0.0%",
+      "avgPnl": -1
+    },
+    "college_basketball": {
+      "trades": 85,
+      "wins": 5,
+      "losses": 80,
+      "pending": 0,
+      "totalPnl": -80,
+      "winRate": "5.9%",
+      "avgPnl": -0.94
+    }
+  },
+  "bySignalStrengthBucket": {
+    "5-6%": {
+      "trades": 100,
+      "wins": 5,
+      "losses": 90,
+      "winRate": "5.3%",
+      "totalPnl": -90
+    },
+    "6-7%": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": "N/A",
+      "totalPnl": 0
+    },
+    "7-8%": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": "N/A",
+      "totalPnl": 0
+    },
+    "8%+": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": "N/A",
+      "totalPnl": 0
+    }
+  },
+  "byEstimatedProbBucket": {
+    "<10%": {
+      "trades": 2,
+      "wins": 0,
+      "losses": 2,
+      "winRate": "0.0%",
+      "totalPnl": -2
+    },
+    "10-15%": {
+      "trades": 98,
+      "wins": 5,
+      "losses": 88,
+      "winRate": "5.4%",
+      "totalPnl": -88
+    },
+    "15-20%": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": "N/A",
+      "totalPnl": 0
+    },
+    "20%+": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": "N/A",
+      "totalPnl": 0
+    }
+  },
+  "signalCorrelation": {
+    "avgWinSignal": 0.0523,
+    "avgLossSignal": 0.0515,
+    "higherSignalPredictsWin": true
+  },
+  "probAccuracy": {
+    "modelCloserCount": 5,
+    "marketCloserCount": 90,
+    "modelBetter": false
+  }
+}

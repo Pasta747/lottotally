@@ -1,0 +1,802 @@
+[
+  {
+    "success": true,
+    "checked": 41,
+    "settled": 41,
+    "wins": 20,
+    "losses": 21,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-21T22:11:20.637Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-21T22:14:23.345Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-21T22:44:25.236Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-21T23:14:23.304Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-21T23:44:23.998Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T00:14:25.223Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T00:44:23.116Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T01:14:23.220Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T01:44:26.289Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T02:14:23.837Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T02:44:24.275Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T03:14:23.599Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T03:44:23.724Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T04:14:26.858Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T04:44:24.453Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T05:24:10.267Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T06:12:40.377Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T07:11:25.289Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T07:54:17.185Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T08:06:47.373Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T08:48:58.566Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T09:15:56.071Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T09:54:57.682Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T10:15:59.682Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T11:13:47.095Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T11:15:58.977Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T12:15:21.053Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T12:35:52.598Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T13:32:20.985Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T13:49:36.010Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T14:36:56.895Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T14:49:36.072Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T15:19:37.060Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T15:49:35.741Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T16:19:35.400Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T16:49:35.744Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T17:19:37.300Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T17:49:35.527Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T18:19:34.160Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T18:49:36.971Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T19:19:34.204Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T19:49:34.815Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T20:19:34.756Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T22:19:35.090Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T22:49:37.471Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T23:19:35.033Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-22T23:49:36.597Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T00:19:35.646Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T00:49:35.610Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T01:19:35.648Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T01:49:35.237Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T02:19:35.663Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T02:49:36.202Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T03:19:37.543Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T03:49:35.311Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T04:19:35.353Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T04:49:50.139Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T05:19:51.516Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T05:49:49.830Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T06:19:51.382Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T06:49:51.417Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T07:19:51.515Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T07:49:54.388Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T08:19:51.550Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T08:49:52.857Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T09:19:51.270Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T09:49:52.253Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T10:19:51.114Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T10:49:52.722Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T11:19:52.523Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T11:49:51.099Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T12:19:52.472Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T12:49:51.979Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T13:19:51.047Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T13:49:51.569Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T14:17:52.359Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T14:20:15.608Z"
+  },
+  {
+    "success": true,
+    "checked": 0,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 0,
+    "errors": 0,
+    "ts": "2026-03-23T14:30:17.403Z"
+  },
+  {
+    "success": true,
+    "checked": 5,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 5,
+    "errors": 0,
+    "ts": "2026-03-23T14:39:25.064Z"
+  },
+  {
+    "success": true,
+    "checked": 5,
+    "settled": 0,
+    "wins": 0,
+    "losses": 0,
+    "skipped": 5,
+    "errors": 0,
+    "ts": "2026-03-23T14:49:51.555Z"
+  }
+]

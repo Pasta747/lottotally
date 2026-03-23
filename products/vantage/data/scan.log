@@ -1,0 +1,500 @@
+Signals found: 151
+  1. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-SIN NO @4¢ strength=4.2%
+  2. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @68¢ strength=4.2%
+  3. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @40¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-144 NO @65¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23USCSCAR-125 NO @71¢ strength=4.2%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23USCSCAR-122 NO @62¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23USCSCAR-119 NO @50¢ strength=4.2%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23USCSCAR-116 NO @39¢ strength=4.2%
+  9. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-139 NO @66¢ strength=4.2%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-136 NO @57¢ strength=4.2%
+  11. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-133 NO @44¢ strength=4.2%
+  12. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-127 NO @50¢ strength=4.2%
+  13. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ALALOU-116 NO @26¢ strength=4.2%
+  14. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @4¢ strength=4.2%
+  15. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-126 NO @49¢ strength=4.2%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 151
+[2026-03-23T14:01:04Z] Signals found: 151   → Placed: 0 | Rejected/filtered: 151 
+[2026-03-23T14:05:47Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+(node:549486) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 150
+  1. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-SIN NO @4¢ strength=4.2%
+  2. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @68¢ strength=4.2%
+  3. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @37¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UKWVU-121 NO @71¢ strength=4.2%
+  5. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @4¢ strength=4.2%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-126 NO @49¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-123 NO @33¢ strength=4.2%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UKWVU-118 NO @63¢ strength=4.2%
+  9. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UKWVU-115 NO @50¢ strength=4.2%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UKWVU-112 NO @36¢ strength=4.2%
+  11. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-126 NO @60¢ strength=4.2%
+  12. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-123 NO @48¢ strength=4.2%
+  13. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-120 NO @28¢ strength=4.2%
+  14. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @73¢ strength=4.2%
+  15. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-133 NO @71¢ strength=4.2%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 150
+[2026-03-23T14:05:47Z] Signals found: 150   → Placed: 0 | Rejected/filtered: 150 
+[2026-03-23T14:10:48Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🛡️ auth for agents: https://vestauth.com
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+(node:550062) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 149
+  1. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-SIN NO @4¢ strength=4.2%
+  2. L2 [tennis] KXATPSETWINNER-26MAR24KORLAN-2-KOR NO @39¢ strength=4.2%
+  3. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @97¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @36¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-127 NO @50¢ strength=4.2%
+  6. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @4¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-126 NO @49¢ strength=4.2%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-123 NO @33¢ strength=4.2%
+  9. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-129 NO @71¢ strength=4.2%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-139 NO @66¢ strength=4.2%
+  11. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @19¢ strength=4.1%
+  12. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-144 NO @65¢ strength=4.1%
+  13. L2 [tennis] KXATPSETWINNER-26MAR24VACFIL-2-FIL NO @45¢ strength=4.0%
+  14. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27ALAMICH-163 NO @55¢ strength=4.0%
+  15. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-133 NO @71¢ strength=4.0%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 149
+[2026-03-23T14:10:48Z] Signals found: 149   → Placed: 0 | Rejected/filtered: 149 
+[2026-03-23T14:15:45Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🛡️ auth for agents: https://vestauth.com
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🛡️ auth for agents: https://vestauth.com
+(node:550632) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 146
+  1. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-SIN NO @4¢ strength=4.2%
+  2. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @3¢ strength=4.2%
+  3. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @68¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UKWVU-121 NO @71¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23USCSCAR-125 NO @71¢ strength=4.2%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-130 NO @57¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @33¢ strength=4.2%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-144 NO @65¢ strength=4.2%
+  9. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-126 NO @49¢ strength=4.2%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-123 NO @33¢ strength=4.2%
+  11. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @73¢ strength=4.2%
+  12. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-133 NO @71¢ strength=4.2%
+  13. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-127 NO @50¢ strength=4.2%
+  14. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @19¢ strength=4.0%
+  15. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-147 NO @72¢ strength=4.0%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 146
+[2026-03-23T14:15:45Z] Signals found: 146   → Placed: 0 | Rejected/filtered: 146 
+[2026-03-23T14:20:45Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  suppress all logs with { quiet: true }
+(node:551390) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 146
+  1. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-SIN NO @4¢ strength=4.2%
+  2. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @3¢ strength=4.2%
+  3. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @68¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27ALAMICH-157 NO @17¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-144 NO @65¢ strength=4.2%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-138 NO @43¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23USCSCAR-125 NO @71¢ strength=4.2%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-127 NO @50¢ strength=4.2%
+  9. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @29¢ strength=4.2%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-126 NO @49¢ strength=4.2%
+  11. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-123 NO @33¢ strength=4.2%
+  12. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UKWVU-121 NO @71¢ strength=4.2%
+  13. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-129 NO @63¢ strength=4.2%
+  14. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @73¢ strength=4.2%
+  15. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @19¢ strength=4.1%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 146
+[2026-03-23T14:20:45Z] Signals found: 146   → Placed: 0 | Rejected/filtered: 146 
+[2026-03-23T14:25:43Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+(node:552008) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 146
+  1. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-SIN NO @4¢ strength=4.2%
+  2. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @68¢ strength=4.2%
+  3. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-138 NO @43¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23USCSCAR-125 NO @71¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-127 NO @50¢ strength=4.2%
+  6. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @4¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @25¢ strength=4.2%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-126 NO @49¢ strength=4.2%
+  9. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-123 NO @33¢ strength=4.2%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UKWVU-121 NO @71¢ strength=4.2%
+  11. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @73¢ strength=4.2%
+  12. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26IOWANEB-119 NO @28¢ strength=4.1%
+  13. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-129 NO @71¢ strength=4.1%
+  14. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27ALAMICH-157 NO @17¢ strength=4.0%
+  15. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @19¢ strength=4.0%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 146
+[2026-03-23T14:25:43Z] Signals found: 146   → Placed: 0 | Rejected/filtered: 146 
+[2026-03-23T14:30:42Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+(node:552680) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 145
+  1. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-SIN NO @4¢ strength=4.2%
+  2. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @68¢ strength=4.2%
+  3. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27SJUDUKE-127 NO @43¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UKWVU-121 NO @71¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ALALOU-119 NO @29¢ strength=4.2%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-123 NO @33¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @73¢ strength=4.2%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-127 NO @50¢ strength=4.2%
+  9. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-124 NO @36¢ strength=4.2%
+  10. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @5¢ strength=4.1%
+  11. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @21¢ strength=4.1%
+  12. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-126 NO @49¢ strength=4.1%
+  13. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-129 NO @67¢ strength=4.1%
+  14. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @19¢ strength=4.0%
+  15. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-129 NO @65¢ strength=4.0%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 145
+[2026-03-23T14:30:42Z] Signals found: 145   → Placed: 0 | Rejected/filtered: 145 
+[2026-03-23T14:35:43Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+(node:553537) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 144
+  1. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-SIN NO @4¢ strength=4.2%
+  2. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @68¢ strength=4.2%
+  3. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23USCSCAR-125 NO @71¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-129 NO @63¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-127 NO @50¢ strength=4.2%
+  6. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @4¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @19¢ strength=4.2%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-123 NO @33¢ strength=4.2%
+  9. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-126 NO @49¢ strength=4.1%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @73¢ strength=4.1%
+  11. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @19¢ strength=4.0%
+  12. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27SJUDUKE-127 NO @40¢ strength=4.0%
+  13. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-147 NO @72¢ strength=4.0%
+  14. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ALALOU-122 NO @62¢ strength=4.0%
+  15. L2 [tennis] KXATPSETWINNER-26MAR22MOUSIN-1-SIN NO @9¢ strength=3.9%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 144
+[2026-03-23T14:35:43Z] Signals found: 144   → Placed: 0 | Rejected/filtered: 144 
+[2026-03-23T14:40:45Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  enable debug logging with { debug: true }
+(node:554110) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 139
+  1. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-SIN NO @4¢ strength=4.2%
+  2. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @3¢ strength=4.2%
+  3. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @95¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-144 NO @65¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-138 NO @43¢ strength=4.2%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-129 NO @71¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-124 NO @36¢ strength=4.2%
+  8. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @19¢ strength=4.2%
+  9. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-123 NO @33¢ strength=4.2%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @73¢ strength=4.2%
+  11. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-133 NO @71¢ strength=4.2%
+  12. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-127 NO @50¢ strength=4.2%
+  13. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-147 NO @72¢ strength=4.1%
+  14. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @19¢ strength=4.0%
+  15. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-129 NO @65¢ strength=4.0%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 139
+[2026-03-23T14:40:45Z] Signals found: 139   → Placed: 0 | Rejected/filtered: 139 
+[2026-03-23T14:45:49Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+(node:573366) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 140
+  1. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-SIN NO @4¢ strength=4.2%
+  2. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @3¢ strength=4.2%
+  3. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @68¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-129 NO @67¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-127 NO @50¢ strength=4.2%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-123 NO @33¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-126 NO @60¢ strength=4.2%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @73¢ strength=4.2%
+  9. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-133 NO @71¢ strength=4.2%
+  10. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @18¢ strength=4.1%
+  11. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27TENNISU-123 NO @35¢ strength=4.1%
+  12. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-147 NO @72¢ strength=4.0%
+  13. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-129 NO @65¢ strength=4.0%
+  14. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-126 NO @49¢ strength=4.0%
+  15. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ALALOU-122 NO @62¢ strength=4.0%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 140
+[2026-03-23T14:45:49Z] Signals found: 140   → Placed: 0 | Rejected/filtered: 140 
+[2026-03-23T14:50:49Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  enable debug logging with { debug: true }
+(node:660265) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 146
+  1. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-SIN NO @4¢ strength=4.2%
+  2. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @3¢ strength=4.2%
+  3. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @68¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-144 NO @65¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-138 NO @43¢ strength=4.2%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-120 NO @28¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-127 NO @50¢ strength=4.2%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-124 NO @36¢ strength=4.2%
+  9. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @43¢ strength=4.2%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-123 NO @33¢ strength=4.2%
+  11. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @73¢ strength=4.2%
+  12. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-147 NO @72¢ strength=4.1%
+  13. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-126 NO @49¢ strength=4.1%
+  14. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @19¢ strength=4.0%
+  15. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ALALOU-122 NO @62¢ strength=4.0%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 146
+[2026-03-23T14:50:49Z] Signals found: 146   → Placed: 0 | Rejected/filtered: 146 
+[2026-03-23T14:55:47Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+(node:740848) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 139
+  1. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27SJUDUKE-127 NO @29¢ strength=4.2%
+  2. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @4¢ strength=4.2%
+  3. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @39¢ strength=4.2%
+  4. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @73¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @46¢ strength=4.1%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-141 NO @53¢ strength=4.1%
+  7. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-147 NO @73¢ strength=4.0%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ALALOU-122 NO @62¢ strength=4.0%
+  9. L2 [tennis] KXATPSETWINNER-26MAR22MOUSIN-1-SIN NO @9¢ strength=3.9%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23USCSCAR-128 NO @78¢ strength=3.9%
+  11. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-136 NO @78¢ strength=3.9%
+  12. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-PAU NO @40¢ strength=3.8%
+  13. L2 [college_basketball] KXNCAAMBSPREAD-26MAR27MSUCONN-CONN16 YES @8¢ strength=3.8%
+  14. L2 [college_basketball] KXNCAAMBSPREAD-26MAR26TEXPUR-TEX8 YES @8¢ strength=3.8%
+  15. L2 [college_basketball] KXNCAAMBSPREAD-26MAR26ILLHOU-HOU17 YES @8¢ strength=3.8%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 139
+[2026-03-23T14:55:47Z] Signals found: 139   → Placed: 0 | Rejected/filtered: 139 
+[2026-03-23T15:00:52Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  suppress all logs with { quiet: true }
+(node:794767) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 142
+  1. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27TENNISU-123 NO @47¢ strength=4.2%
+  2. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UKWVU-121 NO @71¢ strength=4.2%
+  3. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23SYRCONN-133 NO @71¢ strength=4.2%
+  4. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @4¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-147 NO @73¢ strength=4.2%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @73¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @36¢ strength=4.1%
+  8. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-141 NO @50¢ strength=4.1%
+  9. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23OKSTUCLA-132 NO @73¢ strength=4.1%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-129 NO @73¢ strength=4.1%
+  11. L2 [tennis] KXATPSETWINNER-26MAR22MOUSIN-1-SIN NO @11¢ strength=4.0%
+  12. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27SJUDUKE-127 NO @27¢ strength=4.0%
+  13. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ALALOU-122 NO @62¢ strength=4.0%
+  14. L2 [tennis] KXATPSETWINNER-26MAR23SHEHUM-2-HUM NO @38¢ strength=3.9%
+  15. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @41¢ strength=3.9%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 142
+[2026-03-23T15:00:52Z] Signals found: 142   → Placed: 0 | Rejected/filtered: 142 
+[2026-03-23T15:05:47Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+(node:795321) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 139
+  1. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @68¢ strength=4.2%
+  2. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-138 NO @43¢ strength=4.2%
+  3. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-129 NO @66¢ strength=4.2%
+  4. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @4¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-147 NO @72¢ strength=4.2%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @72¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @37¢ strength=4.1%
+  8. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @39¢ strength=4.1%
+  9. L2 [tennis] KXATPSETWINNER-26MAR22MOUSIN-1-SIN NO @11¢ strength=4.0%
+  10. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27ALAMICH-163 NO @50¢ strength=4.0%
+  11. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-141 NO @45¢ strength=4.0%
+  12. L2 [college_basketball] KXNCAAMBSPREAD-26MAR27MSUCONN-CONN16 YES @7¢ strength=3.9%
+  13. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27TENNISU-123 NO @48¢ strength=3.9%
+  14. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ALALOU-122 NO @61¢ strength=3.9%
+  15. L2 [nba] KXNBASPREAD-26MAR23MEMATL-MEM2 YES @8¢ strength=3.8%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 139
+[2026-03-23T15:05:47Z] Signals found: 139   → Placed: 0 | Rejected/filtered: 139 
+[2026-03-23T15:10:42Z] [dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.3.1] injecting env (0) from ../../.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.3.1] injecting env (49) from ../../.env -- tip: ⚙️  suppress all logs with { quiet: true }
+(node:795927) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scanning in LIVE mode for mario.piergallini@gmail.com
+
+── Vantage Scan ──────────────────────────────────
+Layers: L2
+Signals found: 137
+  1. L2 [tennis] KXATPSETWINNER-26MAR24ETCPAU-1-ETC NO @68¢ strength=4.2%
+  2. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-138 NO @43¢ strength=4.2%
+  3. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23UVAIOWA-129 NO @60¢ strength=4.2%
+  4. L2 [tennis] KXATPMATCH-26MAR22MOUSIN-MOU YES @4¢ strength=4.2%
+  5. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-147 NO @72¢ strength=4.2%
+  6. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23NDOSU-142 NO @72¢ strength=4.2%
+  7. L2 [college_basketball] KXNCAAMBTOTAL-26MAR27MSUCONN-121 NO @33¢ strength=4.1%
+  8. L2 [college_basketball] KXNCAAMBTOTAL-26MAR26ARKARIZ-151 NO @36¢ strength=4.1%
+  9. L2 [tennis] KXATPSETWINNER-26MAR22MOUSIN-1-SIN NO @11¢ strength=4.0%
+  10. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ILLVAN-141 NO @49¢ strength=4.0%
+  11. L2 [college_basketball] KXNCAAWBTOTAL-26MAR23ALALOU-122 NO @61¢ strength=3.9%
+  12. L2 [nba] KXNBASPREAD-26MAR23MEMATL-MEM2 YES @8¢ strength=3.8%
+  13. L2 [college_basketball] KXNCAAMBSPREAD-26MAR26ARKARIZ-ARIZ23 YES @8¢ strength=3.8%
+  14. L2 [college_basketball] KXNCAAMBSPREAD-26MAR27TENNISU-TENN12 YES @8¢ strength=3.8%
+  15. L2 [college_basketball] KXNCAAMBSPREAD-26MAR27TENNISU-ISU18 YES @8¢ strength=3.8%
+
+── Execution ─────────────────────────────────────
+Users: 1
+
+User: mario.piergallini@gmail.com | risk=moderate | kelly=0.25 | minStrength=5% | maxWager=$1 | mode=live
+  ⏭  First rejection: signal_too_weak (4.2% < 5.0% threshold for moderate)
+  → Placed: 0 | Rejected/filtered: 137
+[2026-03-23T15:10:42Z] Signals found: 137   → Placed: 0 | Rejected/filtered: 137 
