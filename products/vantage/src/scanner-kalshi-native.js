@@ -2,6 +2,7 @@ const { KalshiClient } = require('/root/PastaOS/Plutus/oddstool-v2/kalshi-client
 const { weightedSignalStrength } = require('./atlas-manager');
 const { estimateNCAASpreadProbForMarket } = require('./models/ncaa-spread-model');
 const { estimateTennisMatchProbForMarket } = require('./models/tennis-model');
+const { estimateMLBProbForMarket } = require('./models/mlb-model');
 
 function isWithinHours(closeTime, hours = 48) {
   if (!closeTime) return false;
@@ -79,6 +80,10 @@ function estimatedProb(market, category) {
   } else if (category === 'tennis') {
     estimateTennisMatchProbForMarket(market).then(r => {
       if (r?.prob != null) _modelCache[ticker] = { prob: r.prob, ts: Date.now(), source: 'tennis-model' };
+    }).catch(() => {});
+  } else if (category === 'mlb') {
+    estimateMLBProbForMarket(market).then(r => {
+      if (r?.prob != null) _modelCache[ticker] = { prob: r.prob, ts: Date.now(), source: 'mlb-model' };
     }).catch(() => {});
   }
 
