@@ -46,6 +46,51 @@ export async function initDB() {
     UNIQUE(user_id, snapshot_date)
   )`;
 }
+export async function migrateV3() {
+  // is_admin flag on users
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE`;
+  // Set Mario as admin
+  await sql`UPDATE users SET is_admin = TRUE WHERE email = ${'mario@yourvantage.ai'}`;
+
+  // Signals table — Plutus's schema (canonical for admin dashboard)
+  await sql`
+    CREATE TABLE IF NOT EXISTS signals (
+      signal_id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      sport              TEXT NOT NULL,
+      league             TEXT NOT NULL,
+      game_id            TEXT NOT NULL,
+      game_date          DATE NOT NULL,
+      home_team          TEXT NOT NULL,
+      away_team          TEXT NOT NULL,
+      market_type        TEXT NOT NULL,
+      selection          TEXT NOT NULL,
+      sportsbook         TEXT NOT NULL DEFAULT 'draftkings',
+      model_probability  FLOAT NOT NULL,
+      fair_probability   FLOAT NOT NULL,
+      ev_percent         FLOAT NOT NULL,
+      kelly_fraction     FLOAT NOT NULL DEFAULT 0.25,
+      stake_usd          FLOAT,
+      did_we_bet         BOOLEAN NOT NULL DEFAULT FALSE,
+      bet_reason         TEXT,
+      min_ev_threshold   FLOAT,
+      market_odds        FLOAT NOT NULL,
+      american_odds      INTEGER,
+      actual_result      TEXT,
+      final_score        TEXT,
+      outcome            TEXT DEFAULT 'pending',
+      profit_loss_usd    FLOAT DEFAULT 0,
+      signal_age_hours   FLOAT
+    )
+  `;
+
+  // Indexes for admin queries
+  await sql`CREATE INDEX IF NOT EXISTS idx_signals_created_at ON signals (created_at DESC)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_signals_sport ON signals (sport)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_signals_outcome ON signals (outcome)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_signals_ev_percent ON signals (ev_percent)`;
+}
+
 export async function migrateV2() {
   await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'vantage'`;
   await sql`ALTER TABLE trades ADD COLUMN IF NOT EXISTS kalshi_order_id TEXT`;
