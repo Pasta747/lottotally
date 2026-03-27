@@ -1,21 +1,22 @@
-import db from "@/lib/db";
+import { sql } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { createScratchBook, markTicketsSold } from "@/app/dashboard/actions";
 
 export default async function ScratchOffsPage() {
   const session = await getSession();
-  const userId = Number(session?.user.id);
+  const userId = session?.user?.id ? Number(session.user.id) : null;
 
-  const books = db
-    .prepare(
-      `SELECT sb.*, COALESCE(SUM(ss.tickets_sold), 0) as sold
-       FROM scratch_books sb
-       LEFT JOIN scratch_sales ss ON sb.id = ss.book_id
-       WHERE sb.user_id = ?
-       GROUP BY sb.id
-       ORDER BY sb.created_at DESC`
-    )
-    .all(userId) as Array<{
+  // Guard: if no valid userId, show empty state instead of crashing
+  if (!userId || isNaN(userId)) {
+    return (
+      <main className="space-y-6">
+        <h1 className="text-3xl font-semibold">Scratch-off Tracker</h1>
+        <p className="text-slate-600">Session error. Please log out and log in again.</p>
+      </main>
+    );
+  }
+
+  let books: Array<{
     id: number;
     game_name: string;
     book_number: string;
@@ -23,7 +24,21 @@ export default async function ScratchOffsPage() {
     face_value: number;
     status: string;
     sold: number;
-  }>;
+  }> = [];
+  try {
+    const booksResult = await sql`
+      SELECT sb.*, COALESCE(SUM(ss.tickets_sold), 0) as sold
+      FROM scratch_books sb
+      LEFT JOIN scratch_sales ss ON sb.id = ss.book_id
+      WHERE sb.user_id = ${userId}
+      GROUP BY sb.id
+      ORDER BY sb.created_at DESC
+    `;
+    books = booksResult as typeof books;
+  } catch (err) {
+    console.error("Failed to load scratch books:", err);
+    // Render with empty books rather than crashing the whole page
+  }
 
   return (
     <main className="space-y-6">
@@ -48,7 +63,7 @@ export default async function ScratchOffsPage() {
         </label>
         <label>
           <p className="mb-1 text-sm text-slate-600">Activated Date</p>
-          <input className="input" name="activated_at" type="date" required defaultValue={new Date().toISOString().split("T")[0]} />
+          <input className="input" name="activated_at" type="date" required defaultValue={'2026-03-24'} />
         </label>
         <button className="btn-primary md:col-span-2" type="submit">
           Add / Activate Book
@@ -89,7 +104,7 @@ export default async function ScratchOffsPage() {
                     className="input"
                     type="date"
                     name="date"
-                    defaultValue={new Date().toISOString().split("T")[0]}
+                    defaultValue={'2026-03-24'}
                     required
                   />
                 </label>
