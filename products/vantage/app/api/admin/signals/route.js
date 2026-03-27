@@ -3,12 +3,12 @@ import { sql } from '@vercel/postgres';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
-const ADMIN_EMAIL = 'mario@yourvantage.ai';
+const ADMIN_EMAILS = ['mario@yourvantage.ai', 'mario.piergallini@gmail.com'];
 
 export async function GET(request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email || session.user.email !== ADMIN_EMAIL) {
+    if (!session?.user?.email || !ADMIN_EMAILS.includes(session.user.email)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -31,13 +31,13 @@ export async function GET(request) {
     let params = [];
     let paramIdx = 1;
 
-    if (sport) { where.push(`sport = $${paramIdx++}`); params.push(sport); }
-    if (category) { where.push(`league = $${paramIdx++}`); params.push(category); }
+    if (sport) { where.push(`sport_label = $${paramIdx++}`); params.push(sport); }
+    if (category) { where.push(`category = $${paramIdx++}`); params.push(category); }
     if (outcome) { where.push(`outcome = $${paramIdx++}`); params.push(outcome); }
     if (dateFrom) { where.push(`created_at >= $${paramIdx++}::date`); params.push(dateFrom); }
     if (dateTo) { where.push(`created_at <= $${paramIdx++}::date`); params.push(dateTo); }
-    if (evMin) { where.push(`ev_percent >= $${paramIdx++}`); params.push(parseFloat(evMin)); }
-    if (evMax) { where.push(`ev_percent <= $${paramIdx++}`); params.push(parseFloat(evMax)); }
+    if (evMin) { where.push(`ev_pct >= $${paramIdx++}`); params.push(parseFloat(evMin)); }
+    if (evMax) { where.push(`ev_pct <= $${paramIdx++}`); params.push(parseFloat(evMax)); }
     if (didWeBet !== null && didWeBet !== undefined && didWeBet !== '') {
       where.push(`did_we_bet = $${paramIdx++}`);
       params.push(didWeBet === 'true');
@@ -47,27 +47,59 @@ export async function GET(request) {
 
     // Total count
     const countResult = await sql`
-      SELECT COUNT(*) as total FROM signals ${sql.unsafe(whereClause)}
+      SELECT COUNT(*) as total FROM signal_events ${sql.unsafe(whereClause)}
     `;
     const total = parseInt(countResult.rows[0]?.total || 0);
 
     // Data query
     const dataResult = await sql`
       SELECT
-        signal_id, created_at, sport, league, game_id, game_date,
-        home_team, away_team, market_type, selection, sportsbook,
-        model_probability, fair_probability, ev_percent, kelly_fraction,
+        id, created_at, sport_label, category, ticker, game,
+        market_question, side, market_price, execution_price,
+        estimated_prob, signal_strength, ev_pct, kelly_fraction,
         stake_usd, did_we_bet, bet_reason, min_ev_threshold,
-        market_odds, american_odds, actual_result, final_score,
-        outcome, profit_loss_usd, signal_age_hours
-      FROM signals
+        actual_result, final_score, outcome, profit_loss_usd,
+        signal_age_hours, layer, source, raw_payload
+      FROM signal_events
       ${sql.unsafe(whereClause)}
       ORDER BY created_at DESC
       LIMIT ${limit} OFFSET ${offset}
     `;
 
+    console.log('Signals query result:', dataResult.rows.length, 'rows', '| filters:', { sport, category, outcome, dateFrom, dateTo, evMin, evMax, didWeBet });
+
+    // Transform rows to match frontend expected field names
+    const signals = dataResult.rows.map(row => ({
+      signal_id: row.id,
+      created_at: row.created_at,
+      sport_label: row.sport_label,
+      category: row.category,
+      ticker: row.ticker,
+      game: row.game,
+      market_question: row.market_question,
+      side: row.side,
+      market_price: row.market_price,
+      execution_price: row.execution_price,
+      model_probability: row.estimated_prob,
+      signal_strength: row.signal_strength,
+      ev_percent: row.ev_pct,
+      kelly_fraction: row.kelly_fraction,
+      stake_usd: row.stake_usd,
+      did_we_bet: row.did_we_bet,
+      bet_reason: row.bet_reason,
+      min_ev_threshold: row.min_ev_threshold,
+      actual_result: row.actual_result,
+      final_score: row.final_score,
+      outcome: row.outcome,
+      profit_loss_usd: row.profit_loss_usd,
+      signal_age_hours: row.signal_age_hours,
+      layer: row.layer,
+      source: row.source,
+      raw_payload: row.raw_payload,
+    }));
+
     return NextResponse.json({
-      signals: dataResult.rows,
+      signals,
       pagination: {
         page,
         limit,

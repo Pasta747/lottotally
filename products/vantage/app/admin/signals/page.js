@@ -210,7 +210,7 @@ export default function SignalsPage() {
               ) : signals.length === 0 ? (
                 <tr>
                   <td colSpan={11} style={{ textAlign: 'center', padding: 40, color: '#9ca3af' }}>
-                    No signals found. {Object.values(filters).some(v => v) ? 'Try clearing filters.' : 'The signals table may be empty.'}
+                    No signals found.{Object.values(filters).some(v => v) ? ' Try clearing filters or adjusting your search criteria.' : ' There are no signals in the database matching your criteria.'}
                   </td>
                 </tr>
               ) : (
