@@ -34,35 +34,72 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-100 p-6">
-      <form onSubmit={handleSubmit} className="card w-full max-w-md space-y-4">
-        <h1 className="text-2xl font-semibold">Log in to LottoTally</h1>
-        <input
-          className="input"
-          placeholder="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          className="input"
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        <button disabled={loading} className="btn-primary w-full" type="submit">
-          {loading ? "Logging in..." : "Log In"}
+    <main className="flex min-h-screen flex-col items-center justify-center bg-slate-100 px-4 pb-8">
+      {/* Logo */}
+      <div className="mb-8 flex flex-col items-center gap-2">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white text-2xl font-bold shadow-lg">
+          L
+        </div>
+        <h1 className="text-2xl font-bold text-slate-900">LottoTally</h1>
+      </div>
+
+      <form onSubmit={handleSubmit} className="card w-full max-w-sm space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold text-slate-900">Welcome back</h2>
+          <p className="mt-1 text-sm text-slate-500">Sign in to your account</p>
+        </div>
+
+        <div className="space-y-3">
+          <div>
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700">Email</label>
+            <input
+              id="email"
+              className="input"
+              placeholder="you@example.com"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-700">Password</label>
+            <input
+              id="password"
+              className="input"
+              placeholder="••••••••"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+            />
+          </div>
+        </div>
+
+        {error && (
+          <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
+
+        <button
+          disabled={loading}
+          className="btn-primary w-full"
+          type="submit"
+        >
+          {loading ? "Signing in..." : "Sign In"}
         </button>
-        <p className="text-center text-sm text-slate-600">
-          New to LottoTally?{" "}
-          <Link className="font-medium text-indigo-600" href="/signup">
-            Start your 14-day free trial
+
+        <div className="flex items-center justify-between text-sm">
+          <Link className="font-medium text-indigo-600 hover:text-indigo-500" href="/signup">
+            Start free trial
           </Link>
-        </p>
+          <Link className="font-medium text-indigo-600 hover:text-indigo-500" href="/forgot-password">
+            Forgot password?
+          </Link>
+        </div>
       </form>
     </main>
   );
