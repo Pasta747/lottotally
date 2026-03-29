@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npx next build --no-turbopack",
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "framework": "nextjs"
