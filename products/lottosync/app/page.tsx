@@ -136,11 +136,6 @@ export default function Home() {
               )}
             </button>
           </div>
-          <div className="hidden items-center gap-2 md:flex">
-            <Link href="/login" className="rounded-md px-3 py-2 text-sm text-slate-300 hover:text-white">Log in</Link>
-            <Link href="/signup" className="rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-100">Start trial</Link>
-          </div>
-        </div>
         {menuOpen && (
           <div className="border-t border-white/10 bg-slate-950 px-4 py-4 md:hidden">
             <nav className="flex flex-col gap-1">
@@ -277,7 +272,7 @@ export default function Home() {
             <ul className="mt-2 space-y-2 text-sm text-slate-400">
               <li><a href="/privacy" className="hover:text-white">Privacy</a></li>
               <li><a href="/terms" className="hover:text-white">Terms</a></li>
-              <li>support@lottotally.com</li>
+              <li>hello@lottotally.com</li>
             </ul>
           </div>
         </div>
