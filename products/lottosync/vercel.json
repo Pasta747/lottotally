@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx next build --no-turbopack",
+  "buildCommand": "POSTGRES_URL=\"postgresql://dummy:dummy@localhost/dummy\" npm run build",
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "framework": "nextjs"
