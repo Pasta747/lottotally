@@ -1,14 +1,25 @@
-import db from "@/lib/db";
+import { sql } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { updateSettings } from "@/app/dashboard/actions";
 
 export default async function SettingsPage() {
   const session = await getSession();
-  const userId = Number(session?.user.id);
+  const userId = Number(session?.user?.id);
 
-  const user = db
-    .prepare("SELECT store_name, state, commission_rate, lottery_terminal_id FROM users WHERE id = ?")
-    .get(userId) as {
+  if (!userId || isNaN(userId)) {
+    return (
+      <main>
+        <h1 className="mb-6 text-3xl font-semibold">Settings</h1>
+        <div className="card">
+          <p className="text-slate-400">Please log in to manage your settings.</p>
+        </div>
+      </main>
+    );
+  }
+
+  // Fetch user data for settings
+  const userResult = await sql`SELECT store_name, state, commission_rate, lottery_terminal_id FROM lt_users WHERE id = ${userId}`;
+  const user = userResult[0] as {
     store_name: string | null;
     state: string | null;
     commission_rate: number;

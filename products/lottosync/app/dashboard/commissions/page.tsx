@@ -1,18 +1,29 @@
-import db from "@/lib/db";
+import { sql } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { createSettlement } from "@/app/dashboard/actions";
 
 export default async function CommissionsPage() {
   const session = await getSession();
-  const userId = Number(session?.user.id);
+  const userId = Number(session?.user?.id);
 
-  const user = db
-    .prepare("SELECT commission_rate FROM users WHERE id = ?")
-    .get(userId) as { commission_rate: number };
+  if (!userId || isNaN(userId)) {
+    return (
+      <main>
+        <h1 className="mb-6 text-3xl font-semibold">Commissions</h1>
+        <div className="card">
+          <p className="text-slate-400">Please log in to view your commission history.</p>
+        </div>
+      </main>
+    );
+  }
 
-  const settlements = db
-    .prepare("SELECT * FROM settlements WHERE user_id = ? ORDER BY date DESC")
-    .all(userId) as Array<{
+  // Fetch user commission rate
+  const userResult = await sql`SELECT commission_rate FROM lt_users WHERE id = ${userId}`;
+  const user = userResult[0] as { commission_rate: number };
+
+  // Fetch settlement history
+  const settlementsResult = await sql`SELECT * FROM settlements WHERE user_id = ${userId} ORDER BY date DESC`;
+  const settlements = settlementsResult as Array<{
     id: number;
     amount: number;
     date: string;
@@ -28,7 +39,7 @@ export default async function CommissionsPage() {
       <form action={createSettlement} className="card grid gap-3 md:grid-cols-2">
         <label>
           <p className="mb-1 text-sm text-slate-600">Settlement Date</p>
-          <input className="input" type="date" name="date" required defaultValue={new Date().toISOString().split("T")[0]} />
+          <input className="input" type="date" name="date" required defaultValue={'2026-03-24'} />
         </label>
         <label>
           <p className="mb-1 text-sm text-slate-600">State Settlement Amount ($)</p>

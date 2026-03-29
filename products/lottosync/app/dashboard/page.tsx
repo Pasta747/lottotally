@@ -1,4 +1,4 @@
-import db from "@/lib/db";
+import { sql } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 
 function formatCurrency(value: number) {
@@ -7,35 +7,53 @@ function formatCurrency(value: number) {
 
 export default async function DashboardPage() {
   const session = await getSession();
-  const userId = Number(session?.user.id);
+  const userId = Number(session?.user?.id);
   const today = new Date().toISOString().split("T")[0];
 
-  const todaySales = db
-    .prepare(
-      "SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total FROM daily_entries WHERE user_id = ? AND date = ?"
-    )
-    .get(userId, today) as { total: number };
+  // New user with no data yet
+  if (!userId || isNaN(userId)) {
+    return (
+      <main>
+        <h1 className="mb-6 text-3xl font-semibold">Dashboard Overview</h1>
+        <div className="card">
+          <p className="text-slate-400">Welcome! Complete your first daily entry to see your dashboard metrics.</p>
+        </div>
+      </main>
+    );
+  }
 
-  const user = db
-    .prepare("SELECT commission_rate FROM users WHERE id = ?")
-    .get(userId) as { commission_rate: number };
+  // Fetch today's sales
+  const todaySalesResult = await sql`
+    SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total 
+    FROM daily_entries 
+    WHERE user_id = ${userId} AND date = ${today}
+  `;
+  const todaySales = todaySalesResult[0] as { total: number };
 
-  const activeBooks = db
-    .prepare("SELECT COUNT(*) as count FROM scratch_books WHERE user_id = ? AND status = 'active'")
-    .get(userId) as { count: number };
+  // Fetch user commission rate
+  const userResult = await sql`SELECT commission_rate FROM lt_users WHERE id = ${userId}`;
+  const user = userResult[0] as { commission_rate: number };
 
-  const shrinkageAlerts = db
-    .prepare(
-      `SELECT COUNT(*) as count
-       FROM scratch_books sb
-       LEFT JOIN (
-         SELECT book_id, SUM(tickets_sold) as sold
-         FROM scratch_sales
-         GROUP BY book_id
-       ) ss ON sb.id = ss.book_id
-       WHERE sb.user_id = ? AND COALESCE(ss.sold, 0) > sb.total_tickets`
-    )
-    .get(userId) as { count: number };
+  // Fetch active scratch-off books count
+  const activeBooksResult = await sql`
+    SELECT COUNT(*) as count 
+    FROM scratch_books 
+    WHERE user_id = ${userId} AND status = 'active'
+  `;
+  const activeBooks = activeBooksResult[0] as { count: number };
+
+  // Fetch shrinkage alerts
+  const shrinkageAlertsResult = await sql`
+    SELECT COUNT(*) as count
+    FROM scratch_books sb
+    LEFT JOIN (
+      SELECT book_id, SUM(tickets_sold) as sold
+      FROM scratch_sales
+      GROUP BY book_id
+    ) ss ON sb.id = ss.book_id
+    WHERE sb.user_id = ${userId} AND COALESCE(ss.sold, 0) > sb.total_tickets
+  `;
+  const shrinkageAlerts = shrinkageAlertsResult[0] as { count: number };
 
   const commissionEarned = (todaySales.total * (user?.commission_rate ?? 5.5)) / 100;
 

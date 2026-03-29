@@ -1,51 +1,66 @@
-import db from "@/lib/db";
+import { sql } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { ReportChart } from "@/components/report-chart";
 
 export default async function ReportsPage() {
   const session = await getSession();
-  const userId = Number(session?.user.id);
+  const userId = Number(session?.user?.id);
 
-  const monthly = db
-    .prepare(
-      `SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total
-       FROM daily_entries
-       WHERE user_id = ? AND date >= date('now', '-30 day')`
-    )
-    .get(userId) as { total: number };
+  // New user with no data yet
+  if (!userId || isNaN(userId)) {
+    return (
+      <main className="space-y-6">
+        <h1 className="text-3xl font-semibold">Reports</h1>
+        <div className="card">
+          <p className="text-slate-400">No account data yet. Complete your first daily entry to see reports.</p>
+        </div>
+      </main>
+    );
+  }
 
-  const weekly = db
-    .prepare(
-      `SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total
-       FROM daily_entries
-       WHERE user_id = ? AND date >= date('now', '-7 day')`
-    )
-    .get(userId) as { total: number };
+  // Fetch weekly sales volume
+  const weeklyResult = await sql`
+    SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total
+    FROM daily_entries
+    WHERE user_id = ${userId} AND date >= (CURRENT_DATE - INTERVAL '7 days')::date
+  `;
+  const weekly = weeklyResult[0] as { total: number };
 
-  const commission = db
-    .prepare(
-      `SELECT
-        COALESCE(AVG(CASE WHEN discrepancy = 0 THEN 100 ELSE MAX(0, 100 - ABS(discrepancy)) END), 100) as accuracy
-       FROM settlements
-       WHERE user_id = ?`
-    )
-    .get(userId) as { accuracy: number };
+  // Fetch monthly sales volume
+  const monthlyResult = await sql`
+    SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total
+    FROM daily_entries
+    WHERE user_id = ${userId} AND date >= (CURRENT_DATE - INTERVAL '30 days')::date
+  `;
+  const monthly = monthlyResult[0] as { total: number };
 
-  const trendRows = db
-    .prepare(
-      `SELECT de.date,
-        COALESCE((de.terminal_sales + de.scratch_sales) * 0.055, 0) as commission_estimate,
-        COALESCE((SELECT SUM(ss.tickets_sold) FROM scratch_sales ss JOIN scratch_books sb ON sb.id = ss.book_id WHERE sb.user_id = ? AND ss.date = de.date), 0) as sold_tickets
-      FROM daily_entries de
-      WHERE de.user_id = ?
-      ORDER BY de.date DESC
-      LIMIT 14`
-    )
-    .all(userId, userId) as Array<{ date: string; commission_estimate: number; sold_tickets: number }>;
+  // Fetch commission accuracy — fix: avoid nested aggregate (MAX inside AVG is invalid SQL)
+  const commissionResult = await sql`
+    SELECT
+      COALESCE(
+        (SELECT CASE WHEN COUNT(*) = 0 OR AVG(ABS(discrepancy)) = 0 THEN 100
+                    ELSE GREATEST(0, 100 - AVG(ABS(discrepancy))) END
+         FROM settlements WHERE user_id = ${userId}),
+        100
+      ) as accuracy
+  `;
+  const commission = commissionResult[0] as { accuracy: number };
+
+  // Fetch trend data for the last 14 days
+  const trendRowsResult = await sql`
+    SELECT de.date,
+      COALESCE((de.terminal_sales + de.scratch_sales) * 0.055, 0) as commission_estimate,
+      COALESCE((SELECT SUM(ss.tickets_sold) FROM scratch_sales ss JOIN scratch_books sb ON sb.id = ss.book_id WHERE sb.user_id = ${userId} AND ss.date = de.date), 0) as sold_tickets
+    FROM daily_entries de
+    WHERE de.user_id = ${userId}
+    ORDER BY de.date DESC
+    LIMIT 14
+  `;
+  const trendRows = trendRowsResult[0] as Array<{ date: string; commission_estimate: number; sold_tickets: number }>;
 
   const chartData = trendRows.reverse().map((row) => ({
-    date: row.date.slice(5),
-    shrinkage: Math.max(0, row.sold_tickets - 100),
+    date: row.date.slice(5), // Display month and day
+    shrinkage: Math.max(0, row.sold_tickets - 100), // Example shrinkage calculation
     commissionAccuracy: Number(commission.accuracy?.toFixed(1) ?? 100),
   }));
 
