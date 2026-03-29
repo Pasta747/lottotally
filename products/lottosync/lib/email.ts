@@ -4,7 +4,7 @@ dotenv.config({ path: '/root/PastaOS/products/lottosync/.env.vercel-production',
 
 const AGENTMAIL_API_BASE = process.env.AGENTMAIL_API_BASE ?? 'https://api.agentmail.to/v0';
 const AGENTMAIL_API_KEY = process.env.AGENTMAIL_API_KEY;
-const AGENTMAIL_FROM_INBOX = process.env.AGENTMAIL_FROM_INBOX ?? 'hello@pingerhq.com';
+const AGENTMAIL_FROM_INBOX = process.env.AGENTMAIL_FROM_INBOX ?? 'hello@lottotally.com';
 
 if (!AGENTMAIL_API_KEY) {
   console.warn('AGENTMAIL_API_KEY not found. Email functionality may not work.');
