@@ -18,6 +18,9 @@ export default function NotFound() {
           <Link href="/dashboard" className="btn-primary block text-center">
             Go to Dashboard
           </Link>
+          <Link href="/login" className="btn-secondary block text-center">
+            Sign In
+          </Link>
           <Link href="/" className="btn-secondary block text-center">
             Back to Home
           </Link>

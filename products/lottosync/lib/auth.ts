@@ -67,6 +67,11 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-export function getSession() {
-  return getServerSession(authOptions);
+export async function getSession() {
+  try {
+    return await getServerSession(authOptions);
+  } catch (err) {
+    console.error("getSession error:", err);
+    return null;
+  }
 }

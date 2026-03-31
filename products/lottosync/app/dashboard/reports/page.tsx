@@ -19,44 +19,64 @@ export default async function ReportsPage() {
   }
 
   // Fetch weekly sales volume
-  const weeklyResult = await sql`
-    SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total
-    FROM daily_entries
-    WHERE user_id = ${userId} AND date >= (CURRENT_DATE - INTERVAL '7 days')::date
-  `;
-  const weekly = weeklyResult[0] as { total: number };
+  let weekly = { total: 0 };
+  try {
+    const weeklyResult = await sql`
+      SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total
+      FROM daily_entries
+      WHERE user_id = ${userId} AND date >= (CURRENT_DATE - INTERVAL '7 days')::date
+    `;
+    weekly = weeklyResult[0] as { total: number };
+  } catch (err) {
+    console.error("DB error (weekly):", err);
+  }
 
   // Fetch monthly sales volume
-  const monthlyResult = await sql`
-    SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total
-    FROM daily_entries
-    WHERE user_id = ${userId} AND date >= (CURRENT_DATE - INTERVAL '30 days')::date
-  `;
-  const monthly = monthlyResult[0] as { total: number };
+  let monthly = { total: 0 };
+  try {
+    const monthlyResult = await sql`
+      SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total
+      FROM daily_entries
+      WHERE user_id = ${userId} AND date >= (CURRENT_DATE - INTERVAL '30 days')::date
+    `;
+    monthly = monthlyResult[0] as { total: number };
+  } catch (err) {
+    console.error("DB error (monthly):", err);
+  }
 
-  // Fetch commission accuracy — fix: avoid nested aggregate (MAX inside AVG is invalid SQL)
-  const commissionResult = await sql`
-    SELECT
-      COALESCE(
-        (SELECT CASE WHEN COUNT(*) = 0 OR AVG(ABS(discrepancy)) = 0 THEN 100
-                    ELSE GREATEST(0, 100 - AVG(ABS(discrepancy))) END
-         FROM settlements WHERE user_id = ${userId}),
-        100
-      ) as accuracy
-  `;
-  const commission = commissionResult[0] as { accuracy: number };
+  // Fetch commission accuracy
+  let commission = { accuracy: 100 };
+  try {
+    const commissionResult = await sql`
+      SELECT
+        COALESCE(
+          (SELECT CASE WHEN COUNT(*) = 0 OR AVG(ABS(discrepancy)) = 0 THEN 100
+                      ELSE GREATEST(0, 100 - AVG(ABS(discrepancy))) END
+           FROM settlements WHERE user_id = ${userId}),
+          100
+        ) as accuracy
+    `;
+    commission = commissionResult[0] as { accuracy: number };
+  } catch (err) {
+    console.error("DB error (commission):", err);
+  }
 
   // Fetch trend data for the last 14 days
-  const trendRowsResult = await sql`
-    SELECT de.date,
-      COALESCE((de.terminal_sales + de.scratch_sales) * 0.055, 0) as commission_estimate,
-      COALESCE((SELECT SUM(ss.tickets_sold) FROM scratch_sales ss JOIN scratch_books sb ON sb.id = ss.book_id WHERE sb.user_id = ${userId} AND ss.date = de.date), 0) as sold_tickets
-    FROM daily_entries de
-    WHERE de.user_id = ${userId}
-    ORDER BY de.date DESC
-    LIMIT 14
-  `;
-  const trendRows = trendRowsResult[0] as Array<{ date: string; commission_estimate: number; sold_tickets: number }>;
+  let trendRows: Array<{ date: string; commission_estimate: number; sold_tickets: number }> = [];
+  try {
+    const trendRowsResult = await sql`
+      SELECT de.date,
+        COALESCE((de.terminal_sales + de.scratch_sales) * 0.055, 0) as commission_estimate,
+        COALESCE((SELECT SUM(ss.tickets_sold) FROM scratch_sales ss JOIN scratch_books sb ON sb.id = ss.book_id WHERE sb.user_id = ${userId} AND ss.date = de.date), 0) as sold_tickets
+      FROM daily_entries de
+      WHERE de.user_id = ${userId}
+      ORDER BY de.date DESC
+      LIMIT 14
+    `;
+    trendRows = trendRowsResult[0] as Array<{ date: string; commission_estimate: number; sold_tickets: number }>;
+  } catch (err) {
+    console.error("DB error (trendRows):", err);
+  }
 
   const chartData = trendRows.reverse().map((row) => ({
     date: row.date.slice(5), // Display month and day
@@ -71,11 +91,11 @@ export default async function ReportsPage() {
       <section className="grid gap-4 md:grid-cols-2">
         <div className="card">
           <p className="text-sm text-slate-500">Weekly P&L (sales volume)</p>
-          <p className="mt-2 text-3xl font-semibold">${weekly.total.toFixed(2)}</p>
+          <p className="mt-2 text-3xl font-semibold">${Number(weekly.total).toFixed(2)}</p>
         </div>
         <div className="card">
           <p className="text-sm text-slate-500">Monthly P&L (sales volume)</p>
-          <p className="mt-2 text-3xl font-semibold">${monthly.total.toFixed(2)}</p>
+          <p className="mt-2 text-3xl font-semibold">${Number(monthly.total).toFixed(2)}</p>
         </div>
       </section>
 

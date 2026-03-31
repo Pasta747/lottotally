@@ -63,7 +63,7 @@ export default async function ScratchOffsPage() {
         </label>
         <label>
           <p className="mb-1 text-sm text-slate-600">Activated Date</p>
-          <input className="input" name="activated_at" type="date" required defaultValue={'2026-03-24'} />
+          <input className="input" name="activated_at" type="date" required defaultValue={new Date().toISOString().split('T')[0]} />
         </label>
         <button className="btn-primary md:col-span-2" type="submit">
           Add / Activate Book
@@ -104,7 +104,7 @@ export default async function ScratchOffsPage() {
                     className="input"
                     type="date"
                     name="date"
-                    defaultValue={'2026-03-24'}
+                    defaultValue={new Date().toISOString().split('T')[0]}
                     required
                   />
                 </label>

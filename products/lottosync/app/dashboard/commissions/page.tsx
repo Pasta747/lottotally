@@ -18,18 +18,34 @@ export default async function CommissionsPage() {
   }
 
   // Fetch user commission rate
-  const userResult = await sql`SELECT commission_rate FROM lt_users WHERE id = ${userId}`;
-  const user = userResult[0] as { commission_rate: number };
+  let user = { commission_rate: 5.5 };
+  try {
+    const userResult = await sql`SELECT commission_rate FROM lt_users WHERE id = ${userId}`;
+    user = userResult[0] as { commission_rate: number };
+  } catch (err) {
+    console.error("DB error (user):", err);
+  }
 
   // Fetch settlement history
-  const settlementsResult = await sql`SELECT * FROM settlements WHERE user_id = ${userId} ORDER BY date DESC`;
-  const settlements = settlementsResult as Array<{
+  let settlements: Array<{
     id: number;
     amount: number;
     date: string;
     expected_amount: number;
     discrepancy: number;
-  }>;
+  }> = [];
+  try {
+    const settlementsResult = await sql`SELECT * FROM settlements WHERE user_id = ${userId} ORDER BY date DESC`;
+    settlements = settlementsResult as Array<{
+      id: number;
+      amount: number;
+      date: string;
+      expected_amount: number;
+      discrepancy: number;
+    }>;
+  } catch (err) {
+    console.error("DB error (settlements):", err);
+  }
 
   return (
     <main className="space-y-6">
@@ -39,7 +55,7 @@ export default async function CommissionsPage() {
       <form action={createSettlement} className="card grid gap-3 md:grid-cols-2">
         <label>
           <p className="mb-1 text-sm text-slate-600">Settlement Date</p>
-          <input className="input" type="date" name="date" required defaultValue={'2026-03-24'} />
+          <input className="input" type="date" name="date" required defaultValue={new Date().toISOString().split('T')[0]} />
         </label>
         <label>
           <p className="mb-1 text-sm text-slate-600">State Settlement Amount ($)</p>
@@ -64,11 +80,11 @@ export default async function CommissionsPage() {
           <tbody>
             {settlements.map((settlement) => (
               <tr key={settlement.id} className="border-t border-slate-100">
-                <td className="py-2">{settlement.date}</td>
-                <td className="py-2">${settlement.amount.toFixed(2)}</td>
-                <td className="py-2">${settlement.expected_amount.toFixed(2)}</td>
+                <td className="py-2">{String(settlement.date).slice(0, 10)}</td>
+                <td className="py-2">${Number(settlement.amount).toFixed(2)}</td>
+                <td className="py-2">${Number(settlement.expected_amount).toFixed(2)}</td>
                 <td className={`py-2 ${settlement.discrepancy === 0 ? "text-slate-700" : "font-semibold text-amber-600"}`}>
-                  ${settlement.discrepancy.toFixed(2)}
+                  ${Number(settlement.discrepancy).toFixed(2)}
                 </td>
               </tr>
             ))}

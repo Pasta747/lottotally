@@ -17,6 +17,15 @@ export async function POST(req: Request) {
     const parsed = signupSchema.safeParse(body);
 
     if (!parsed.success) {
+      const issues = parsed.error.issues;
+      const passwordIssue = issues.find((i) => i.path.includes("password"));
+      if (passwordIssue) {
+        return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
+      }
+      const emailIssue = issues.find((i) => i.path.includes("email"));
+      if (emailIssue) {
+        return NextResponse.json({ error: "Please enter a valid email address" }, { status: 400 });
+      }
       console.error("Signup validation failed:", parsed.error);
       return NextResponse.json({ error: "Invalid signup data" }, { status: 400 });
     }

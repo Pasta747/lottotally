@@ -13,28 +13,46 @@ async function requireUserId() {
   return Number(userResult[0].id);
 }
 
-export async function createDailyEntry(formData: FormData) {
-  const session = await getSession();
-  if (!session?.user?.email) throw new Error("Not logged in. Please log out and log in again.");
+export type ActionState = { error: string | null; success: string | null };
 
-  const userResult = await sql`SELECT id FROM lt_users WHERE email = ${session.user.email.toLowerCase()} LIMIT 1`;
-  if (userResult.length === 0) throw new Error("Account not found. Please log out and log in again.");
-  const userId = Number(userResult[0].id);
+export async function createDailyEntry(_prevState: ActionState | null, formData: FormData): Promise<ActionState> {
+  try {
+    const session = await getSession();
+    if (!session?.user?.email) {
+      return { error: "Not logged in. Please log out and log in again.", success: null };
+    }
 
-  const date = String(formData.get("date") ?? "");
-  const terminal_sales = Number(formData.get("terminal_sales") ?? 0);
-  const scratch_sales = Number(formData.get("scratch_sales") ?? 0);
-  const terminal_report_num = String(formData.get("terminal_report_num") ?? "");
+    const userResult = await sql`SELECT id FROM lt_users WHERE email = ${session.user.email.toLowerCase()} LIMIT 1`;
+    if (userResult.length === 0) {
+      return { error: "Account not found. Please log out and log in again.", success: null };
+    }
+    const userId = Number(userResult[0].id);
 
-  if (!date || !terminal_sales) throw new Error("Missing date or terminal sales");
+    const date = String(formData.get("date") ?? "");
+    const terminal_sales = Number(formData.get("terminal_sales") ?? 0);
+    const scratch_sales = Number(formData.get("scratch_sales") ?? 0);
+    const terminal_report_num = String(formData.get("terminal_report_num") ?? "");
 
-  await sql`
-    INSERT INTO daily_entries (user_id, date, terminal_sales, scratch_sales, terminal_report_num)
-    VALUES (${userId}, ${date}, ${terminal_sales}, ${scratch_sales}, ${terminal_report_num})
-  `;
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/daily");
-  revalidatePath("/dashboard/reports");
+    if (!date || !terminal_sales) {
+      return { error: "Missing date or terminal sales", success: null };
+    }
+
+    await sql`
+      INSERT INTO daily_entries (user_id, date, terminal_sales, scratch_sales, terminal_report_num)
+      VALUES (${userId}, ${date}, ${terminal_sales}, ${scratch_sales}, ${terminal_report_num})
+    `;
+    try {
+      revalidatePath("/dashboard");
+      revalidatePath("/dashboard/daily");
+      revalidatePath("/dashboard/reports");
+    } catch (e) {
+      console.error("revalidatePath error:", e);
+    }
+    return { error: null, success: "Daily entry saved!" };
+  } catch (err) {
+    console.error("createDailyEntry error:", err);
+    return { error: "Failed to save daily entry. Please try again.", success: null };
+  }
 }
 
 export async function insertDailyEntry(

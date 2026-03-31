@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 export default function DashboardLayout({
   children,
@@ -28,9 +29,20 @@ export default function DashboardLayout({
     <div className="flex min-h-screen bg-slate-50">
       {/* Desktop sidebar */}
       <aside className="hidden w-64 flex-col border-r border-slate-200 bg-white md:flex">
-        <div className="flex h-16 items-center gap-2 border-b border-slate-200 px-4">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500 text-sm font-bold text-white">L</span>
-          <span className="font-semibold text-slate-900">LottoTally</span>
+        <div className="flex h-16 items-center justify-between gap-2 border-b border-slate-200 px-4">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500 text-sm font-bold text-white">L</span>
+            <span className="font-semibold text-slate-900">LottoTally</span>
+          </div>
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="text-xs text-slate-400 hover:text-red-600"
+            title="Sign out"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
         </div>
         <nav className="flex-1 space-y-1 p-2">
           {[
@@ -63,6 +75,15 @@ export default function DashboardLayout({
             <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500 text-xs font-bold text-white">L</span>
             <span className="font-semibold text-slate-900">LottoTally</span>
           </div>
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="text-xs text-slate-400 hover:text-red-600"
+            title="Sign out"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
         </header>
 
         {/* Page content */}
