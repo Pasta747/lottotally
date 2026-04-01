@@ -1,8 +1,22 @@
 import { agents, products, sprintTasks } from "@/lib/data";
+import HealthBadge from "@/components/HealthBadge";
+import AgentRoster from "@/components/AgentRoster";
+import ARRTile from "@/components/ARRTile";
+import MarioUnblocks from "@/components/MarioUnblocks";
 
 export default function Overview() {
   return (
     <div className="space-y-6">
+      {/* Mission Control — Agent Health */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <HealthBadge />
+        <AgentRoster />
+        <ARRTile />
+      </div>
+
+      {/* Mario Unblocks */}
+      <MarioUnblocks />
+
       {/* KPI row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KpiCard label="Revenue" value="$0" sub="Day 28 · Target $1M ARR" />
