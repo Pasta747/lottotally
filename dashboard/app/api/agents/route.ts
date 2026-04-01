@@ -3,7 +3,14 @@ import { NextResponse } from 'next/server';
 
 const DATA_FILE = `${process.cwd()}/data/agents.json`;
 
-function readAgents() {
+interface Agent {
+  id: string;
+  status: string;
+  last_updated: string;
+  [key: string]: unknown;
+}
+
+function readAgents(): { last_updated: string; agents: Agent[] } {
   try {
     const raw = readFileSync(DATA_FILE, 'utf-8');
     return JSON.parse(raw);
