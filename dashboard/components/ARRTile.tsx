@@ -37,7 +37,7 @@ export default function ARRTile({ refreshInterval = 60000 }: { refreshInterval?:
         // show last known
       }
     }
-    fetch();
+    loadMetrics();
     const iv = setInterval(loadMetrics, refreshInterval);
     return () => clearInterval(iv);
   }, [refreshInterval]);
