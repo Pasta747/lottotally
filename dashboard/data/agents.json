@@ -1,0 +1,122 @@
+{
+  "last_updated": "2026-03-31T16:30:00Z",
+  "agents": [
+    {
+      "id": "einstein",
+      "name": "Einstein",
+      "role": "CTO",
+      "status": "operational",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "M1: Data API layer",
+      "blocker": null
+    },
+    {
+      "id": "gary",
+      "name": "Gary",
+      "role": "CMO",
+      "status": "operational",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "Pinger content + Google Ads",
+      "blocker": null
+    },
+    {
+      "id": "marcus",
+      "name": "Marcus",
+      "role": "CRO",
+      "status": "operational",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "Instantly cold email campaigns",
+      "blocker": null
+    },
+    {
+      "id": "athena",
+      "name": "Athena",
+      "role": "EA",
+      "status": "operational",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "Daily briefings",
+      "blocker": null
+    },
+    {
+      "id": "plutus",
+      "name": "Plutus",
+      "role": "CIO/Trading",
+      "status": "operational",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "Equity bot + BTC RSI scanner",
+      "blocker": null
+    },
+    {
+      "id": "hera",
+      "name": "Hera",
+      "role": "Vantage GM",
+      "status": "operational",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "Vantage product ownership",
+      "blocker": null
+    },
+    {
+      "id": "artemis",
+      "name": "Artemis",
+      "role": "LottoTally GM",
+      "status": "operational",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "LottoTally QA + launches",
+      "blocker": null
+    },
+    {
+      "id": "iris",
+      "name": "Iris",
+      "role": "Canopy GM",
+      "status": "idle",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "Canopy product ownership",
+      "blocker": null
+    },
+    {
+      "id": "rhea",
+      "name": "Rhea",
+      "role": "Pinger GM",
+      "status": "idle",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "Pinger product ownership",
+      "blocker": null
+    },
+    {
+      "id": "nike",
+      "name": "Nike",
+      "role": "CFO",
+      "status": "operational",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "Financial baseline + ARR tracking",
+      "blocker": null
+    },
+    {
+      "id": "chronos",
+      "name": "Chronos",
+      "role": "Sprint PM",
+      "status": "operational",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "Sprint board maintenance",
+      "blocker": null
+    },
+    {
+      "id": "achille",
+      "name": "Achille",
+      "role": "Research",
+      "status": "operational",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "Special projects",
+      "blocker": null
+    },
+    {
+      "id": "pasta",
+      "name": "Pasta",
+      "role": "COO",
+      "status": "operational",
+      "last_updated": "2026-03-31T16:30:00Z",
+      "current_task": "Operations coordination",
+      "blocker": null
+    }
+  ]
+}

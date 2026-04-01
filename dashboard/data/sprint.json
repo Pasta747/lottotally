@@ -1,0 +1,61 @@
+{
+  "last_updated": "2026-03-31T16:30:00Z",
+  "items": [
+    {
+      "id": "M1",
+      "task": "Data API layer",
+      "owner": "Einstein",
+      "status": "in_progress",
+      "age_hours": 0,
+      "escalation": ""
+    },
+    {
+      "id": "M2",
+      "task": "Staleness timestamps + health badge",
+      "owner": "Einstein",
+      "status": "todo",
+      "age_hours": 0,
+      "escalation": ""
+    },
+    {
+      "id": "M3",
+      "task": "Left sidebar agent roster",
+      "owner": "Einstein",
+      "status": "todo",
+      "age_hours": 0,
+      "escalation": ""
+    },
+    {
+      "id": "M4",
+      "task": "Add all 13 agents to roster",
+      "owner": "Einstein",
+      "status": "todo",
+      "age_hours": 0,
+      "escalation": ""
+    },
+    {
+      "id": "M5",
+      "task": "ARR tile in metrics bar",
+      "owner": "Einstein",
+      "status": "todo",
+      "age_hours": 0,
+      "escalation": ""
+    },
+    {
+      "id": "M6",
+      "task": "Mario unblocks — auto-sort + one-click resolve",
+      "owner": "Einstein",
+      "status": "todo",
+      "age_hours": 0,
+      "escalation": ""
+    },
+    {
+      "id": "LOTTO-001",
+      "task": "LottoTally DASH-001/002/003 critical fixes",
+      "owner": "Einstein",
+      "status": "done",
+      "age_hours": 0,
+      "escalation": ""
+    }
+  ]
+}

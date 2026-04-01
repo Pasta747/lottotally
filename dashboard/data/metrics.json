@@ -1,0 +1,14 @@
+{
+  "last_updated": "2026-03-31T16:30:00Z",
+  "products": {
+    "pinger": { "arr": 0, "forecast": 0, "status": "red", "mrr": 0 },
+    "canopy": { "arr": 0, "forecast": 0, "status": "red", "mrr": 0 },
+    "lottotally": { "arr": 0, "forecast": 0, "status": "red", "mrr": 0 },
+    "vantage": { "arr": 0, "forecast": 0, "status": "red", "mrr": 0 }
+  },
+  "total_arr": 0,
+  "total_mrr": 0,
+  "burn_monthly": 1400,
+  "pipeline": 0,
+  "health": "red"
+}
