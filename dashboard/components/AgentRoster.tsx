@@ -42,7 +42,7 @@ export default function AgentRoster({ refreshInterval = 60000 }: { refreshInterv
   useEffect(() => {
     async function fetchAgents() {
       try {
-        const res = await fetch('/api/data/agents');
+        const res = await fetch('/api/agents');
         const json = await res.json();
         setData(json);
       } catch {

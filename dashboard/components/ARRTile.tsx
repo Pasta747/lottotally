@@ -28,9 +28,9 @@ export default function ARRTile({ refreshInterval = 60000 }: { refreshInterval?:
   const [data, setData] = useState<MetricsResponse | null>(null);
 
   useEffect(() => {
-    async function fetch() {
+    async function loadMetrics() {
       try {
-        const res = await fetch('/api/data/metrics');
+        const res = await window.fetch('/api/metrics');
         const json = await res.json();
         setData(json);
       } catch {
@@ -38,7 +38,7 @@ export default function ARRTile({ refreshInterval = 60000 }: { refreshInterval?:
       }
     }
     fetch();
-    const iv = setInterval(fetch, refreshInterval);
+    const iv = setInterval(loadMetrics, refreshInterval);
     return () => clearInterval(iv);
   }, [refreshInterval]);
 

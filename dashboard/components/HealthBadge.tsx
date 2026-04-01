@@ -21,7 +21,7 @@ export default function HealthBadge({ refreshInterval = 60000 }: { refreshInterv
   useEffect(() => {
     async function fetchHealth() {
       try {
-        const res = await fetch('/api/data/health');
+        const res = await fetch('/api/health');
         const data = await res.json();
         setHealth(data);
         setLastRefresh(new Date().toLocaleTimeString());
