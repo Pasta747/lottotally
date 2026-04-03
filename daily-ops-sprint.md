@@ -1,195 +1,353 @@
-# Sprint Board — Thursday Mar 19, 2026
+# Sprint Board — Wednesday Apr 1, 2026
 
-## 🔴 P0 — Revenue-Blocking (Today)
+## 🔴 P0 — Revenue-Blocking
 
-### Einstein (CTO)
-- [x] **E1: Verify Canopy Stripe checkout e2e** ✅ Verified Mar 19
-- [x] **E2: Pinger onboarding fix** ✅ Verified Mar 19
-- [x] **E3: Pinger checkout buttons linked** ✅ Verified Mar 19
+### Pinger Cold Email — 0 NEW replies since Mar 27 (4+ days)
+- [x] **Wave 2 Instantly package — READY** ✅ 4 campaigns (WP Maintenance, Dev Shops, SaaS, Design Partner) — Email_Copywriter/content/pinger-wave2-instantly-upload.md
+- [ ] P0 — Need Marcus to execute Wave 2 in Instantly
+- [ ] Alex (Finsweet) + Per (Codeable) — follow-up sequence needed TODAY
 
-### Gary (CMO) + Marcus (CRO)
-- [x] **G1+M1: Canopy beta outreach from @canopyfilter** ✅ Copy reviewed, staggered @mention tweets scheduled (X free tier blocks DMs). Wave 1: Morbid 12:15 PT today, Violet 5:15 PT today, ATWWD 11:15 tomorrow, Pop 4:15 tomorrow, The Deck Sat 11:15. Marcus owns replies.
+### LottoTally — DASH Criticals (DEPLOYED ✅)
+- [x] **DASH-001**: `createDailyEntry` fix — **DEPLOYED** ✅ via telegram sub-agent (3:36 PM PT)
+- [x] **DASH-002**: `createSettlement` fix (removed ALTER TABLE, isolated revalidatePath) — **DEPLOYED** ✅ via telegram sub-agent (3:36 PM PT)
+- [x] **DASH-003**: Reports page try-catch + null guards — **DEPLOYED** ✅ via telegram sub-agent (3:36 PM PT)
+- [x] **BLOCKER**: Vercel token expired — RESOLVED via telegram sub-agent deploy
+- [x] **Regression fixes** (404-001, SIGNUP-003, FORGOT-001): **DEPLOYED** ✅
 
-## 🟡 P1 — High Impact (Today/Tomorrow)
+> ⚠️ Einstein was working on this in parallel — stuck ~56 min trying git push. Deploy completed via Telegram sub-agent session. Einstein unaware (session isolation).
 
-### Einstein (CTO)
-- [x] **E4: Website redesign — LottoTally** ✅ Done — lottotally.com 200, Einstein moved to E5. Verified Mar 19
-- [x] **E-digest: Build Canopy digest delivery** ✅ Done — SSL fix applied (`sslmode=no-verify` + `rejectUnauthorized:false`), redeployed, `/api/digest/run` returns 200 with digest stats. Verified Mar 19
-- [ ] **E5: Website redesign — Canopy** (use `clean` or `agentic` design system)
-- [ ] **E6: Website redesign — Pinger** (use `clean` design system)
+### LottoTally QA — 16 Issues (Artemis ownership)
+- [ ] 13 open issues from QA report (Mar 28)
+- [ ] Sprint board fully updated with verification checklist
 
-### Gary (CMO)
-- [x] **G2: Etsy product listing visuals** ✅ Done — template system built (2 skins, 7 templates, metadata schema) at CMO_Gary/content/etsy-template-system.md. Verified Mar 19
-- [x] **G3: Pinger launch assets** ✅ Done — All 5/5 shipped: QA checklist, Proof Kit, One-pager, Trust Snippets, Demo Polish Notes. Offer discrepancy fixed across all assets (commit d0c2e1f). Verified Mar 19
-- [x] **G-social: @pingerhq X posting schedule** ✅ Done — 5 tweets scheduled via cron (Mar 19-20), posting plan + weekly cadence committed (8b16ecb). Verified Mar 19
+### Pinger Cold Email — 0 NEW replies since Mar 27 (3 days)
+- [ ] P0 escalated. Wave 1: 12 sent → 5 replies, 2 interested (Mar 25/26). Wave 2: 44 leads, campaign LIVE Mar 27. 0 new replies since.
+- [ ] Need: Rhea (Pinger GM) + Gary + Marcus to redesign follow-up sequence. Alex (Finsweet) + Per (Codeable) leads are cooling.
+- [ ] BLOCKED: Rhea not engaged. Instantly reply data inaccessible (cannot pull reply bodies).
 
-### Marcus (CRO)
-- [x] **M2: Reply playbook** ✅ Done — canopy-reply-playbook.md, 7 scenarios + setup call script. Verified Mar 19
-- [x] **M3: Pinger cold email Friday prep** ✅ Instantly status check sent, awaiting Gary confirmation on warmup domain readiness
-- [x] **M-onboard: Beta creator onboarding flow** ✅ Done — 7-phase journey (reply → paid at Month 6), canopy-beta-onboarding.md. Verified Mar 19
+## 🟡 P1 — High Impact
 
-### Achille
-- [x] **A1: ATLAS integration plan** ✅ Done — 44-page plan, 30 strategies mapped to 4-layer Darwinian system, $135/mo cost. Verified Mar 19
-- [ ] **A2: Etsy listings push** — **ALL 16 listing copies done** ✅, pricing done ✅, deploy guides ready ✅, **all 16 delivery PDFs done** ✅. 🔴 BLOCKED: Etsy blocks server IP. Mario needs ~2hr from laptop to deploy Sheets + publish. Full catalog ready.
-- [x] **A-price: Etsy pricing research** ✅ Done — `/root/PastaOS/Achille/google-sheets-tools/PRICING-RESEARCH.md`. Prices competitive, no changes needed. Verified Mar 19
+### Canopy — Legal page deployed but EINSTEIN DEPLOY BLOCKED
+- [ ] Legal page code complete ✅ but awaiting Einstein deploy (Vercel token issue)
+
+### Pinger — Pricing page + blog posts written
+- [ ] Pricing page copy ready (5 tiers) — awaiting Einstein build
+- [x] Blog posts written — Pinger-Blog-Post-4 published ✅ (Gary INBOX Mar 31)
+- [ ] Google Ads brief ready — awaiting Mario Google Ads account creation
+
+### Einstein Mission Control — M1/M8 still in progress
+- [ ] M1 (Pinger redesign): paused
+- [ ] M8 (LottoTally M1+data layer): in progress
+- [ ] BLOCKER: M7 (shared data API) must complete before M1/M8 can wire in
 
 ## 🟢 P2 — Important (This Week)
-- [ ] Fix broken cron jobs (Equity Scanner, Marcus standup, Achille standup — session corruption)
-- [ ] Fix Kimi K2 garbage output on Einstein/Gary team standups
-- [ ] Facebook App Secret for long-lived IG token
-- [ ] Rally team on $1M ARR plan (formal revenue targets per product)
+- [ ] Equity Scanner cron — broken (self-recovering timeouts)
+- [ ] Settlement tracker cron — broken (self-recovering timeouts)
+- [ ] Facebook App Secret for long-lived IG token (@canopyfilter)
+- [ ] Etsy publish — Mario laptop needed (16 products ready)
+- [ ] Resend DNS — 4 products need TXT record verification
+- [ ] Vantage scanner threshold — needs lowering from 5% to 2%
+
+## ✅ Recently Completed (Gary/Marcus/Plutus/Athena)
+
+**Gary (20 DONE items, updated Apr 1 5:09 AM PT):**
+- ✅ Pinger pricing page — LIVE at pingerhq.com/pricing ($49/$99/$199 tiers). Confirmed by Mario Apr 1. Gary copy superseded — keeping current live tiers.
+- ✅ Pinger blog post 4 + 3 prior posts
+- ✅ Pinger onboarding emails (Alex + Per Step 1)
+- ✅ X posts week1 Mon–Fri (@pingerhq)
+- ✅ Legal pages all 4 products (8 docs) — Pinger/Canopy/Vantage ✅, LottoTally ✅
+- ✅ LottoTally QA fixes (NAV-001, SIGNUP-003, SEO-001, 404-001)
+- ✅ Pinger Google Ads brief
+- ✅ LottoTally Google Ads copy (3 campaigns, 6 ad groups) — SENT Mar 30
+- ✅ Pinger-Legal-Page ✅ (Gary INBOX Mar 31)
+- ✅ Canopy-Legal-Page ✅ (Gary INBOX Mar 31)
+- ✅ Vantage-Legal-Page ✅ (Gary INBOX Mar 31)
+- ✅ LottoTally Google Ads copy (3 campaigns) ✅ (Gary INBOX Mar 31)
+- ⚠️ AWAITING EINSTEIN DEPLOY: Legal pages (3 products)
+- ✅ Onboarding emails (Alex + Per Step 1)
+- ✅ X posts week1 Mon–Fri (@pingerhq)
+- ✅ Legal pages all 4 products (8 docs)
+- ✅ LottoTally QA fixes (NAV-001, SIGNUP-003, SEO-001, 404-001)
+- ✅ Pinger Google Ads brief
+- ✅ LottoTally Google Ads copy (3 campaigns, 6 ad groups) — SENT Mar 30 8:41 PM PT
+- ✅ INBOX/status.md updated
+- ✅ Operating model v2 acknowledged
+- ⚠️ LottoTally logo variants — COLOR MISMATCH: blue/gold generated but site uses green. Gary flagged. Awaiting Mario decision.
+- ✅ LottoTally calculator page — LIVE at lottotally.com/calculator (200 OK). Built and deployed by Pasta (Apr 1, 8:25 AM PT). Gary's copy, 4-field interactive form, social proof, FAQ, CTA. GitHub 8ccd5a3.
+- ✅ LinkedIn outreach strategy — complete at linkedin/linkedin-outreach-strategy.md — all 4 DM scripts, 2 email scripts, ICP scoring, NVIDIA action plan
+- ✅ Pinger Wave 2 Instantly package — 4 campaigns ready (WP Maintenance, Dev Shops, SaaS, Design Partner) — Email_Copywriter/content/pinger-wave2-instantly-upload.md
+- ✅ LinkedIn strategy + logo variants added to sprint board
+
+**Marcus (stale INBOX, no new items):**
+- ✅ Pinger cold email reply monitoring (46 leads, 0 replies — escalated P0)
+- ✅ Brand consistency audit
+- ✅ LottoTally Google Ads blueprint
+- ✅ MEMORY.md rewrite
+
+**Plutus:**
+- ✅ Spread parser fix
+- ✅ Game-start lock
+- ✅ ESPN game results scraper
+- ✅ NBA/NHL moneyline backtest system
+- ✅ IBKR reconciliation (Mar 2-27)
+- ✅ Signal enrichment pipeline + 5 new models
+- ✅ Vantage settlement tracker (Mar 29: 15 games, 0 signals, 0 errors)
+
+**Athena:**
+- ✅ Prebake briefing + morning briefing (Mar 28)
+- ⚠️ Last status check: 9+ hours ago — briefing overdue for Mar 30
 
 ## Status Tracker
-| Agent | Current Task | Status | Last Check | Next Task |
-|-------|-------------|--------|------------|-----------|
-| Einstein | E6 (Pinger redesign) | 🔄 ~15% — hero/nav/proof-section polish with `clean` system. No blockers. | 10:48 AM Mar 19 | E6 → E5 (Canopy redesign) |
-| Gary | ✅ G-social SHIPPED → Instantly check | 🔥 G-social DONE: 5 @pingerhq tweets scheduled via cron (post_1 11:15 PT today through Fri 1:15 PM). Committed `8b16ecb`. Now asked to browser-verify Instantly warmup — the last open Friday risk. | 10:48 AM Mar 19 | Instantly verification → G-content (Canopy) |
-| Marcus | ✅ All done, monitoring | ✅ HEARTBEAT_OK. All tasks complete. Standing by for Morbid @mention at 12:15 PT (~1h27m). Offer discrepancy handled. Instantly still unverified — escalated 3x to Gary. | 10:48 AM Mar 19 | Monitor Canopy @mentions from 12:15 PT. |
-| Achille | A-filter (spread EV filter) | 🔄 Was idle, assigned spread bet EV filter for OddsTool. All prior tasks ✅. ATLAS cron healthy, 10W/5L +42.1% ROI. Equity Scanner still error (P2). | 10:48 AM Mar 19 | A-filter → support Einstein on BTC ATLAS build. Etsy awaits Mario. |
+| Agent | Current Task | Status | Last Output | Blockers |
+|-------|-------------|--------|-------------|----------|
+| Einstein (CTO) | M1 Data API layer (droplet server) | 🔴 STUCK | ~4.5 HOURS ago (1:40 PM PT) | No exec access to git push. Mario alerted via Telegram 4:13 PM PT. Needs session reset. |
+| Artemis (LottoTally GM) | QA verification + deploy watch | 🔄 Standing by | Current | Waiting for Einstein deploy |
+| Gary (CMO) | 12 items DONE. LottoTally Google Ads sent to Mario. | ✅ Online | Mar 30 8:41 PM | Standing by. Can fire Canopy Wave 2-5 DMs, Reddit posts, more X content on request. |
+| Marcus (CRO) | Silent | ⚠️ Stuck | 34+ min | Mario: Google Ads acct, FB Page, Instantly UI |
+| Plutus (CIO) | Settlement tracker, BTC RSI | ✅ OK | Mar 29 | None |
+| Athena (EA) | Morning briefing | ⚠️ Overdue | Mar 29 PM | Needs Mar 30 briefing |
+| Rhea (Pinger GM) | Pinger cold email P0 | 🔴 Not engaged | Unknown | 7 days zero replies |
 
-## Check-in Log
-<!-- PM agent appends status updates here every 15 min -->
+## Chronos Check Log
+### 3:11 PM Mar 31 PT — Sprint PM Check-in
+**Einstein:** 🟡 BORDERLINE (~30 min, right at threshold) — was actively building M1 Data API layer (droplet server arch), seq 436 output at 3:10:30 PM PT. Architecture confirmed, building. NOT declaring stuck yet — watch next cycle.
+**Gary:** ✅ 16 DONE items in INBOX — legal pages (3 products), pricing page copy, Google Ads brief + copy, X posts, blog posts all ✅. Standing by.
+**Marcus:** ⚠️ Silent since Mar 28. INBOX stale. Blocked on Mario: Google Ads acct, FB Page, Instantly UI (7+ days).
+**Plutus:** ✅ BTC RSI neutral, settlement tracker clean.
+**Athena:** ⚠️ Briefing overdue — last Mar 28 AM. ~30+ hrs since last briefing.
+**Rhea:** 🔴 P0 Pinger cold email — 8+ days 0 replies, not engaged.
+**New DONE items marked:** Pinger-Legal-Page, Canopy-Legal-Page, Vantage-Legal-Page, LottoTally Google Ads copy (Gary INBOX Mar 31).
+**Mario blockers unchanged (7+ days):** Google Ads acct, FB Page, Instantly UI, Canopy X restriction.
+**Tasks remaining:** ~10 (4 Mario-owned, 3 Einstein-owned, 3 Artemis QA).
 
-### 10:48 AM Mar 19 — Sprint PM Check-in #12
-**Einstein:** E6 (Pinger redesign) at **~15%**. Hero/nav/proof-section polish with `clean` system. No blockers. Friday deadline acknowledged. E5 (Canopy) paused at ~20%.
-**Gary:** 🔥 **G-social SHIPPED.** Built full X posting plan (`PINGER_X_POSTING_PLAN.md`) + 5 tweets scheduled via system cron (UTC times verified: post_1 at 11:15 PT today, post_2 3:15 PT, post_3 7:30 PM PT, post_4 Fri 9:15 AM, post_5 Fri 1:15 PM). Scripts in `pinger/x-scripts/`, committed `8b16ecb`. Honest about Instantly: still can't confirm warmup status from his session. Sent him to browser-verify — this is the last open Friday blocker.
-**Marcus:** HEARTBEAT_OK. All tasks complete, nothing new to report. Standing by for 12:15 PT Morbid @mention. Offer alignment handled (Pasta tiers vs Gary's email copy). Instantly unverified — Marcus has asked Gary 3x, no resolution. Escalation path: need someone with browser to check Instantly UI.
-**Achille:** Idle, all prior tasks complete. Paper trades all settled: 10W/5L, +$31.55, +42.1% ROI. ATLAS cron healthy (Sharpe 0.460, weight 0.806). Flagged spread bet EV as unreliable data artifact. **Assigned new task: A-filter (build spread bet EV filter).** Also noted Equity Scanner still on error (Kimi K2 issue, P2).
-**Key updates:**
-- 🔥 **G-social SHIPPED** — @pingerhq now has 5 tweets scheduled before Friday cold email launch. Social presence will look alive when prospects check.
-- 🔄 Einstein at 15% on E6 (Pinger redesign). No blockers but needs to push — Friday is real.
-- ⚠️ **Instantly warmup STILL the #1 open risk for Friday.** Gary sent to verify. If he can't, need Pasta or Einstein to browser-check today.
-- ✅ Achille redirected from idle to productive work (spread EV filter).
-- ⏰ ~27 min to first @pingerhq tweet (post_1 at 11:15 PT). ~1h27m to Morbid @mention (12:15 PT).
-- 🔴 Etsy publish still blocked on Mario laptop.
+### 11:36 AM Mar 31 — Sprint PM Check-in
+Einstein: 🟡 WORKING (~76 min output) — M1 Data API layer building droplet server. Gary: ✅ 16 DONE items INBOX (pricing pg, legal pgs x3, blog post 4, Google Ads copy, X posts) — all awaiting Einstein deploy. Marcus: ⚠️ STALE INBOX Mar 28. Plutus: ✅ BTC RSI neutral, settlement tracker clean. Athena: ⚠️ Briefing overdue (last Mar 28). Rhea: 🔴 P0 cold email 8+ days 0 replies.
 
-### 10:33 AM Mar 19 — Sprint PM Check-in #11
-**Einstein:** Timeout (15s). History confirms: acknowledged E6 (Pinger redesign) as top priority, switching now. E5 (Canopy) at ~20%, paused. No blockers. Also noted Achille's BTC ATLAS strategy map path for later.
-**Gary:** Timeout (15s). History confirms: 🔥 **G3 COMPLETE — 5/5 shipped.** Demo Polish Notes delivered (`DEMO_POLISH_NOTES.md`), AND proactively fixed offer discrepancy in One-pager + Proof Kit to match Pasta-approved tiers (3 lifetime + 10 six-month). Commit `d0c2e1f`. G3 is closed. Ready for G-social.
-**Marcus:** Timeout (15s). History confirms: reviewed all 3 Gary docs, messaging aligned. Noted offer discrepancy is now resolved by Gary. Instantly warmup still flagged — Gary's own checklist has unchecked boxes for account active, email connected, warmup score ≥70. Marcus has asked Gary 3x with no answer on this specific item. Ready for 12:15 PT.
-**Achille:** Timeout (15s). History confirms: ATLAS cron flipped from `error` → `ok` status. All 15 paper trades settled: 10W/5L, 66.7% WR, +$31.55 on $75 wagered (+42.1% ROI). Darwinian weight sync running (3 syncs logged, Sharpe 0.460, weight 0.806). Flagged spread bet EV as unreliable data artifact — recommends filtering. Monitoring continues.
-**Key updates:**
-- 🔥 **G3 SHIPPED** — all Pinger launch assets complete. Friday cold email has full collateral: QA checklist, Proof Kit, One-pager, Trust Snippets, Demo Polish. Offer language aligned.
-- ✅ Einstein confirmed E6 (Pinger redesign) is active. Friday deadline acknowledged.
-- ✅ ATLAS cron healthy in prod — real trades being tracked, Darwinian weights updating.
-- ✅ OddsTool paper: 10W/5L (+42.1% ROI) — positive signal, small sample. Spread bet EV filtering needed.
-- ⚠️ Instantly warmup STILL unverified. Gary's checklist has unchecked boxes. Marcus asked 3x. This is a real Friday risk — need Pasta or Einstein to browser-check.
-- 🔴 Etsy publish still blocked on Mario laptop (~2hr, 16 products ready).
-- ⏰ ~1h42m to first Canopy @mention (Morbid 12:15 PT). All systems ready.
+### 3:39 PM Mar 30 — Sprint PM Check-in
+**Einstein:** 🔴 STUCK ~56 min (no exec access to git push). Deploy actually completed via Telegram sub-agent at ~3:36 PM — DASH-001/002/003 all LIVE. Einstein unaware.
+**Artemis:** ✅ Deploy verified live on lottotally.com. Standing by to retest.
+**Gary:** 🟡 INBOX stale, 11 DONE items, no new work today.
+**Marcus:** ⚠️ Silent, blocked on Mario-owned items (Google Ads acct, FB Page, Instantly UI — 7+ days).
+**Plutus:** ✅ Settlement tracker OK.
+**Athena:** ⚠️ Mar 30 AM briefing overdue (~9 hours).
+**Rhea:** 🔴 Pinger cold email P0 — 7 days zero replies, not engaged.
 
-### 10:18 AM Mar 19 — Sprint PM Check-in #10
-**Einstein:** ✅ **E-digest DONE.** SSL fix applied (`sslmode=no-verify` + `rejectUnauthorized:false`), Canopy redeployed, `/api/digest/run` returns 200 with digest stats. The last Canopy onboarding blocker is cleared. Also verified Instantly via API — campaigns exist, sequences loaded, schedules set (Mon-Fri 8a-5p ET). Gap: warmup/account status can't be checked (API key missing `accounts:read` scope). Browser check still needed. Now moving to E5/E6.
-**Gary:** G3 at 80%. Two more deliverables shipped since last check: Cold Email Companion One-Pager (`pinger/COLD_EMAIL_COMPANION_ONE_PAGER.md`) + Trust Snippets Pack (`pinger/TRUST_SNIPPETS_PACK.md`), commit `17a982e`. 4/5 done. Only demo polish remaining. On track for EOD.
-**Marcus:** Proactively reviewed Gary's launch assets. Aligned. Caught one discrepancy: Gary's cold email says "20 design partner spots, free for 6 months" but Pasta-approved offer is 3 lifetime + 10 six-month. Marcus will use Pasta-approved tiers in his reply handling. Smart catch. Ready for 12:15 PT Morbid tweet (~2h away).
-**Achille:** 🔥 TRIPLE DELIVERY. (1) ATLAS wired into live OddsTool cron loop — syncs Darwinian weights, runs 3 agents in parallel, KellySizingAgent sets unit multiplier, gate tested with mock (BET, conviction 0.71, 0.5x Kelly). (2) NHL goals dropped from engine.js (0/2 record), MLB added to EV scanner. (3) BTC ATLAS strategy mapping complete (`btc-bot/ATLAS-STRATEGY-MAP.md`) — full code for all 5 wrapper agents, btc-desk.js orchestrator, shared weight store. Einstein can clone mechanically.
-**Key updates:**
-- 🔥 **E-digest SHIPPED** — Canopy's biggest onboarding blocker is GONE. Creators can now receive digests.
-- 🔥 **ATLAS is LIVE in OddsTool cron** — not just a plan, not just wrappers, actually running in the loop.
-- ✅ Gary 4/5 on Pinger launch assets. Friday cold email has solid collateral.
-- ⚠️ Offer discrepancy flagged: Gary's emails say 20 spots/6mo free, Pasta says 3 lifetime + 10 six-month. Not blocking but needs alignment.
-- 🟡 Instantly warmup still unverified via browser. Einstein API-confirmed campaigns/sequences exist but can't check warmup status.
-- 🔴 Etsy publish still blocked on Mario laptop (~2hr, 16 products ready).
-- ⏰ ~2h to first Canopy @mention (Morbid 12:15 PT). All infrastructure ready now.
+### 2:37 PM Mar 30 — Sprint PM Check-in
+**Einstein:** 🔴 STUCK (last output 51 min ago). BUT active Vercel deploy in progress via telegram sub-agent (seq 843, `vercel --prod` running ~14 min ago). LottoTally DASH-001/002/003 all built, waiting on deploy. Vercel token expired — Einstein trying to resolve. Artemis standing by to verify on live site.
+**Artemis:** ✅ All 3 criticals fixed + built. Standing by for deploy.
+**Gary:** 🟡 11 DONE items, INBOX stale, no new work started today.
+**Marcus:** ⚠️ Silent 34+ min, blocked on Mario-owned items (Google Ads, FB Page, Instantly UI — all 7+ days old).
+**Plutus:** ✅ Settlement tracker clean (Mar 29). BTC RSI OK.
+**Athena:** ⚠️ Briefing 9+ hours overdue — needs Mar 30 AM briefing.
+**Rhea:** 🔴 Pinger cold email P0 — 7 days zero replies, not engaged.
+**Mario actions needed:**
+1. [CRITICAL] Einstein may need Vercel CLI re-auth help — standing by to retry deploy
+2. [CRITICAL] Rhea needs activation on Pinger cold email P0
+3. [BLOCKED 7+ days] Google Ads account creation (Marcus)
+4. [BLOCKED 7+ days] Facebook Business Page for LottoTally (Marcus)
+5. [BLOCKED 6+ days] Instantly UI access for Gary
+6. [BLOCKED 6+ days] Canopy @canopyfilter X restriction lift
+7. [Mar 29] Athena morning briefing overdue — needs 6:30 AM Mar 30 briefing
 
-### 10:03 AM Mar 19 — Sprint PM Check-in #9
-**Einstein:** E-digest at ~95% but **new blocker: DB SSL** (`SELF_SIGNED_CERT_IN_CHAIN`) when prod digest route hits DB. Code deployed, route live (401 auth-gated), but actual trigger fails at DB connection layer. This is the last mile — told him to fix SSL first, then go STRAIGHT to E6 (Pinger redesign). Friday deadline is real.
-**Gary:** G3 at 50%. 2/5 done: QA checklist ✅, Design Partner Proof Kit ✅. Three remaining: cold email companion one-pager, trust snippets, demo polish. No content blockers. Told him to prioritize one-pager first (Marcus needs it for Friday), then trust snippets, then demo polish. Instantly verification escalated separately.
-**Marcus:** 🔥 ALL DONE. Pinger reply playbook shipped (`strategy/pinger-reply-playbook.md`, 8 scenarios including design partner conversion with Stripe coupon steps). Canopy playbook ✅, onboarding flow ✅. Standing by for 12:15 PT Morbid tweet (~2h12m). Told him to review Pinger cold email alignment with Gary's assets while waiting.
-**Achille:** 🔥 MAJOR: Built ATLAS agent wrappers for OddsTool (`oddstool-v2/atlas-agent.js`). 5 agents: EVPlusAgent, LowHoldAgent, EVTrendAgent, SportSeasonAgent, KellySizingAgent. Darwinian weight system with Sharpe tracking. First sync: EV+ Sharpe 0.460, auto-weight 0.806. EVTrendAgent signals BET at max conviction. Also shipped ATLAS implementation priority analysis. Directed to: (1) wire agents into live cron loop, (2) drop NHL goals props, (3) map BTC strategies for Einstein to clone.
-**Key updates:**
-- 🔴 NEW BLOCKER: E-digest DB SSL in prod. Einstein fixing. This blocks Canopy onboarding.
-- ✅ Marcus fully loaded — both Pinger + Canopy playbooks shipped. Best-prepared CRO in the game.
-- 🔥 Achille leveled up OddsTool with actual ATLAS integration (not just a plan — working code).
-- ⏰ ~2h12m to first Canopy @mention (Morbid at 12:15 PT). All reply infrastructure ready.
-- 🟡 Instantly verification still a gap — Gary flagged 3x to Marcus, no one has browser-checked. Need Pasta or Einstein to verify today.
-- 🟡 Etsy publish still blocked on Mario laptop (~2hr task, 16 products ready).
+## ⏰ Chronos Check — 2026-03-30 10:53 PM PT
+- Einstein: ⚠️ STUCK ~9 hrs — last reply 7:26 PM PT, can't git push (no exec), needs manual deploy to unblock
+- Gary: ⚠️ STALE ~2 hrs — session running, no output since 8:41 PM PT
+- Marcus: ⚠️ STALE ~2 hrs — session running, no output since 8:41 PM PT
+- BTC RSI Scanner: ✅ running (last ran clean)
+- Settlement tracker: ✅ running (0 checked, 0 errors)
+- Artemis: not in session list this cycle (may be done)
+- Plutus: ✅ INBOX 8 DONE items (Mar 28 data)
+- Athena: ✅ INBOX shows prior briefing delivered
+- Mario blockers unchanged: Google Ads account, FB Page, Instantly UI
 
-### 9:48 AM Mar 19 — Sprint PM Check-in #8
-**Einstein:** ⚠️ Timed out (15s). History shows last action was polling a process session (`young-glade`) which got aborted. Unclear if on E-digest, E5, or E6. Sent follow-up asking for status + prioritizing E6 (Pinger redesign) for Friday cold email deadline. Also flagged Instantly UI verification need.
-**Gary:** G3 progress — 2/5 deliverables shipped: QA checklist ✅ + Design Partner Proof Kit ✅ (commit 45e086c). Demo polish, one-pager, and trust snippets still pending. Gary also flagged to Marcus that Instantly browser verification is an open gap — warmup status, sequences, and contacts not confirmed in UI. This is a real risk for Friday.
-**Marcus:** Proactive. Reached out to Gary directly about Instantly + Canopy tweet status. Wants to write Pinger reply playbook while waiting for 12:15 PT. Approved — told him to go. ~2h27m to first Canopy @mention (Morbid at 12:15 PT).
-**Achille:** 🔥 MAJOR OUTPUT. (1) Paper trades SETTLED: 9W/4L, 69.2% win rate, +$29.05 on $65 wagered (+44.7% ROI). NBA props 9/11, NHL goals 0/2 — recommends dropping NHL. (2) ALL 16 listing copies now written (11 new ones this session). Full Etsy catalog: 16 delivery PDFs + 16 listing copies. Nothing left to prep. Directed to: settle new OddsTool trades, ATLAS priority review, and any remaining product work.
-**Key updates:**
-- 🔥 Etsy is FULLY PREPPED — 16/16 products ready. Only blocker: Mario's laptop for Etsy publish. This is the fastest revenue path and it's 100% on one human action.
-- 🔴 Instantly verification for Friday cold email is a GAP — Gary and Marcus both flagged it. Nobody has browser-checked warmup status, sequences, or contacts today. Need Einstein or Pasta to verify.
-- 🟡 Einstein status unknown — session was aborted mid-poll. Could be working fine, could be stuck. Follow-up sent.
-- ⏰ 2h27m to first Canopy @mention tweet (Morbid, 12:15 PT). Team ready.
-- OddsTool paper results: early signal is positive (+44.7% ROI) but small sample. NHL goals props underperform — actionable insight.
+### 12:57 AM Mar 31 — Sprint PM Check-in (Chronos)
+**Einstein:** 🔴 STUCK ~5.5 hrs — can't git push from session (no exec access). DASH-001/002/003 were deployed via Telegram sub-agent at 3:36 PM (already live). Still needs manual git push to sync codebase. M1/M8 stalled.
+**Artemis:** ✅ Standing by to retest LottoTally fixes.
+**Gary:** ✅ Online, 12 DONE items, LottoTally Google Ads copy sent Mar 30.
+**Marcus:** ⚠️ Silent since Mar 28. Blocked on Mario: Google Ads acct, FB Page, Instantly UI.
+**Plutus:** ✅ BTC RSI Scanner clean, settlement tracker clean.
+**Athena:** ⚠️ Briefing overdue — last was Mar 28 AM. ~18 hrs since last status update.
+**Rhea:** 🔴 P0 — Pinger cold email 0 replies 8+ days, not engaged.
 
-### 9:24 AM Mar 19 — Sprint PM Check-in #7
-**Einstein:** E-digest at ~100% code/deploy, ~95% overall. Code is deployed, route is live (/api/digest/run → 401 auth-gated). Only remaining step: trigger with real creator/channel payload for e2e proof. No blockers. Told him to do a test trigger, then move to E5 or E6 (suggested E6 for Pinger — Friday deadline).
-**Gary:** Pivoted to G3 (Pinger launch assets). Delivered a solid 5-item plan: (1) Friday launch QA checklist, (2) Design partner proof kit, (3) Demo video polish pass, (4) Cold email companion one-pager, (5) Trust snippets pack. Told him to execute starting with QA checklist + proof kit.
-**Marcus:** Responded HEARTBEAT_OK — all tasks done, standing by. Sent follow-up asking about tweet status prep and Pinger GTM needs from Gary. First Canopy @mention (Morbid) fires at 12:15 PT (~2h51m from now).
-**Achille:** Delivery PDFs ✅ DONE (all 16 products). OddsTool paper trade analysis ✅ DONE — 13 trades from Mar 15-16 still open (can't auto-settle, no Kalshi tickers). Avg EV 7.47%, two suspicious 33-37% EV trades flagged. Told him to manually settle trades using game results and prep remaining 15 Etsy product descriptions.
-**Key updates:**
-- E-digest is functionally done — just needs live trigger proof. Critical for Canopy onboarding.
-- Gary successfully redirected from G2 → G3 (Pinger). 5-piece launch asset plan is strong.
-- Achille productive — delivery templates and trading analysis both shipped. Etsy publish still blocked on Mario.
-- ~2h51m until first Canopy @mention tweet. All systems ready.
-- No new blockers. Existing blocker: Etsy server IP block (needs Mario's laptop).
+## ⏰ Chronos Check — 2026-03-31 4:13 PM PT
+**Einstein:** 🔴 STUCK ~4.5 HOURS — last output at seq 436 (~1:40 PM PT), was building M1 Data API layer (Express/droplet). Mario alerted via Telegram 4:13 PM PT. Needs session reset or new instructions.
 
-### 9:05 AM Mar 19 — Sprint PM Check-in #6
-**Einstein:** E-digest ~95%. Digest route is LIVE in production (/api/digest/run returns 401 = auth-gated, route exists). Final step: e2e trigger test with real creator/channel payload. No blockers. After E-digest, moves to E5 or E6.
-**Gary:** G2 at ~70%. Template spec + style skins done, packaging metadata brief for first 5 products. Nudged to wrap G2 metadata quickly and pivot to G3 (Pinger launch assets) — Friday cold email is the deadline.
-**Marcus:** All done. Standing by for 12:15 PT first @mention tweet (Morbid). No action needed. ~3h10m to first tweet.
-**Achille:** A2 at 80%, A-price ✅ DONE (PRICING-RESEARCH.md — prices competitive, no changes). **NEW BLOCKER: Etsy permanently blocks server IP (178.128.75.106) as bot traffic.** Achille cannot log in or publish from here. All 5 listing copies written, deploy guides ready. Mario needs ~2hr from laptop. Escalated to Mario via WhatsApp. Told Achille to generate remaining delivery PDF templates, then shift to trading tasks.
-**Key updates:**
-- E-digest nearly complete — Einstein built it fast, digest route live in prod. Critical for Canopy onboarding.
-- A-price DONE — new ✅. Updated etsy.md project plan.
-- 🔴 Etsy publish requires Mario's laptop — hard blocker, escalated. Fastest revenue path stalled.
-- Gary needs to shift to G3 (Pinger) — nudged.
-- 3h10m until first Canopy @mention tweet. Team ready.
+**Gary:** ✅ 16 DONE items in INBOX. Standing by for deploy.
 
-### 8:35 AM Mar 19 — Sprint PM Check-in #5
-**Einstein:** Timeout (15s). History shows he moved PAST E4 and is now deploying E5 (Canopy redesign) to Vercel — `npx vercel --prod` on canopy-filter. Run was aborted mid-poll (`cool-tidepool` session killed). canopyfilter.com returns 200, so deploy may have landed. lottotally.com also 200. Sent him reminder: E-digest is highest priority after E5. First tweet fires 12:15 PT.
-**Gary:** Timeout (15s). Last response 8:13 AM — was at ~55% on G2 but sprint board already marked G2 ✅ Done. Transitioning to product metadata sheet for first 5 products, then G3. No blockers.
-**Marcus:** Timeout (15s). Last response 8:13 AM — all tasks done, holding for 12:15 PT creator replies. Status unchanged. No action needed.
-**Achille:** Timeout (15s). Session was fully reset by Pasta (config patched to Claude Sonnet permanently, old corrupted session deleted). New session ID: 297fc1d5. Zero messages — completely fresh. Sent him full task brief (A2 publish + A-price). Awaiting bootstrap.
-**Key updates:**
-- E4 (LottoTally redesign) appears COMPLETE — Einstein moved on to E5 (Canopy)
-- Einstein's Canopy deploy may have landed (200) despite aborted poll
-- Achille session is alive and clean — model fixed at config level, won't revert
-- Equity Scanner cron STILL broken (same tool_use error, session 40ccf76b)
-- 3h37m until first Canopy @mention tweet (Morbid at 12:15 PT)
+**Marcus:** ⚠️ STALE — INBOX Mar 28, blocked on Mario-owned items (Google Ads acct, FB Page, Instantly UI — 8+ days).
 
-### 8:18 AM Mar 19 — Sprint PM Check-in #4
-**Einstein:** No response (15s timeout). Last msg 8:10 AM — E4 ~85%, also flagged that **Canopy digest delivery is NOT implemented** (OAuth connect works, but no digest send route/job). This is a new P1 blocker for Canopy beta onboarding. After E4 deploy, Einstein should build digest delivery before E5.
-**Gary:** No response (15s timeout). Last msg 8:13 AM — G2 DONE. Built full Etsy visual template system (2 skins, 7 templates, product metadata schema) at `/root/PastaOS/CMO_Gary/content/etsy-template-system.md`. Wants to build product metadata sheet for first 5 products as next step. Good call — approve that.
-**Marcus:** No response (15s timeout). Last msg 8:13 AM — All done, standing by. Sent him warning about Canopy digest gap so he adjusts reply handling (promise "first digest coming this week" not "immediate results").
-**Achille:** 🔴 DEAD SESSION. Session transcript corrupted — error: `tool_use ids found without tool_result blocks (functionsexec0)`. Model IS Claude Sonnet now but old Kimi K2 malformed tool calls baked into session history. Session file: `ed7739ff-3822-4a6c-8bdc-b16300913e29.jsonl`. **Escalated to Mario via WhatsApp** for session reset (delete/rename file). 24+ hours of zero Etsy output.
-**NEW ISSUES:**
-- 🔴 Canopy digest delivery NOT built. Creators can connect YouTube but get nothing. Einstein needs to build this ASAP (new task: E-digest).
-- 🔴 Achille needs session file deletion, not just model switch. Escalated.
-- First Canopy @mention tweet still fires 12:15 PT — team ready but manage expectations on product completeness.
+**Plutus:** ✅ BTC RSI + settlement tracker running clean.
 
-### 8:03 AM Mar 19 — Sprint PM Check-in #3
-**Einstein:** E4 (LottoTally redesign) ~85%, finishing polish + deploy. No blockers. Told to move to E5 (Canopy) after, plus verify Canopy OAuth/digest flow before 12:15 PT (Marcus's question).
-**Gary:** G1 locked at 90% — all 5 @mention tweets scheduled (first at 12:15 PT Morbid). Shifting to G2 (Etsy visuals template system). Given typeui skill paths and Achille's ready assets.
-**Marcus:** All sprint tasks ✅ DONE. Standing by for creator replies from 12:15 PT. Has reply playbook + onboarding flow ready. Manual fallback (canopy.js --channel) prepped if OAuth doesn't work.
-**Achille:** 🔴 DEAD SESSION. Kimi K2 producing malformed tool calls (same incompatibility from Mar 17). Cannot publish Etsy listings. 0 listings published despite 24+ hours of having products ready. Escalated to Pasta (Mario WhatsApp) for model config fix.
-**Issues:**
-- CRITICAL: Achille needs model switch from Kimi K2 → Claude Sonnet. Etsy revenue blocked.
-- Einstein asked to verify Canopy OAuth before 12:15 PT.
-- Equity Scanner cron STILL broken (session corruption). P2.
-- First Canopy @mention tweet fires 12:15 PT — all hands ready.
+**Athena:** ⚠️ INBOX stale Mar 28, no recent briefing.
 
-### 7:48 AM Mar 19 — Sprint PM Check-in #2
-**Einstein:** E4 (LottoTally redesign) ~70%. No blockers. Finishing polish, then E5/E6.
-**Gary:** G1 ~85% (scheduled, monitoring first wave at 12:15 PT). Transitioning to G2 (Etsy visuals).
-**Marcus:** M-onboard ✅ DONE — full beta creator onboarding flow written (canopy-beta-onboarding.md). 7-phase journey from reply → paid. Raised good question: does Canopy OAuth + digest delivery actually work? Needs Einstein verification.
-**Achille:** Had 12 listing images ready but was falsely blocked claiming "needs Mario." Etsy creds are in his own .env (Pasta747). Unblocked him — told to publish 3 products NOW via browser. Also starting A-price in parallel.
-**Issues:**
-- Marcus's M-onboard question: Does Canopy actually have working OAuth connect + digest delivery? Einstein should verify before first creator reply comes in. → Added to Einstein's queue after E4.
-- Achille was self-blocking on A2. Fixed. Monitoring for actual publish.
-- Equity Scanner cron STILL broken (session corruption). P2.
-- First @mention tweet (Morbid) fires at 12:15 PT — need to monitor for reply.
+**Achille:** No INBOX file.
 
-### 7:33 AM Mar 19 — Sprint PM Check-in #1
-**Einstein:** E1/E2/E3 all ✅ DONE. Now on E4 (LottoTally redesign polish). No blockers.
-**Gary:** G1 ✅ DONE — reviewed copy, built staggered @mention tweet plan (5 waves, first at 12:15 PT). Moving to G2 (Etsy visuals).
-**Marcus:** M1/M2/M3 all ✅ DONE. Reply playbook written, DMs handed to Gary, Instantly check sent. Standing by for Canopy creator replies.
-**Achille:** A1 ✅ DONE (ATLAS plan delivered). A2 in progress — 5 Etsy listings ready, templates built, needs to publish.
-**Issues:**
-- Equity Scanner cron STILL BROKEN (session corruption — tool_use/tool_result mismatch). Needs Einstein fix (T-fix-eq).
-- Canopy outreach is @mention tweets, NOT DMs (X free tier limitation). Lower conversion expected — may need Mario to send DMs manually from personal account.
-- Marcus flagged Stripe env vars concern for Pinger — but project plan shows ✅ Done (7 Stripe vars in Vercel production). Non-issue.
+**Equity Scanner:** ✅ running clean.
+
+**BTC RSI Scanner:** ✅ running clean (last 4:05 PM PT, neutral).
+
+**Settlement tracker:** ✅ ran clean 3:44 PM PT.
+
+**Mario blockers (8+ days):** Google Ads acct, FB Page, Instantly UI, Facebook App Secret, GA4 Measurement ID.
+
+---
+## ⏰ Chronos Check — 2026-03-31 12:06 PM PT
+**Einstein:** 🔴 STUCK ~5.4 HOURS — last output 11:36 AM PT, building M1 Data API layer (droplet server architecture). Can't git push (no exec). Mario alerted via WhatsApp at 12:06 PM PT.
+
+**Gary:** ✅ 16 DONE items in INBOX (pricing page, legal pages x3, blog post 4, Google Ads copy, X posts, DMs, etc.) — all awaiting Einstein Vercel deploy
+
+**Marcus:** ⚠️ STALE — INBOX from Mar 28, no new output this session cycle
+
+**Plutus:** ✅ 8 DONE items in INBOX (spread parser, game-start lock, ESPN scraper, NBA/NHL backtest, enrichment pipeline, IBKR recon)
+
+**Athena:** ⚠️ INBOX last updated Mar 28, no new briefing data
+
+**Achille:** No INBOX file found
+
+**Equity Scanner:** ✅ running clean (last ran 10:35 AM PT, no signals)
+
+**BTC RSI Scanner:** ✅ running clean (last ran 9:44 AM PT, neutral)
+
+**Settlement tracker:** ✅ ran clean at 10:28 AM PT (0 checked, 0 errors)
+
+**Mario blockers unchanged:** Google Ads acct, FB Page, Instantly UI, Facebook App Secret, GA4 Measurement ID
+
+---
+## ⏰ Chronos Check — 2026-03-31 10:36 AM PT
+**Einstein:** 🟡 WORKING ✅ — replied ~5.5 min ago, building M1 Data API layer (Node.js server on DigitalOcean, /opt/pastaos/api/ structure defined, endpoint URLs pending droplet setup)
+**Gary:** ✅ 16 DONE items in INBOX (pricing pages, legal pages, blog posts, Google Ads copy, X posts, DMs, etc.)
+**Marcus:** ⚠️ STALE — INBOX from Mar 28, no new output this session cycle
+**Plutus:** ✅ 8 DONE items in INBOX (spread parser, game-start lock, ESPN scraper, NBA/NHL backtest, enrichment pipeline, IBKR recon)
+**Athena:** ⚠️ INBOX last updated Mar 28, no new briefing data
+**Achille:** No INBOX file found
+**Equity Scanner:** ✅ running clean (last ran 10:35 AM PT, no signals)
+**BTC RSI Scanner:** ✅ running clean (last ran 9:44 AM PT, neutral)
+**Settlement tracker:** ✅ ran clean at 10:28 AM PT (0 checked, 0 errors)
+**Mario blockers unchanged:** Google Ads acct, FB Page, Instantly UI, Facebook App Secret, GA4 Measurement ID
+
+### 5:15 PM Mar 31 PT — Sprint PM Check-in
+**Einstein:** 🔴 STUCK (~1h15 min silent, 5:05 PM Mario ping no response) — Was building M1 Data API layer (droplet server arch), seq 436 at 4:00:30 PM PT. Mario pinged at 5:05 PM to confirm Qwen 3.6 Plus Preview switch — no reply. Needs session reset or intervention.
+**Gary:** ✅ 16+ DONE items — Pinger/Canopy/Vantage legal pages, LottoTally Google Ads copy, Pinger blog post 4 all confirmed in INBOX today.
+**Marcus:** ⚠️ Silent — INBOX stale Mar 28. Blocked on Mario-owned items (Google Ads acct, FB Page, Instantly UI — 9+ days).
+**Plutus:** ✅ Settlement tracker clean (0 checked, 0 errors). BTC RSI neutral.
+**Athena:** ⚠️ Briefing overdue — last Mar 28 AM. ~33+ hours since last briefing.
+**Rhea:** 🔴 P0 Pinger cold email — 10+ days 0 replies, not engaged.
+**New DONE items (marking now):** Pinger-Legal-Page ✅, Canopy-Legal-Page ✅, Vantage-Legal-Page ✅, LottoTally Google Ads copy ✅, Pinger-Blog-Post-4 ✅ (Gary INBOX Mar 31).
+**Mario blockers unchanged (9+ days):** Google Ads acct, FB Page, Instantly UI, Canopy X restriction.
+**Tasks remaining:** ~8 (4 Mario-owned, 2 Einstein/M1, 2 Artemis QA).
+
+---
+## ⏰ Heartbeat Update — 2026-04-01 12:06 AM PT
+**Note:** Previous heartbeat session FAILED at ~12:06 AM. Sprint board was being updated by Chronos PM at ~11 PM PT but write was aborted. Board was stale at 5:15 PM PT. Updating now with confirmed new DONE items.
+
+**New DONE items (verified on disk):**
+- Einstein M1-M8: ✅ ALL DONE — per Einstein INBOX (2026-03-31 9:22 PM PT)
+- LottoTally Logos: ✅ 4 variants confirmed on disk (lt03-blue, lt03-gold, lt03-twotone, lt03-fullcolor-dark.png — 60-89KB, generated 7:13 PM PT)
+- Gary LinkedIn strategy: ✅ CONFIRMED at /root/PastaOS/CMO_Gary/linkedin/linkedin-outreach-strategy.md
+- Athena self-improvement: ✅ COMPLETE — full 6-phase cycle done
+
+**Settlement tracker cron:** ✅ running clean (~10:59 PM PT, 0 checked, 0 errors)
+**BTC RSI Scanner cron:** ✅ running clean (~11:05 PM PT, neutral signals)
+**Sub-agent self-improvement:** ✅ ran — 8/10 agents completed, 2 failed (lead_researcher, market_scanner)
+
+**Stale items still on board (5:15 PM PT):**
+- Einstein listed as "STUCK" — actually M1-M8 DONE ✅
+- Gary LinkedIn listed as pending — actually CONFIRMED ✅
+
+**Critical blockers (unchanged):**
+- Google Ads account: 10+ days blocked (Mario-owned)
+- LinkedIn Sales Nav: Gary blocked, can't identify 66 NVIDIA searchers
+- Gary session: timing out, can't exec or receive messages
+
+---
+# Sprint Board — Wednesday Apr 1, 2026 (Updated 5:06 AM PT)
+
+## 🔴 P0 — Revenue-Blocking
+
+### Pinger Cold Email — Wave 2 Instantly Upload READY ⚠️
+- [ ] Wave 2 cold email finalized by Gary's email_copywriter (Quill) — 3-segment structure + top 3 personalized (SiteCare, WP Tangerine, MadeByShape)
+- [ ] Instantly upload package: `/root/PastaOS/CMO_Gary/Email_Copywriter/content/pinger-wave2-instantly-upload.md`
+- [ ] ⚠️ DO NOT UPLOAD until Instantly warmup score ≥ 70
+- [ ] Marcus to upload to Instantly — Gary blocked (no UI access)
+- [ ] P0: 0 NEW replies since Mar 27 (5+ days) — Rhea not engaged, Alex + Per leads cooling
+
+### Pinger Cold Email — Day 7 Follow-up
+- [ ] Wave 1 Day 7 follow-up copy ready: `/root/PastaOS/CMO_Gary/content/pinger-day7-followup-email.md`
+- [ ] Marcus to confirm if already fired; if not, push today
+
+### 🚨 Pinger Pricing Tier Decision — MARIO NEEDED
+- [ ] Einstein blocked on Pinger pricing page deploy — LIVE tiers vs Gary-written tiers are completely different structures
+- [ ] Option A: "LIVE" → Starter $49/Pro $99/Agency $199
+- [ ] Option B: "GARY" → Free $0/Freelancer $29/Agency $79/Studio $179
+- [ ] ONE WORD from Mario unblocks deploy + Google Ads launch
+
+### LottoTally QA — 13 Open Issues (Artemis ownership)
+- [ ] QA report from Mar 28 still has 13 open issues
+- [ ] Artemis not actively working
+
+## 🟡 P1 — High Impact
+
+### Google Ads Account (Mario-owned — 10+ days)
+- [ ] BLOCKING LottoTally + Pinger campaigns (Marcus ready to launch)
+- [ ] Mario in creative setup screen Mar 30
+
+### Einstein — New QA Agents Dispatched
+- [ ] Spec + Scribe dispatched (4 AM standup) — QA coverage for Pinger, Canopy, equity-bot
+- [ ] Spec confused about workspace path — needs correction
+
+### Marcus — INBOX Stale (4+ days)
+- [ ] Last INBOX update Mar 28. Standup aborted this morning.
+- [ ] Blocked on: Google Ads acct, Instantly UI access
+
+## 🟢 P2 — This Week
+- [ ] Sales Nav access for Gary (LinkedIn outreach blocked)
+- [ ] Vantage scanner threshold → 2% (Plutus owns)
+- [ ] Facebook App Secret (@canopyfilter)
+- [ ] Etsy publish — Mario laptop needed
+- [ ] Resend DNS verification
+
+## ✅ Recently Completed (Einstein standup 4:05 AM)
+- ✅ Mission Control M1-M6 deployed + dashboard wired
+- 🟡 LottoTally logos — READY FOR REVIEW: 4 indigo #4F46E5 variants sent to Mario. Awaiting approval → then Einstein deploys.
+- ✅ Gary LinkedIn strategy ✅
+- ✅ Einstein LottoTally QA audit ✅
+- ✅ Spec dispatched: Pinger webhook NaN guards, auth edge tests, Canopy billing, equity-bot exit
+- ✅ Scribe dispatched: Pinger API Reference, Ops Runbook, Canopy API Reference, Equity Bot README
+
+## 🚨 New blocker — Pinger pricing mismatch
+- Deployed: Starter $49, Pro $99, Agency $199
+- Gary's copy: Free $0, Freelancer $29, Agency $79, Studio $179
+- **NEEDS MARIO DECISION before any deploy. Blocking Google Ads.**
+- Reported to Mario 10:00 AM
+
+## Mario Blockers (UNCHANGED)
+Google Ads acct 🚨, FB Page, Instantly UI, Sales Nav, Facebook App Secret, GA4 Measurement ID
+
+## Chronos Check — Apr 1, 2026 10:00 AM PT
+**Einstein:** ✅ Alive. Exec broken. Deploy queue stalled. LottoTally calc deployed by Pasta.
+**Gary:** ⚠️ Session timing out. Content ready (NVIDIA emails, LinkedIn strategy, Wave 2).
+**Marcus:** ⚠️ Session timing out. Google Ads acct Day 12 blocker.
+**Plutus:** ✅ Settlement tracker clean.
+**Athena:** ✅ Briefing delivered 6:08 AM.
+**Rhea:** 🔴 Pinger cold email 0 replies Day 12+. Redesign on tonight's self-improvement cycle.
+**LottoTally logos:** 🟡 4 indigo variants sent to Mario for review.
+**Einstein:** ✅ RESPONSIVE (~1 min ago). M1-M8 ALL DONE. DASH-001/002/003 DEPLOYED. Pinger+Canopy QA Audit DONE.
+**Gary:** ✅ Online. NVIDIA emails DONE, Wave 2 package reviewed DONE.
+**Marcus:** ⚠️ Session alive (52 min ago) but last substantive output Mar 28. Blocked: Google Ads acct, FB Page, Instantly UI (all Mario-owned, 8-11 days).
+**Plutus:** ✅ OK. Settlement tracker clean.
+**Athena:** ✅ Briefing delivered Apr 1 6:08 AM. WhatsApp failed (chat not found).
+**Rhea:** 🔴 P0 Pinger cold email — 8+ days 0 replies, not engaged.
+**New DONE items marked:** M1-M8 (Mission Control full stack), DASH-001/002/003, Pinger+Canopy QA Audit, Gary: NVIDIA emails, Wave 2 review.
+**Mario blockers unchanged (8-11 days):** Google Ads acct, FB Page, Instantly UI, Canopy X restriction, Sales Nav.
+**Tasks remaining:** ~8 (4 Mario-owned, 2 Einstein deploy, 2 Artemis QA).
+
+## ⏰ Chronos Check — 2026-04-01 11:46 AM PT
+**Einstein:** 🔴 STUCK (~98 min silent, 10:48 AM last output) — BLOCKED on Pinger pricing tier decision. LIVE: Starter $49/Pro $99/Agency $199 vs Gary's: Free $0/Freelancer $29/Agency $79/Studio $179 — completely different structures. Needs Mario's call. WhatsApp+Telegram both failing, reported via webchat.
+**Gary:** 🔴 Session running but exec broken (can't post X, can't run scripts). Content ready (Wave 2, NVIDIA emails, LinkedIn strategy).
+**Marcus:** ⚠️ Silent/stale. Wave 2 upload blocked — Marcus has Instantly UI access, file ready.
+**Rhea:** 🟡 Working. Wave 2 Instantly upload ready — blocked on Marcus.
+**Plutus:** ✅ BTC RSI neutral, settlement tracker clean, equity scanner clean.
+**Athena:** 🟡 Briefing delivered 6:08 AM (~5.5h ago) — acceptable.
+**Achille:** No INBOX file.
+**Tasks remaining:** ~8 (1 P0 Einstein blocker, 4 Mario-owned, 3 others).
+**New blocker:** Pinger pricing decision — 1 human call unblocks Pinger deploy + Google Ads.
