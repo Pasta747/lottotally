@@ -31,7 +31,7 @@ export function WeeklyBarChart({
             width={52}
           />
           <Tooltip
-            formatter={(value: number) => [formatCurrency(value), "Weekly Sales"]}
+            formatter={(value: any) => [formatCurrency(Number(value)), "Weekly Sales"]}
             labelFormatter={(label) => `Week: ${label}`}
             contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 13 }}
             cursor={{ fill: "#f8fafc" }}

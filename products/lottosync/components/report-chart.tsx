@@ -7,6 +7,9 @@ export function ReportChart({
 }: {
   data: Array<{ date: string; commissionAccuracy?: number; commission?: number }>;
 }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const fmt = (v: any) => `$${Number(v).toFixed(2)}`;
+
   return (
     <div className="h-72 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -26,7 +29,7 @@ export function ReportChart({
             width={56}
           />
           <Tooltip
-            formatter={(value: number) => [`$${value.toFixed(2)}`, "Est. Commission"]}
+            formatter={fmt as any}
             labelFormatter={(label) => `Date: ${label}`}
             contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 13 }}
           />
