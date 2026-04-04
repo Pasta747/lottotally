@@ -34,11 +34,11 @@ export default async function ReportsPage() {
   try {
     const result = await sql`
       SELECT
-        date,
-        terminal_sales,
-        scratch_sales,
-        (terminal_sales + scratch_sales) as total_sales,
-        (terminal_sales + scratch_sales) * 0.055 as commission_estimate
+        date::text as date,
+        COALESCE(terminal_sales, 0) as terminal_sales,
+        COALESCE(scratch_sales, 0) as scratch_sales,
+        COALESCE(terminal_sales, 0) + COALESCE(scratch_sales, 0) as total_sales,
+        (COALESCE(terminal_sales, 0) + COALESCE(scratch_sales, 0)) * 0.055 as commission_estimate
       FROM daily_entries
       WHERE user_id = ${userId}
       ORDER BY date DESC
@@ -49,26 +49,44 @@ export default async function ReportsPage() {
     console.error("DB error (dailyRows):", err);
   }
 
-  // Fetch week-over-week comparison
-  let thisWeek = { total: 0, days: 0 };
-  let lastWeek = { total: 0, days: 0 };
+  // Week-over-week comparison using simple date math
+  let thisWeekTotal = 0;
+  let lastWeekTotal = 0;
+  let thisWeekDays = 0;
+  let lastWeekDays = 0;
   try {
-    const [tw, lw] = await Promise.all([
-      sql`
-        SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total, COUNT(*) as days
-        FROM daily_entries
-        WHERE user_id = ${userId} AND date >= (CURRENT_DATE - INTERVAL '7 days')::date
-      `,
-      sql`
-        SELECT COALESCE(SUM(terminal_sales + scratch_sales), 0) as total, COUNT(*) as days
-        FROM daily_entries
-        WHERE user_id = ${userId} AND date >= (CURRENT_DATE - INTERVAL '14 days')::date AND date < (CURRENT_DATE - INTERVAL '7 days')::date
-      `,
-    ]);
-    thisWeek = tw[0] as { total: number; days: number };
-    lastWeek = lw[0] as { total: number; days: number };
+    const tw = await sql`
+      SELECT
+        COALESCE(SUM(COALESCE(terminal_sales, 0) + COALESCE(scratch_sales, 0)), 0) as total,
+        COUNT(*) as days
+      FROM daily_entries
+      WHERE user_id = ${userId}
+        AND date >= (CURRENT_DATE - INTERVAL '7 days')
+    `;
+    if (tw[0]) {
+      thisWeekTotal = Number(tw[0].total ?? 0);
+      thisWeekDays = Number(tw[0].days ?? 0);
+    }
   } catch (err) {
-    console.error("DB error (weekly comparison):", err);
+    console.error("DB error (thisWeek):", err);
+  }
+
+  try {
+    const lw = await sql`
+      SELECT
+        COALESCE(SUM(COALESCE(terminal_sales, 0) + COALESCE(scratch_sales, 0)), 0) as total,
+        COUNT(*) as days
+      FROM daily_entries
+      WHERE user_id = ${userId}
+        AND date >= (CURRENT_DATE - INTERVAL '14 days')
+        AND date < (CURRENT_DATE - INTERVAL '7 days')
+    `;
+    if (lw[0]) {
+      lastWeekTotal = Number(lw[0].total ?? 0);
+      lastWeekDays = Number(lw[0].days ?? 0);
+    }
+  } catch (err) {
+    console.error("DB error (lastWeek):", err);
   }
 
   // Monthly totals
@@ -77,13 +95,16 @@ export default async function ReportsPage() {
   try {
     const result = await sql`
       SELECT
-        COALESCE(SUM(terminal_sales + scratch_sales), 0) as total,
-        COALESCE(SUM((terminal_sales + scratch_sales) * 0.055), 0) as commission
+        COALESCE(SUM(COALESCE(terminal_sales, 0) + COALESCE(scratch_sales, 0)), 0) as total,
+        COALESCE(SUM((COALESCE(terminal_sales, 0) + COALESCE(scratch_sales, 0)) * 0.055), 0) as commission
       FROM daily_entries
-      WHERE user_id = ${userId} AND date >= (CURRENT_DATE - INTERVAL '30 days')::date
+      WHERE user_id = ${userId}
+        AND date >= (CURRENT_DATE - INTERVAL '30 days')
     `;
-    monthlyTotal = Number(result[0]?.total ?? 0);
-    monthlyCommission = Number(result[0]?.commission ?? 0);
+    if (result[0]) {
+      monthlyTotal = Number(result[0].total ?? 0);
+      monthlyCommission = Number(result[0].commission ?? 0);
+    }
   } catch (err) {
     console.error("DB error (monthly):", err);
   }
@@ -99,13 +120,13 @@ export default async function ReportsPage() {
     : null;
 
   // WoW change
-  const wowChange = lastWeek.total > 0
-    ? ((thisWeek.total - lastWeek.total) / lastWeek.total) * 100
+  const wowChange = lastWeekTotal > 0
+    ? ((thisWeekTotal - lastWeekTotal) / lastWeekTotal) * 100
     : 0;
 
   // Chart data — last 14 days reversed (oldest first)
   const chartData = [...dailyRows].slice(0, 14).reverse().map((row) => ({
-    date: row.date.slice(5).replace("-", "/"),
+    date: String(row.date).slice(5).replace("-", "/"),
     terminal: Number(row.terminal_sales),
     scratch: Number(row.scratch_sales),
     total: Number(row.total_sales),
@@ -117,13 +138,14 @@ export default async function ReportsPage() {
   try {
     const result = await sql`
       SELECT
-        TO_CHAR(date, 'MM/DD') as week,
-        SUM(terminal_sales + scratch_sales) as total,
-        SUM((terminal_sales + scratch_sales) * 0.055) as commission
+        TO_CHAR(MIN(date), 'MM/DD') as week,
+        SUM(COALESCE(terminal_sales, 0) + COALESCE(scratch_sales, 0)) as total,
+        SUM((COALESCE(terminal_sales, 0) + COALESCE(scratch_sales, 0)) * 0.055) as commission
       FROM daily_entries
-      WHERE user_id = ${userId} AND date >= (CURRENT_DATE - INTERVAL '56 days')::date
-      GROUP BY TO_CHAR(date, 'IYYY-IW'), TO_CHAR(date, 'MM/DD')
-      ORDER BY MIN(date) ASC
+      WHERE user_id = ${userId}
+        AND date >= (CURRENT_DATE - INTERVAL '56 days')
+      GROUP BY DATE_TRUNC('week', date)::date
+      ORDER BY DATE_TRUNC('week', date) ASC
       LIMIT 8
     `;
     weeklyData = result as typeof weeklyData;
@@ -147,7 +169,7 @@ export default async function ReportsPage() {
           <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="card">
               <p className="text-sm text-slate-500">This Week</p>
-              <p className="mt-1 text-2xl font-semibold">{formatCurrency(Number(thisWeek.total))}</p>
+              <p className="mt-1 text-2xl font-semibold">{formatCurrency(thisWeekTotal)}</p>
               <p className={`text-xs ${wowChange >= 0 ? "text-green-600" : "text-red-500"}`}>
                 {wowChange >= 0 ? "▲" : "▼"} {Math.abs(wowChange).toFixed(1)}% vs last week
               </p>
