@@ -1,6 +1,4 @@
 {
-  "buildCommand": "POSTGRES_URL=\"postgresql://dummy:dummy@localhost/dummy\" npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "outputDirectory": ".next"
 }
