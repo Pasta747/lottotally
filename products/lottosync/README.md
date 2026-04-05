@@ -38,3 +38,4 @@ SQLite DB is auto-created at `data/lottotally.db` on first run.
 ## Notes
 - MVP intentionally excludes Stripe billing, OCR, multi-store, and employee tracking (V2).
 - Database schema is kept simple and can be migrated to Postgres later.
+# trigger deploy Sun Apr  5 15:48:05 UTC 2026
