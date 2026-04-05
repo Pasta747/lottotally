@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </>
         )}
         {children}
+        <Analytics />
       </body>
     </html>
   );
